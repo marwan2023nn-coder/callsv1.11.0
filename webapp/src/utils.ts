@@ -426,7 +426,6 @@ export function stopOutgoingRingback() {
     if (!outgoingRingAudio) {
         return;
     }
-
     try {
         outgoingRingAudio.pause();
         outgoingRingAudio.src = '';

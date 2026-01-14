@@ -212,7 +212,7 @@ const Footer = styled.div`
 `;
 
 export const DefaultLeftButton = styled.button`
-    color: var(--button-bg);
+    color: #00987e;
     font-weight: 600;
     padding: 4px 10px;
     margin-inline-end: 2px;

@@ -32,7 +32,7 @@ export const Button = styled.button`
 `;
 
 export const PrimaryButton = styled(Button)`
-    background: var(--button-bg);
+    background: #00987e;
     color: var(--button-color);
     transition: background 0.15s ease-out;
     white-space: nowrap;
@@ -55,7 +55,7 @@ export const PrimaryButton = styled(Button)`
     }
 
     &:hover:enabled {
-        background: var(--button-bg);
+        background: #00987e;
 
         &:before {
             opacity: 1;
@@ -87,7 +87,7 @@ export const DestructiveButton = styled(Button)`
 export const TertiaryButton = styled(Button)`
     transition: all 0.15s ease-out;
 
-    color: var(--button-bg);
+    color: #00987e;
     background: rgba(var(--button-bg-rgb), 0.08);
 
     &:disabled {

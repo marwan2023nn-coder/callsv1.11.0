@@ -116,7 +116,7 @@ export const CallIncomingCondensed = ({call, onWidget = false, joinButtonBorder 
 
 const Container = styled.div`
     border-radius: 8px;
-    background-color: var(--online-indicator);
+    background-color: #00987e;
     padding: 0;
     border: 0;
 `;

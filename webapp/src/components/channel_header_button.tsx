@@ -215,7 +215,7 @@ const CallButton = styled.button<{ $restricted: boolean, $isCloudPaid: boolean, 
     ${(props) => props.$isClientConnecting && css`
       &&&& {
         background: rgba(var(--button-bg-rgb), 0.12);
-        color: var(--button-bg);
+        color: #00987e;
       }
     `}
 `;
@@ -226,7 +226,7 @@ const UpsellIcon = styled.i`
         position: absolute;
         inset-inline-end: 52px;
         top: 12px;
-        color: var(--button-bg);
+        color: #00987e;
         width: 16px;
         height: 16px;
         background-color: var(--center-channel-bg);

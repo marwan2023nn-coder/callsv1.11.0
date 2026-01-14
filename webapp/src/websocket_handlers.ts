@@ -99,9 +99,7 @@ import {
 // state mutating operations.
 export function handleCallEnd(store: Store, ev: WebSocketMessage<EmptyData>) {
     const channelID = ev.data.channelID || ev.broadcast.channel_id;
-    if (getCallsClient()?.channelID === channelID) {
-        stopOutgoingRingback();
-    }
+    stopOutgoingRingback();
     store.dispatch(callEnd(channelID));
 }
 

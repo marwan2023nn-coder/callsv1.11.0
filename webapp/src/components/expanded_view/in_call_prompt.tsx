@@ -128,7 +128,7 @@ const Footer = styled.div`
 
 export const DefaultLeftButton = styled.button`
     color: var(--button-color);
-    background: var(--button-bg);
+    background: #00987e;
     font-weight: 600;
     padding: 10px 16px;
     border-radius: 4px;

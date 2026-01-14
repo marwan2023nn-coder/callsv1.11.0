@@ -39,7 +39,7 @@ const Enterprise = styled.div`
     line-height: 16px;
 
     background: rgba(var(--button-bg-rgb), 0.12);
-    color: var(--button-bg);
+    color: #00987e;
 
     >i {
         font-size: 12px;

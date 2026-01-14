@@ -48,7 +48,7 @@ const CreateMeetingSummaryButton = styled.button`
 
 	&:active {
 		background: rgba(var(--button-bg-rgb), 0.08);
-		color: var(--button-bg);
+		color: #00987e;
 	}
 `;
 

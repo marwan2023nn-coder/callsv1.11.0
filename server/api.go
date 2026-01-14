@@ -11,11 +11,11 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/time/rate"
+	"time"
 
 	"github.com/mattermost/mattermost-plugin-calls/server/db"
 	"github.com/mattermost/mattermost-plugin-calls/server/public"
+	"golang.org/x/time/rate"
 
 	"github.com/mattermost/rtcd/service/rtc"
 
@@ -269,10 +269,59 @@ func (p *Plugin) handleDismissNotification(w http.ResponseWriter, r *http.Reques
 	}
 	state.Call.Props.DismissedNotification[userID] = true
 
+	channel, appErr := p.API.GetChannel(channelID)
+	isDM := appErr == nil && channel.Type == model.ChannelTypeDirect
+	if isDM {
+		state.Call.Props.EndReason = "ignored"
+		if post, err := p.store.GetPost(state.Call.PostID); err == nil {
+			post.AddProp("end_reason", "ignored")
+			if _, appErr := p.API.UpdatePost(post); appErr != nil {
+				p.LogError("failed to update call post", "err", appErr.Error())
+			}
+		} else {
+			p.LogError("failed to get call post", "err", err.Error())
+		}
+	}
+
 	if err := p.store.UpdateCall(&state.Call); err != nil {
 		res.Err = fmt.Errorf("failed to update call: %w", err).Error()
 		res.Code = http.StatusInternalServerError
 		return
+	}
+
+	// Special case for DM calls: "dismiss" is treated as "ignore/reject" and ends the call for both users.
+	// This is intentionally scoped to DMs only to avoid allowing any participant in group calls to end the call.
+	if isDM {
+		// Ask clients to disconnect themselves.
+		p.publishWebSocketEvent(wsEventCallEnd, map[string]interface{}{}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
+
+		callID := state.Call.ID
+		nodeID := state.Call.Props.NodeID
+		go func() {
+			// Wait a few seconds for the call to end cleanly. If this doesn't happen we force end it.
+			time.Sleep(5 * time.Second)
+
+			call, err := p.store.GetCall(callID, db.GetCallOpts{})
+			if err != nil {
+				p.LogError("failed to get call", "err", err.Error())
+				return
+			}
+
+			sessions, err := p.store.GetCallSessions(callID, db.GetCallSessionOpts{})
+			if err != nil {
+				p.LogError("failed to get call sessions", "err", err.Error())
+			}
+
+			for _, session := range sessions {
+				if err := p.closeRTCSession(session.UserID, session.ID, channelID, nodeID, callID); err != nil {
+					p.LogError(err.Error())
+				}
+			}
+
+			if err := p.cleanCallState(call); err != nil {
+				p.LogError(err.Error())
+			}
+		}()
 	}
 
 	// For now, only send to the user that dismissed the notification. May change in the future.

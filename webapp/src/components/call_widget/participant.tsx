@@ -180,7 +180,7 @@ const StyledDotMenu = styled(DotMenu)`
 
 const StyledDotMenuButton = styled(DotMenuButton)<{ $isActive: boolean }>`
     > svg {
-        fill: ${(props) => (props.$isActive ? 'var(--button-bg)' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
+        fill: ${(props) => (props.$isActive ? '#00987e' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
     }
 `;
 

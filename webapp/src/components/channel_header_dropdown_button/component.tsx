@@ -151,7 +151,7 @@ const UpsellIcon = styled.i`
       position: absolute;
       inset-inline-end: 10px;
       top: 16px;
-      color: var(--button-bg);
+      color: #00987e;
       width: 16px;
       height: 16px;
       border-radius: 50%;

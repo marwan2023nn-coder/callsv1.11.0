@@ -364,7 +364,7 @@ const QuickSelectButton = styled.button<{ $active?: boolean }>`
     }
 
     ${({$active}) => ($active && css`
-        background: var(--button-bg);
+        background: #00987e;
         color: var(--button-color);
 
         &:hover {

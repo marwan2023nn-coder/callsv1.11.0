@@ -67,6 +67,7 @@ type CallProps struct {
 	RTCDHost               string              `json:"rtcd_host,omitempty"`
 	ScreenSharingSessionID string              `json:"screen_sharing_session_id,omitempty"`
 	DismissedNotification  map[string]bool     `json:"dismissed_notification,omitempty"`
+	EndReason              string              `json:"end_reason,omitempty"`
 	ScreenStartAt          int64               `json:"screen_start_at,omitempty"`
 	NodeID                 string              `json:"node_id,omitempty"`
 	Participants           map[string]struct{} `json:"participants,omitempty"`
