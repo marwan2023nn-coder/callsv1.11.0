@@ -72,7 +72,7 @@ export const ParticipantsList = ({
                     {showMuteOthers &&
                         <MuteOthersButton onClick={() => hostMuteOthers(callID)}>
                             <MutedIcon
-                                fill='var(--button-bg)'
+                                fill='#00987e'
                                 style={{width: '12px', height: '12px'}}
                             />
                             {formatMessage({defaultMessage: 'Mute others'})}
@@ -123,7 +123,7 @@ const MuteOthersButton = styled.button`
     font-size: 11px;
     font-weight: 600;
     line-height: 16px;
-    color: var(--button-bg);
+    color: #00987e;
 
     border: none;
     background: none;

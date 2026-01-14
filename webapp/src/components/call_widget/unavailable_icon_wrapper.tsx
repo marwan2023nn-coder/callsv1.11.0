@@ -31,7 +31,7 @@ const IconWrapper = styled.div<{$unavailable: boolean, $margin?: string}>`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: ${({$margin}) => $margin || 0};
+  margin: 0px 0px 0px 8px;
   width: 18px;
   height: 18px;
 

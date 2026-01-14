@@ -75,7 +75,7 @@ export const CallIncoming = ({call}: Props) => {
                     </Message>
                 </Row>
                 <RowSpaced>
-                    <WideButton
+                    <DismissButton
                         data-testid={'call-incoming-dismiss'}
                         onClick={onDismiss}
                         css={'margin-inline-end: 8px'}
@@ -85,7 +85,7 @@ export const CallIncoming = ({call}: Props) => {
                             css={'margin-inline-end: 2px'}
                         />
                         {formatMessage({defaultMessage: 'Ignore'})}
-                    </WideButton>
+                    </DismissButton>
                     <JoinButton onClick={onJoin}>
                         <CompassIcon
                             icon={'phone-in-talk'}
@@ -101,7 +101,7 @@ export const CallIncoming = ({call}: Props) => {
 
 const Container = styled.div`
     border-radius: 8px;
-    background-color: var(--online-indicator);
+    background-color: #00987e;
     cursor: pointer;
 `;
 
@@ -145,9 +145,18 @@ const WideButton = styled(Button)`
     }
 `;
 
+const DismissButton = styled(WideButton)`
+    background-color: var(--error-text);
+    color: white;
+
+    &:hover {
+        background-color: rgba(var(--error-text-rgb), 0.88) !important;
+    }
+`;
+
 const JoinButton = styled(WideButton)`
     background-color: var(--button-color);
-    color: var(--online-indicator);
+    color: #00987e;
 
     &:hover {
         background-color: rgba(var(--button-color-rgb), 0.88);

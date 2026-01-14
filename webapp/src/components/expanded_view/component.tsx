@@ -68,9 +68,11 @@ import {
     getScreenStream,
     getUserDisplayName,
     isDMChannel,
+    notificationsStopRinging,
     sendDesktopEvent,
     setCallsGlobalCSSVars,
     shareAudioWithScreen,
+    stopOutgoingRingback,
     untranslatable,
 } from 'src/utils';
 import styled, {createGlobalStyle, css} from 'styled-components';
@@ -426,6 +428,8 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     };
 
     onDisconnectClick = () => {
+        stopOutgoingRingback();
+        notificationsStopRinging();
         this.props.hideExpandedView();
         const callsClient = getCallsClient();
         if (callsClient) {
@@ -1276,7 +1280,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                                 {showMuteOthers &&
                                     <MuteOthersButton onClick={() => hostMuteOthers(this.props.channel?.id)}>
                                         <MutedIcon
-                                            fill='var(--button-bg)'
+                                            fill='#00987e'
                                             style={{width: '12px', height: '12px'}}
                                         />
                                         {formatMessage({defaultMessage: 'Mute others'})}
@@ -1412,7 +1416,7 @@ const MuteOthersButton = styled.button`
     font-size: 11px;
     font-weight: 600;
     line-height: 16px;
-    color: var(--button-bg);
+    color: #00987e;
     align-items: center;
 
     border: none;

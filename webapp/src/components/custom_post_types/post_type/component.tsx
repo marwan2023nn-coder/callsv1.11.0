@@ -25,6 +25,8 @@ import {
     callStartedTimestampFn,
     getCallPropsFromPost,
     getUserDisplayName,
+    notificationsStopRinging,
+    stopOutgoingRingback,
     untranslatable,
 } from 'src/utils';
 import styled from 'styled-components';
@@ -59,6 +61,8 @@ const PostType = ({
 
     const callProps = getCallPropsFromPost(post);
 
+    const endReason = typeof (post.props as any)?.end_reason === 'string' ? (post.props as any).end_reason : '';
+
     const user = useSelector((state: GlobalState) => getUser(state, post.user_id));
     const callID = useSelector((state: GlobalState) => idForCallInChannel(state, post.channel_id)) || '';
     const [, onJoin] = useDismissJoin(post.channel_id, callID);
@@ -70,6 +74,8 @@ const PostType = ({
     const onLeaveButtonClick = () => {
         const win = window.opener || window;
         const callsClient = win.callsClient;
+        stopOutgoingRingback();
+        notificationsStopRinging();
         if (callsClient) {
             // NOTE: this also handles the desktop global widget case since the opener window
             // will have the client.
@@ -106,21 +112,29 @@ const PostType = ({
     const isMissedCall = duration >= 59000 && callProps.participants.length <= 1;
 
     const subMessage = callProps.start_at > 0 && callProps.end_at > 0 ? (
-        <>
-            <span>
-                {formatMessage(
-                    { defaultMessage: 'بَدَأَ المكالمة في {startTime}' },
-                    { startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat) },
-                )}
-            </span>
-            <Divider>{untranslatable('•')}</Divider>
-            <span>
-                {formatMessage(
-                    { defaultMessage: 'انتهت المكالمة في {endTime}' },
-                    { endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat) },
-                )}
-            </span>
-        </>
+        endReason === 'ignored' ? (
+            <>
+                <span>
+                    {formatMessage({defaultMessage: 'تم تجاهل المكالمة'})}
+                </span>
+            </>
+        ) : (
+            <>
+                <span>
+                    {formatMessage(
+                        { defaultMessage: 'بَدَأَ المكالمة في {startTime}' },
+                        { startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat) },
+                    )}
+                </span>
+                <Divider>{untranslatable('•')}</Divider>
+                <span>
+                    {formatMessage(
+                        { defaultMessage: 'انتهت المكالمة في {endTime}' },
+                        { endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat) },
+                    )}
+                </span>
+            </>
+        )
     ) : (
         <>
             <Timestamp
@@ -205,7 +219,7 @@ const PostType = ({
                         <CallIndicator $ended={!callActive}>
                             {callActive &&
                                 <ActiveCallIcon
-                                    fill='var(--online-indicator)'
+                                    fill='#00987e'
                                     style={{ width: '14px', height: '14px' }}
                                 />
                             }
@@ -287,7 +301,7 @@ const Left = styled.div`
    display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 5px;
+    padding-inline-start: 5px;
     padding-inline-end: 5px;
     margin-top: 3px;
     margin-bottom: 3px;
@@ -327,7 +341,7 @@ const CallIndicator = styled.div<{ $ended: boolean }>`
    display: inline-flex;
     justify-content: center;
     align-items: center;
-    background: var(--online-indicator);
+    background: #00987e;
     border-radius: 100%;
     width: 30px;
     height: 30px;
@@ -346,7 +360,7 @@ const Message = styled.span`
     overflow: hidden;
     text-overflow: ellipsis;
     padding-inline-end: 4px;
-     padding-left: 4px;
+    padding-inline-start: 4px;
      font-family: 'GraphikArabic';
      font-weight: normal;
      font-size: 14px;
@@ -386,17 +400,17 @@ const JoinButton = styled(Button)`
     font-size: 14px;
     line-height: 20px;
     color: var(--center-channel-bg);
-    background: var(--online-indicator);
+    background: #00987e;
     margin: 3px;
 
     &:hover {
-        background: linear-gradient(0deg, var(--online-indicator), var(--online-indicator)),
+        background: linear-gradient(0deg, #00987e, #00987e),
             linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08));
         background-blend-mode: multiply;
     }
 
     &:active {
-        background: linear-gradient(0deg, var(--online-indicator), var(--online-indicator)),
+        background: linear-gradient(0deg, #00987e, #00987e),
             linear-gradient(0deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.16));
         background-blend-mode: multiply;
     }

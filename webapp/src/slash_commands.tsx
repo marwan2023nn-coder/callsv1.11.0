@@ -32,7 +32,7 @@ import {
     isRecordingInCurrentCall,
 } from './selectors';
 import {Store} from './types/mattermost-webapp';
-import {getCallsClient, getCallsWindow, getPersistentStorage, isDMChannel, sendDesktopEvent, shouldRenderDesktopWidget} from './utils';
+import {getCallsClient, getCallsWindow, getPersistentStorage, isDMChannel, notificationsStopRinging, sendDesktopEvent, shouldRenderDesktopWidget, stopOutgoingRingback} from './utils';
 
 type joinCallFn = (channelId: string, teamId?: string, title?: string, rootId?: string) => void;
 
@@ -116,6 +116,8 @@ export default async function slashCommandsHandler(store: Store, joinCall: joinC
             const win = getCallsWindow();
             const callsClient = getCallsClient();
             if (callsClient) {
+                stopOutgoingRingback();
+                notificationsStopRinging();
                 callsClient.disconnect();
                 return {};
             } else if (win.desktopAPI?.leaveCall) {

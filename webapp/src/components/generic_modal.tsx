@@ -183,7 +183,7 @@ export const StyledModal = styled(Modal)<{ $contentPadding: string}>`
         }
 
         input.form-control {
-            padding-left: 16px;
+           padding-inline-start: 16px;
         }
     }
 `;

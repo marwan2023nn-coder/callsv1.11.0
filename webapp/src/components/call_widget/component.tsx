@@ -1020,7 +1020,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 alignItems: 'center',
                                 position: 'absolute',
                                 padding: '8px 16px',
-                                background: 'var(--button-bg)',
+                                background: '#00987e',
                                 color: 'white',
                                 borderRadius: '4px',
                                 fontWeight: 600,
@@ -1191,7 +1191,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 style={{
                                     width: '16px',
                                     height: '16px',
-                                    fill: 'var(--button-bg)',
+                                    fill: '#00987e',
                                 }}
                             />
                         }
@@ -2237,7 +2237,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             tooltipText={showParticipantsListLabel}
                             icon={
                                 <ParticipantsIcon
-                                    style={{fill: this.state.showParticipantsList ? 'var(--button-bg)' : ''}}
+                                    style={{fill: this.state.showParticipantsList ? '#00987e' : ''}}
                                 />
                             }
                             style={{marginInlineEnd: 'auto'}}
@@ -2246,7 +2246,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 style={{
                                     fontWeight: 600,
                                     fontSize: '14px',
-                                    color: this.state.showParticipantsList ? 'var(--button-bg)' : '',
+                                    color: this.state.showParticipantsList ? '#00987e' : '',
                                 }}
                             >
                                 {this.props.sessions.length}
@@ -2300,7 +2300,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             icon={
                                 <MenuIcon
                                     style={{
-                                        fill: this.state.showMenu ? 'var(--button-bg)' : '',
+                                        fill: this.state.showMenu ? '#00987e' : '',
                                     }}
                                 />
                             }

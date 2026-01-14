@@ -62,7 +62,7 @@ const StyledLeftButton = styled(DefaultLeftButton)`
 `;
 
 const StyledRightButton = styled(DefaultRightButton)`
-    color: var(--button-bg);
+    color: #00987e;
     background: rgba(var(--button-bg-rgb), 0.08);
     font-size: 12px;
     line-height: 16px;

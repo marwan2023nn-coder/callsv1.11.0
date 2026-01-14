@@ -86,7 +86,7 @@ const AudioDeviceSelectedIcon = styled.div`
     svg {
       width: 14px;
       height: 14px;
-      fill: var(--button-bg);
+      fill: #00987e;
     }
 }
 `;

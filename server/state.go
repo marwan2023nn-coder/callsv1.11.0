@@ -399,6 +399,7 @@ func setCallEnded(call *public.Call) {
 	call.Participants = mapKeys(call.Props.Participants)
 	call.Props.RTCDHost = ""
 	call.Props.DismissedNotification = nil
+	call.Props.EndReason = ""
 	call.Props.NodeID = ""
 	call.Props.Hosts = nil
 	call.Props.Participants = nil

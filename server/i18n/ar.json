@@ -52,6 +52,10 @@
         "translation": "انتهت المكالمة"
     },
     {
+        "id": "app.call.ignored_message",
+        "translation": "تم تجاهل المكالمة"
+    },
+    {
         "id": "app.push_notification.generic_message",
         "translation": "لقد تمت دعوتك إلى مكالمة"
     }

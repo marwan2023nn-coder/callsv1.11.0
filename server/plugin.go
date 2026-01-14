@@ -361,6 +361,9 @@ func (p *Plugin) updateCallPostEnded(postID string, participants []string) (floa
 	T := p.getTranslationFunc("")
 
 	postMsg := T("app.call.ended_message")
+	if endReason, ok := post.GetProp("end_reason").(string); ok && endReason == "ignored" {
+		postMsg = T("app.call.ignored_message")
+	}
 	slackAttachment := model.SlackAttachment{
 		Fallback: postMsg,
 		Title:    postMsg,

@@ -19,11 +19,11 @@ export const DotMenuButton = styled.div<{ $isActive: boolean }>`
     fill: rgba(var(--center-channel-color-rgb), 0.56);
     cursor: pointer;
 
-    color: ${(props) => (props.$isActive ? 'var(--button-bg)' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
+    color: ${(props) => (props.$isActive ? '#00987e' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
     background-color: ${(props) => (props.$isActive ? 'rgba(var(--button-bg-rgb), 0.08)' : 'transparent')};
 
     &:hover {
-        color: ${(props) => (props.$isActive ? 'var(--button-bg)' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
+        color: ${(props) => (props.$isActive ? '#00987e' : 'rgba(var(--center-channel-color-rgb), 0.56)')};
         background-color: ${(props) => (props.$isActive ? 'rgba(var(--button-bg-rgb), 0.08)' : 'rgba(var(--center-channel-color-rgb), 0.08)')};
     }
 `;
