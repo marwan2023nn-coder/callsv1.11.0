@@ -9,7 +9,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "نوصي بشدة بالترقية إلى [Enterprise] (https://mattermost.com/pricing/) و [نشر خدمة RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم Mattermost الرئيسي وقابلية التوسع والموثوقية الخاصة بك."
+        "translation": "نوصي بشدة بالترقية إلى [نسخة المؤسسات] (https://mattermost.com/pricing/) و [نشر خدمة RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم Mattermost الرئيسي وقابلية التوسع والموثوقية الخاصة بك."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",

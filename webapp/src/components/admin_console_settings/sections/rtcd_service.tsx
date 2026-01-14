@@ -75,7 +75,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                     values={{
                                         featureLink: (text: string) => (
                                             <a
-                                                href='https://mattermost.com/pl/calls-deployment-the-rtcd-service?utm_source=mattermost&utm_medium=in-product&utm_content=calls_rtcd_feature_discovery'
+                                                href=''
                                                 target='_blank'
                                                 rel='noreferrer'
                                             >
@@ -99,7 +99,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                             b: (text: string) => <b>{text}</b>,
                                             linkEvaluation: (text: string) => (
                                                 <a
-                                                    href='https://mattermost.com/software-evaluation-agreement'
+                                                    href=''
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -108,7 +108,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                             ),
                                             linkPrivacy: (text: string) => (
                                                 <a
-                                                    href='https://mattermost.com/privacy-policy/'
+                                                    href=''
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
