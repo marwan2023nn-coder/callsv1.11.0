@@ -735,6 +735,70 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 				"owner_id":  state.Call.OwnerID,
 				"host_id":   state.Call.GetHostID(),
 			}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
+
+			if channel.Type == model.ChannelTypeDirect {
+				callID := state.Call.ID
+				nodeID := state.Call.Props.NodeID
+				go func() {
+					time.Sleep(60 * time.Second)
+
+					state, err := p.lockCallReturnState(channelID)
+					if err != nil {
+						p.LogError("no-answer auto end: failed to lock call", "err", err.Error(), "channelID", channelID)
+						return
+					}
+					if state == nil || state.Call.ID != callID {
+						p.unlockCall(channelID)
+						return
+					}
+					if state.Call.EndAt != 0 || len(state.Call.Props.Participants) > 1 || len(state.sessions) > 1 {
+						p.unlockCall(channelID)
+						return
+					}
+
+					state.Call.Props.EndReason = "no_answer"
+					if post, err := p.store.GetPost(state.Call.PostID); err == nil {
+						post.AddProp("end_reason", "no_answer")
+						if _, appErr := p.API.UpdatePost(post); appErr != nil {
+							p.LogError("no-answer auto end: failed to update call post", "err", appErr.Error())
+						}
+					} else {
+						p.LogError("no-answer auto end: failed to get call post", "err", err.Error())
+					}
+
+					if err := p.store.UpdateCall(&state.Call); err != nil {
+						p.LogError("no-answer auto end: failed to update call", "err", err.Error())
+					}
+
+					p.publishWebSocketEvent(wsEventCallEnd, map[string]interface{}{}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
+					p.unlockCall(channelID)
+
+					go func() {
+						// We wait a few seconds for the call to end cleanly. If this doesn't happen we force end it.
+						time.Sleep(5 * time.Second)
+
+						call, err := p.store.GetCall(callID, db.GetCallOpts{})
+						if err != nil {
+							p.LogError("no-answer auto end: failed to get call", "err", err.Error())
+						}
+
+						sessions, err := p.store.GetCallSessions(callID, db.GetCallSessionOpts{})
+						if err != nil {
+							p.LogError("no-answer auto end: failed to get call sessions", "err", err.Error())
+						}
+
+						for _, session := range sessions {
+							if err := p.closeRTCSession(session.UserID, session.ID, channelID, nodeID, callID); err != nil {
+								p.LogError(err.Error())
+							}
+						}
+
+						if err := p.cleanCallState(call); err != nil {
+							p.LogError(err.Error())
+						}
+					}()
+				}()
+			}
 		}
 
 		p.LogDebug("session has joined call",

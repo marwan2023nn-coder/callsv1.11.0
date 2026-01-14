@@ -1,23 +1,23 @@
 [
     {
-        "id": "app.add_user_session.group_calls_not_allowed_error",
+        "id": "app.add_user_session.group_المكالمات_not_allowed_error",
         "translation": "المكالمات على الخوادم غير المرخصة متاحة فقط في DMs."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.نسخة المؤسسات",
-        "translation": "نوصي بشدة [بنشر خدمة RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم Mattermost الرئيسي وقابلية التوسع والموثوقية."
+        "translation": "نوصي بشدة [بنشر خدمة RTCD] (https://workspace.com/pl/المكالمات-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم workspace الرئيسي وقابلية التوسع والموثوقية."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "نوصي بشدة بالترقية إلى [نسخة المؤسسات] (https://mattermost.com/pricing/) و [نشر خدمة RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم Mattermost الرئيسي وقابلية التوسع والموثوقية الخاصة بك."
+        "translation": "نوصي بشدة بالترقية إلى [نسخة المؤسسات] (https://workspace.com/pricing/) و [نشر خدمة RTCD] (https://workspace.com/pl/المكالمات-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم workspace الرئيسي وقابلية التوسع والموثوقية الخاصة بك."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "يواجه التثبيت الخاص بك استخدامًا كثيفًا من مكالمات Mattermost Calls التي يمكن أن تؤثر سلبًا على أداء النظام واستجابته."
+        "translation": "يواجه التثبيت الخاص بك استخدامًا كثيفًا من مكالمات workspace المكالمات التي يمكن أن تؤثر سلبًا على أداء النظام واستجابته."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "نوصي بشدة بالتبديل إلى [إصدار ماترموست إنتربرايز] (https://mattermost.com/pl/install-نسخة المؤسسات-install-upgrade) و[نشر خدمة RTCD] (https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم ماترموست الرئيسي وقابلية تطويره وموثوقيته."
+        "translation": "نوصي بشدة بالتبديل إلى [إصدار ماترموست إنتربرايز] (https://workspace.com/pl/install-نسخة المؤسسات-install-upgrade) و[نشر خدمة RTCD] (https://workspace.com/pl/المكالمات-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم ماترموست الرئيسي وقابلية تطويره وموثوقيته."
     },
     {
         "id": "app.call.new_recording_message",
@@ -54,6 +54,10 @@
     {
         "id": "app.call.ignored_message",
         "translation": "تم تجاهل المكالمة"
+    },
+    {
+        "id": "app.call.no_answer_message",
+        "translation": "مكالمة لم يرد عليها"
     },
     {
         "id": "app.push_notification.generic_message",

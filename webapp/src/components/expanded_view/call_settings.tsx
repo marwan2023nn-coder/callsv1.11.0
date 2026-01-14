@@ -97,7 +97,6 @@ const AudioDeviceName = styled.span`
   width: 100%;
   text-overflow: ellipsis;
   overflow: hidden;
-  direction: ltr;
 `;
 
 const AudioDeviceButton = styled.button<{$isCurrentDevice: boolean}>`

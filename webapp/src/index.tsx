@@ -388,7 +388,7 @@ export default class Plugin {
 
         registry.registerUserSettings({
             id: pluginId,
-            uiName: 'Calls',
+            uiName: 'المكالمات',
             icon: 'icon-phone-in-talk',
             sections: [
                 {
