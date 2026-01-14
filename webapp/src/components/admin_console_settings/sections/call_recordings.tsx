@@ -71,7 +71,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                 <FormattedMessage
                                     defaultMessage={'Get access to call recordings, transcriptions, and live captions'}
                                 />
-                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
+                                <EnterprisePill>{untranslatable('نسخة المؤسسات')}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -141,7 +141,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Call recordings'})}
-                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{untranslatable('نسخة المؤسسات')}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
                             {formatMessage({defaultMessage: 'Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Mattermost'})}

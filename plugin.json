@@ -18,7 +18,7 @@
     "bundle_path": "webapp/dist/main.js"
   },
   "settings_schema": {
-    "header": "تُمكّن إضافة المكالمات إجراء مكالمات صوتية مع مشاركة الشاشة داخل القنوات. راجع [التوثيق](https://workspace.com/pl/calls-make?utm_source=workspace&utm_medium=in-product&utm_content=calls_admin_settings) لمعرفة المزيد.",
+    "header":"",
     "footer": "",
     "sections": [
       {

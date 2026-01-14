@@ -42,14 +42,14 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
             <VerticalSpacer $size={32}/>
             <ModalTitle>
                 <FormattedMessage
-                    defaultMessage={'Your trial has started!{br}Explore the benefits of Enterprise'}
+                    defaultMessage={'Your trial has started!{br}Explore the benefits of نسخة المؤسسات'}
                     values={{br: <br/>}}
                 />
             </ModalTitle>
             <VerticalSpacer $size={8}/>
             <ModalBody css={'text-align: start'}>
                 <FormattedMessage
-                    defaultMessage={'Welcome to your Mattermost Enterprise trial! It expires on {trialExpirationDate}. ' +
+                    defaultMessage={'Welcome to your Mattermost نسخة المؤسسات trial! It expires on {trialExpirationDate}. ' +
                         'You now have access to <rtcdDocsLink>RTCD services</rtcdDocsLink>, ' +
                         '<recordingsDocsLink>call recordings</recordingsDocsLink>, ' +
                         '<guestAccountsLink>guest accounts</guestAccountsLink>, ' +
@@ -61,7 +61,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                         trialExpirationDate: trialEndDate,
                         rtcdDocsLink: (text: string) => (
                             <a
-                                href='https://mattermost.com/pl/calls-deployment-the-rtcd-service?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
+                                href=''
                                 target='_blank'
                                 rel='noreferrer'
                             >
@@ -70,7 +70,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                         ),
                         recordingsDocsLink: (text: string) => (
                             <a
-                                href='https://mattermost.com/pl/calls-deployment-recordings?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
+                                href=''
                                 target='_blank'
                                 rel='noreferrer'
                             >
@@ -100,7 +100,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                         ),
                         documentationLink: (text: string) => (
                             <a
-                                href='https://mattermost.com/pl/calls-deployment?utm_source=mattermost&utm_medium=in-product&utm_content=calls_start_trial_form_modal'
+                                href=''
                                 target='_blank'
                                 rel='noreferrer'
                             >
@@ -132,12 +132,12 @@ export const OnPremTrialError = (modalProps: Props) => {
             <VerticalSpacer $size={8}/>
             <ModalBody css={'text-align: center'}>
                 <FormattedMessage
-                    defaultMessage={'It looks like something went wrong with your Enterprise trial request. ' +
+                    defaultMessage={'It looks like something went wrong with your نسخة المؤسسات trial request. ' +
                         'You can try again later or <supportLink>contact Support</supportLink> if the error persists.'}
                     values={{
                         supportLink: (text: string) => (
                             <a
-                                href='https://mattermost.com/support/'
+                                href=''
                                 target='_blank'
                                 rel='noreferrer'
                             >
