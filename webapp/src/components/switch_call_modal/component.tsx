@@ -20,7 +20,7 @@ interface Props {
     targetChannelID: string,
     targetCallID: string,
     hideSwitchCallModal: () => void,
-    dismissIncomingCallNotification: (channelID: string, callID: string) => void,
+    removeIncomingCallNotification: (callID: string) => void,
 }
 
 export default class SwitchCallModal extends React.PureComponent<Props> {
@@ -98,8 +98,10 @@ export default class SwitchCallModal extends React.PureComponent<Props> {
     };
 
     private joinCall = async () => {
-        // If there is an incoming call notification, dismiss that (and for any other clients).
-        this.props.dismissIncomingCallNotification(this.props.targetChannelID, this.props.targetCallID);
+        // If there is an incoming call notification, remove it locally.
+        // NOTE: do not call dismissIncomingCallNotification here. In DM calls this endpoint is treated as "ignore"
+        // and will end the call for both users.
+        this.props.removeIncomingCallNotification(this.props.targetCallID);
 
         this.props.hideSwitchCallModal();
         const win = getCallsWindow();

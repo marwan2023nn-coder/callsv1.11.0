@@ -118,6 +118,12 @@ const PostType = ({
                     {formatMessage({defaultMessage: 'تم تجاهل المكالمة'})}
                 </span>
             </>
+        ) : endReason === 'no_answer' || isMissedCall ? (
+            <>
+                <span>
+                    {formatMessage({defaultMessage: 'مكالمة لم يرد عليها'})}
+                </span>
+            </>
         ) : (
             <>
                 <span>
@@ -283,6 +289,7 @@ const Main = styled.div`
     font-family: "GraphikArabic";
     font-weight: normal;
     width: fit-content;
+    direction: rtl;
 `;
 
 const SubMain = styled.div`
@@ -305,7 +312,6 @@ const Left = styled.div`
     padding-inline-end: 5px;
     margin-top: 3px;
     margin-bottom: 3px;
-    direction: rtl;
 `;
 
 const Right = styled.div`

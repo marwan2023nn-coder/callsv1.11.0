@@ -6,7 +6,7 @@ import {getChannel, getCurrentChannelId} from 'mattermost-redux/selectors/entiti
 import {getCurrentUserId, getUser} from 'mattermost-redux/selectors/entities/users';
 import {connect} from 'react-redux';
 import {bindActionCreators, Dispatch} from 'redux';
-import {dismissIncomingCallNotification, hideSwitchCallModal} from 'src/actions';
+import {hideSwitchCallModal, removeIncomingCallNotification} from 'src/actions';
 import {channelForCurrentCall, idForCallInChannel, switchCallModal} from 'src/selectors';
 import {getUserIdFromDM, isDMChannel} from 'src/utils';
 
@@ -43,7 +43,7 @@ const mapStateToProps = (state: GlobalState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     hideSwitchCallModal,
-    dismissIncomingCallNotification,
+    removeIncomingCallNotification,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(SwitchCallModal);

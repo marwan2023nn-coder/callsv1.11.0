@@ -17,7 +17,7 @@ import {useEffect} from 'react';
 import {useIntl} from 'react-intl';
 import {useDispatch, useSelector, useStore} from 'react-redux';
 import {DID_NOTIFY_FOR_CALL, DID_RING_FOR_CALL} from 'src/action_types';
-import {dismissIncomingCallNotification, ringForCall, showSwitchCallModal} from 'src/actions';
+import {dismissIncomingCallNotification, removeIncomingCallNotification, ringForCall, showSwitchCallModal} from 'src/actions';
 import {navigateToURL} from 'src/browser_routing';
 import {DEFAULT_RING_SOUND} from 'src/constants';
 import {logDebug, logWarn} from 'src/log';
@@ -93,8 +93,10 @@ export const useDismissJoin = (channelID: string, callID: string) => {
             return;
         }
 
-        // We weren't connected, so dismiss the notification here.
-        dispatch(dismissIncomingCallNotification(channelID, callID));
+        // We weren't connected.
+        // NOTE: do not call dismissIncomingCallNotification here. In DM calls this endpoint is treated as "ignore"
+        // and will end the call for both users.
+        dispatch(removeIncomingCallNotification(callID));
         window.postMessage({type: 'connectCall', channelID}, window.origin);
     };
 
