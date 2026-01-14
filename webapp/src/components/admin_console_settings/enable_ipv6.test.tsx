@@ -43,7 +43,7 @@ describe('EnableIPv6', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableIPv6
                         {...baseProps}
                         {...props}

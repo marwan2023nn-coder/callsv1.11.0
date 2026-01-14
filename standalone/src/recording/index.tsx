@@ -10,10 +10,13 @@ import {pluginId} from 'plugin/manifest';
 import {Store} from 'plugin/types/mattermost-webapp';
 import {
     fetchTranslationsFile,
+    getTranslations,
     getPluginPath,
     getUserIDsForSessions,
+    notificationsStopRinging,
     runWithRetry,
     setCallsGlobalCSSVars,
+    stopOutgoingRingback,
 } from 'plugin/utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -28,6 +31,20 @@ import {
     RECEIVED_CALL_PROFILE_IMAGES,
 } from './action_types';
 import RecordingView from './components/recording_view';
+
+function setDocumentDirection(locale: string) {
+    const normalized = (locale || '').toLowerCase();
+    const isRTL = normalized.startsWith('ar');
+
+    document.documentElement.setAttribute('lang', locale);
+    document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+    document.body?.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+}
+
+function stopAllSounds() {
+    stopOutgoingRingback();
+    notificationsStopRinging();
+}
 
 async function fetchProfileImages(ids: string[]) {
     const profileImages: {[userID: string]: string} = {};
@@ -76,9 +93,16 @@ async function initRecordingStore(store: Store, channelID: string) {
 async function initRecording({store, theme}: InitCbProps) {
     setCallsGlobalCSSVars(theme.sidebarBg);
 
-    const locale = getCurrentUserLocale(store.getState()) || 'en';
+    const locale = getCurrentUserLocale(store.getState()) || 'ar';
+
+    setDocumentDirection(locale);
+
+    // Ensure any ringing/ringback is stopped even if the window is closed directly.
+    window.addEventListener('beforeunload', stopAllSounds);
+    window.addEventListener('pagehide', stopAllSounds);
+
     let messages;
-    if (locale !== 'en') {
+    if (locale !== 'ar') {
         try {
             messages = await runWithRetry(() => fetchTranslationsFile(locale));
         } catch (err) {
@@ -86,12 +110,16 @@ async function initRecording({store, theme}: InitCbProps) {
         }
     }
 
+    if (!messages || Object.keys(messages).length === 0) {
+        messages = getTranslations(locale);
+    }
+
     ReactDOM.render(
         <Provider store={store}>
             <IntlProvider
                 locale={locale}
                 key={locale}
-                defaultLocale='en'
+                defaultLocale='ar'
                 messages={messages}
             >
                 <RecordingView/>
@@ -160,6 +188,7 @@ function wsHandlerRecording(store: Store, ev: WebSocketMessage<WebsocketEventDat
 }
 
 function deinitRecording() {
+    stopAllSounds();
     window.callsClient?.destroy();
     delete window.callsClient;
 }

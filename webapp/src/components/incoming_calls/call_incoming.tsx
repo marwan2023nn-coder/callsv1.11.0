@@ -78,18 +78,18 @@ export const CallIncoming = ({call}: Props) => {
                     <WideButton
                         data-testid={'call-incoming-dismiss'}
                         onClick={onDismiss}
-                        css={'margin-right: 8px'}
+                        css={'margin-inline-end: 8px'}
                     >
                         <CompassIcon
                             icon={'close'}
-                            css={'margin-right: 2px'}
+                            css={'margin-inline-end: 2px'}
                         />
                         {formatMessage({defaultMessage: 'Ignore'})}
                     </WideButton>
                     <JoinButton onClick={onJoin}>
                         <CompassIcon
                             icon={'phone-in-talk'}
-                            css={'margin-right: 5px'}
+                            css={'margin-inline-end: 5px'}
                         />
                         {formatMessage({defaultMessage: 'Join'})}
                     </JoinButton>

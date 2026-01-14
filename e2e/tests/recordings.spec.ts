@@ -123,8 +123,8 @@ test.describe('call recordings, transcriptions, live-captions', () => {
         await expect(page.locator('.file-preview-modal__content')).toBeVisible();
 
         // verify transcription track exists
-        await expect(page.getByTestId('calls-recording-transcription')).toHaveAttribute('label', 'en');
-        await expect(page.getByTestId('calls-recording-transcription')).toHaveAttribute('srclang', 'en');
+        await expect(page.getByTestId('calls-recording-transcription')).toHaveAttribute('label', 'ar');
+        await expect(page.getByTestId('calls-recording-transcription')).toHaveAttribute('srclang', 'ar');
 
         // fetch transcription file and verify it has the expected content
         const src = await page.getByTestId('calls-recording-transcription').getAttribute('src');

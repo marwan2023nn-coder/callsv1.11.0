@@ -22,7 +22,7 @@ describe('RTCServerSection', () => {
 
     const renderComponent = () => {
         return render(
-            <IntlProvider locale='en'>
+            <IntlProvider locale='ar'>
                 <RTCServerSection settingsList={settingsList}/>
             </IntlProvider>,
         );

@@ -42,7 +42,7 @@ describe('TestMode', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <TestMode
                         {...baseProps}
                         {...props}

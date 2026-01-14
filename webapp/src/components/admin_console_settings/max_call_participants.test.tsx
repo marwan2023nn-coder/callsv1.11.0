@@ -42,7 +42,7 @@ describe('MaxCallParticipants', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <MaxCallParticipants
                         {...baseProps}
                         {...props}

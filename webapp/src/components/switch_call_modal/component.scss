@@ -11,7 +11,7 @@ button.switch-call-modal-close {
   position: absolute;
   font-size: 24px;
   color: rgba(var(--center-channel-color-rgb), 0.56);
-  right: 18px;
+  inset-inline-end: 18px;
   top: 18px;
   width: 40px;
   height: 40px;

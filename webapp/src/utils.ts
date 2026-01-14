@@ -30,6 +30,7 @@ import {threadIDForCallInChannel} from './selectors';
 import JoinSelfSound from './sounds/join_self.mp3';
 import JoinUserSound from './sounds/join_user.mp3';
 import LeaveSelfSound from './sounds/leave_self.mp3';
+import RingSound from './sounds/ring.mp3';
 import {Store} from './types/mattermost-webapp';
 
 export function getPluginStaticPath() {
@@ -401,6 +402,42 @@ export function playSound(name: string) {
     };
 }
 
+let outgoingRingAudio: HTMLAudioElement | null = null;
+
+export function startOutgoingRingback() {
+    if (outgoingRingAudio) {
+        return;
+    }
+
+    let src = RingSound;
+    if (src.indexOf('/') === 0) {
+        src = getPluginStaticPath() + src;
+    }
+
+    const audio = new Audio(src);
+    audio.loop = true;
+    outgoingRingAudio = audio;
+    audio.play().catch(() => {
+        // Autoplay might be blocked.
+    });
+}
+
+export function stopOutgoingRingback() {
+    if (!outgoingRingAudio) {
+        return;
+    }
+
+    try {
+        outgoingRingAudio.pause();
+        outgoingRingAudio.src = '';
+        outgoingRingAudio.remove();
+    } catch (err) {
+        // ignore
+    }
+
+    outgoingRingAudio = null;
+}
+
 export async function followThread(store: Store, channelID: string, teamID?: string) {
     if (!teamID) {
         logDebug('followThread: no team for channel');
@@ -463,24 +500,42 @@ export function capitalize(input: string) {
     return input.charAt(0).toUpperCase() + input.slice(1);
 }
 
+function getLocaleCandidates(locale: string): string[] {
+    const normalized = locale.replace('_', '-');
+    const candidates = [normalized];
+
+    const base = normalized.split('-')[0];
+    if (base && base !== normalized) {
+        candidates.push(base);
+    }
+
+    return candidates;
+}
+
 export async function fetchTranslationsFile(locale: string) {
     if (locale === 'en') {
         return {};
     }
-    try {
-        // eslint-disable-next-line global-require
-        const filename = require(`../i18n/${locale}.json`).default;
-        if (!filename) {
-            throw new Error(`translations file not found for locale '${locale}'`);
+    for (const candidate of getLocaleCandidates(locale)) {
+        try {
+            // eslint-disable-next-line global-require
+            const filename = require(`../i18n/${candidate}.json`).default;
+            if (!filename) {
+                throw new Error(`translations file not found for locale '${candidate}'`);
+            }
+            const res = await fetch(filename.indexOf('/') === 0 ? getPluginStaticPath() + filename : filename);
+            if (!res.ok) {
+                throw new Error(`failed to fetch translations for locale '${candidate}': ${res.status}`);
+            }
+            const translations = await res.json();
+            logDebug(`loaded i18n file for locale '${candidate}'`);
+            return translations;
+        } catch (err) {
+            logWarn(`failed to load i18n file for locale '${candidate}':`, err);
         }
-        const res = await fetch(filename.indexOf('/') === 0 ? getPluginStaticPath() + filename : filename);
-        const translations = await res.json();
-        logDebug(`loaded i18n file for locale '${locale}'`);
-        return translations;
-    } catch (err) {
-        logWarn(`failed to load i18n file for locale '${locale}':`, err);
-        return {};
     }
+
+    return {};
 }
 
 export function untranslatable(msg: string) {
@@ -490,6 +545,8 @@ export function untranslatable(msg: string) {
 export function getTranslations(locale: string) {
     try {
         logDebug(`loading translations file for locale '${locale}'`);
+
+        locale = locale.replace('_', '-');
 
         // Remapping some language codes to their actual file.
         // This is needed as Mattermost product uses different codes for
@@ -506,9 +563,16 @@ export function getTranslations(locale: string) {
             break;
         }
 
-        // synchronously loading all translation files from bundle (MM-50811).
-        // eslint-disable-next-line global-require
-        return require(`../i18n/${locale}.json`);
+        for (const candidate of getLocaleCandidates(locale)) {
+            try {
+                // eslint-disable-next-line global-require
+                return require(`../i18n/${candidate}.json`);
+            } catch (err) {
+                // continue
+            }
+        }
+
+        throw new Error(`translations file not found for locale '${locale}'`);
     } catch (err) {
         logWarn(`failed to open translations file for locale '${locale}'`, err);
         return {};

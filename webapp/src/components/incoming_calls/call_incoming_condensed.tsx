@@ -139,7 +139,7 @@ const Message = styled.div`
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--button-color);
-    margin-right: auto;
+    margin-inline-end: auto;
 `;
 
 const SmallJoinButton = styled(Button)<{ $border: boolean }>`

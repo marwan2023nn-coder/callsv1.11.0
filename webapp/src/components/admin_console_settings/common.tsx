@@ -14,7 +14,7 @@ export const LabelRow = styled.div`
 `;
 
 export const Label = styled.span`
-    margin-right: 8px;
+    margin-inline-end: 8px;
 `;
 
 export const EnterprisePill = ({children}: {children: ReactNode}) => (
@@ -33,7 +33,7 @@ const Enterprise = styled.div`
     height: 20px;
     gap: 1px;  // compass-icons have a 2.4px horizontal margin
 
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-size: 12px;
     font-weight: 600;
     line-height: 16px;
@@ -68,7 +68,7 @@ export const Title = styled.div`
 `;
 
 export const Text = styled.div`
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-weight: 400;
     font-size: 12px;
     line-height: 16px;
@@ -82,7 +82,7 @@ export const Footer = styled.div`
 export const FooterText = styled.div`
     display: flex;
     align-items: center;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-weight: 400;
     font-size: 10px;
     line-height: 16px;
@@ -99,7 +99,7 @@ export const ModalTitle = styled.div`
 `;
 
 export const ModalBody = styled.div`
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -155,7 +155,7 @@ export const RadioInput = styled.input<{disabled: boolean}>`
 export const RadioInputLabel = styled.label<{$disabled: boolean}>`
   display: inline-flex;
   margin-top: 8px;
-  margin-right: 24px;
+  margin-inline-end: 24px;
   width: fit-content;
   flex-direction: row;
   align-items: center;

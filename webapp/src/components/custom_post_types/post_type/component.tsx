@@ -1,32 +1,30 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {Post} from '@mattermost/types/posts';
-import {GlobalState} from '@mattermost/types/store';
-import {UserProfile} from '@mattermost/types/users';
-import {DateTime, Duration as LuxonDuration} from 'luxon';
-import {getUser} from 'mattermost-redux/selectors/entities/users';
-import React, {useCallback} from 'react';
-import {OverlayTrigger, Tooltip} from 'react-bootstrap';
-import {useIntl} from 'react-intl';
-import {useSelector} from 'react-redux';
+import { Post } from '@mattermost/types/posts';
+import { GlobalState } from '@mattermost/types/store';
+import { UserProfile } from '@mattermost/types/users';
+import { DateTime } from 'luxon';
+import { getUser } from 'mattermost-redux/selectors/entities/users';
+import React, { useCallback } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
 import ConnectedProfiles from 'src/components/connected_profiles';
-import DotMenu, {DotMenuButton} from 'src/components/dot_menu/dot_menu';
+import DotMenu, { DotMenuButton } from 'src/components/dot_menu/dot_menu';
 import ActiveCallIcon from 'src/components/icons/active_call_icon';
 import CallIcon from 'src/components/icons/call_icon';
 import CompassIcon from 'src/components/icons/compassIcon';
 import LeaveCallIcon from 'src/components/icons/leave_call_icon';
-import {useDismissJoin} from 'src/components/incoming_calls/hooks';
-import {LeaveCallMenu} from 'src/components/leave_call_menu';
-import {Header, SubHeader} from 'src/components/shared';
+import { useDismissJoin } from 'src/components/incoming_calls/hooks';
+import { LeaveCallMenu } from 'src/components/leave_call_menu';
+import { Header, SubHeader } from 'src/components/shared';
 import Timestamp from 'src/components/timestamp';
-import {idForCallInChannel} from 'src/selectors';
+import { idForCallInChannel } from 'src/selectors';
 import {
     callStartedTimestampFn,
     getCallPropsFromPost,
-    getCallsClient,
     getUserDisplayName,
-    toHuman,
     untranslatable,
 } from 'src/utils';
 import styled from 'styled-components';
@@ -55,9 +53,9 @@ const PostType = ({
     isHost,
 }: Props) => {
     const intl = useIntl();
-    const {formatMessage} = intl;
+    const { formatMessage } = intl;
     const hourCycle: 'h23' | 'h12' = militaryTime ? 'h23' : 'h12';
-    const timeFormat = {...DateTime.TIME_24_SIMPLE, hourCycle};
+    const timeFormat = { ...DateTime.TIME_24_SIMPLE, hourCycle };
 
     const callProps = getCallPropsFromPost(post);
 
@@ -70,7 +68,8 @@ const PostType = ({
     }, [intl, callProps.start_at]);
 
     const onLeaveButtonClick = () => {
-        const callsClient = getCallsClient();
+        const win = window.opener || window;
+        const callsClient = win.callsClient;
         if (callsClient) {
             // NOTE: this also handles the desktop global widget case since the opener window
             // will have the client.
@@ -80,16 +79,16 @@ const PostType = ({
         }
     };
 
-    const recordings = Object.values(callProps.recordings).filter(job => Boolean(job.file_id)).map(job => job.file_id);
-    const transcriptions = Object.values(callProps.transcriptions).filter(job => Boolean(job.file_id)).map(job => job.file_id);
+    const recordings = Object.values(callProps.recordings).filter((job) => Boolean(job.file_id)).map((job) => job.file_id);
+    const transcriptions = Object.values(callProps.transcriptions).filter((job) => Boolean(job.file_id)).map((job) => job.file_id);
 
     const recordingsSubMessage = recordings.length > 0 ? (
         <ArtifactsContainer>
             <CompassIcon
                 icon='file-video-outline'
-                style={{display: 'inline', fontSize: '16px'}}
+                style={{ display: 'inline', fontSize: '16px' }}
             />
-            <span>{formatMessage({defaultMessage: '{count, plural, =1 {# recording} other {# recordings}}'}, {count: recordings.length})}</span>
+            <span>{formatMessage({ defaultMessage: '{count, plural, =1 {# recording} other {# recordings}}' }, { count: recordings.length })}</span>
         </ArtifactsContainer>
     ) : null;
 
@@ -97,25 +96,28 @@ const PostType = ({
         <ArtifactsContainer>
             <CompassIcon
                 icon='file-text-outline'
-                style={{display: 'inline', fontSize: '16px'}}
+                style={{ display: 'inline', fontSize: '16px' }}
             />
-            <span>{formatMessage({defaultMessage: '{count, plural, =1 {# transcription} other {# transcriptions}}'}, {count: transcriptions.length})}</span>
+            <span>{formatMessage({ defaultMessage: '{count, plural, =1 {# transcription} other {# transcriptions}}' }, { count: transcriptions.length })}</span>
         </ArtifactsContainer>
     ) : null;
+
+    const duration = callProps.end_at - callProps.start_at;
+    const isMissedCall = duration >= 59000 && callProps.participants.length <= 1;
 
     const subMessage = callProps.start_at > 0 && callProps.end_at > 0 ? (
         <>
             <span>
                 {formatMessage(
-                    {defaultMessage: 'Ended at {endTime}'},
-                    {endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat)},
+                    { defaultMessage: 'بَدَأَ المكالمة في {startTime}' },
+                    { startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat) },
                 )}
             </span>
             <Divider>{untranslatable('•')}</Divider>
             <span>
                 {formatMessage(
-                    {defaultMessage: 'Lasted {callDuration}'},
-                    {callDuration: toHuman(intl, LuxonDuration.fromMillis(callProps.end_at - callProps.start_at), 'minutes', {unitDisplay: 'long'})},
+                    { defaultMessage: 'انتهت المكالمة في {endTime}' },
+                    { endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat) },
                 )}
             </span>
         </>
@@ -125,9 +127,9 @@ const PostType = ({
                 timestampFn={timestampFn}
                 interval={5000}
             />
-            { untranslatable(' ')}
+            {untranslatable(' ')}
             {
-                formatMessage({defaultMessage: 'by {user}'}, {user: getUserDisplayName(user)})
+                formatMessage({ defaultMessage: 'by {user}' }, { user: getUserDisplayName(user) })
             }
         </>
     );
@@ -136,9 +138,9 @@ const PostType = ({
         <JoinButton onClick={onJoin}>
             <ActiveCallIcon
                 fill='var(--center-channel-bg)'
-                style={{width: '16px', height: '16px'}}
+                style={{ width: '16px', height: '16px' }}
             />
-            <ButtonText>{formatMessage({defaultMessage: 'Join call'})}</ButtonText>
+            <ButtonText>{formatMessage({ defaultMessage: 'الانضمام إلى المكالمة' })}</ButtonText>
         </JoinButton>
     );
 
@@ -150,32 +152,32 @@ const PostType = ({
                 overlay={
                     <Tooltip id='tooltip-limit'>
                         <Header>
-                            {formatMessage({defaultMessage: 'Sorry, participants per call are currently limited to {count}.'}, {count: maxParticipants})}
+                            {formatMessage({ defaultMessage: 'Sorry, participants per call are currently limited to {count}.' }, { count: maxParticipants })}
                         </Header>
                         {isCloudPaid &&
                             <SubHeader>
-                                {formatMessage({defaultMessage: 'This is because calls is in the beta phase. We’re working to remove this limit soon.'})}
+                                {formatMessage({ defaultMessage: 'This is because calls is in the beta phase. We’re working to remove this limit soon.' })}
                             </SubHeader>
                         }
                     </Tooltip>
                 }
             >
                 <DisabledButton>
-                    <CallIcon fill='rgba(var(--center-channel-color-rgb), 0.32)'/>
-                    <ButtonText>{formatMessage({defaultMessage: 'Join call'})}</ButtonText>
+                    <CallIcon fill='rgba(var(--center-channel-color-rgb), 0.32)' />
+                    <ButtonText>{formatMessage({ defaultMessage: 'الانضمام إلى المكالمة' })}</ButtonText>
                 </DisabledButton>
             </OverlayTrigger>
         );
     }
 
-    const compactTitle = compactDisplay && !isRHS ? <br/> : <></>;
+    const compactTitle = compactDisplay && !isRHS ? <br /> : <></>;
     const title = callProps.title ? <h3 className='markdown__heading'>{callProps.title}</h3> : compactTitle;
     const callActive = callProps.end_at === 0;
     const inCall = connectedID === post.channel_id;
     const iconAndText = (
         <>
-            <LeaveCallIcon style={{fill: 'var(--button-color)', width: '18px', height: '16px'}}/>
-            <ButtonText>{formatMessage({defaultMessage: 'Leave'})}</ButtonText>
+            <LeaveCallIcon style={{ fill: 'var(--button-color)', width: '18px', height: '16px' }} />
+            <ButtonText>{formatMessage({ defaultMessage: 'Leave' })}</ButtonText>
         </>
     );
     const button = inCall ? (
@@ -203,30 +205,30 @@ const PostType = ({
                         <CallIndicator $ended={!callActive}>
                             {callActive &&
                                 <ActiveCallIcon
-                                    fill='var(--center-channel-bg)'
-                                    style={{width: '20px', height: '20px'}}
+                                    fill='var(--online-indicator)'
+                                    style={{ width: '14px', height: '14px' }}
                                 />
                             }
                             {!callActive &&
                                 <LeaveCallIcon
                                     fill={'rgba(var(--center-channel-color-rgb), 0.72)'}
-                                    style={{width: '24px', height: '20px'}}
+                                    style={{ width: '24px', height: '20px' }}
                                 />
                             }
                         </CallIndicator>
                         <MessageWrapper>
                             <Message>
                                 {callActive &&
-                                    formatMessage({defaultMessage: 'Call started'})
+                                    formatMessage({ defaultMessage: 'Call started' })
                                 }
-                                {!callActive &&
+                                {/* {!callActive &&
                                     formatMessage({defaultMessage: 'Call ended'})
-                                }
+                                } */}
                             </Message>
                             <SubMessage>{subMessage}</SubMessage>
                         </MessageWrapper>
                     </Left>
-                    { (recordings.length > 0 || callActive) && <RowDivider/> }
+                    {(recordings.length > 0 || callActive) && <RowDivider />}
                     <Right>
                         {callActive &&
                             <>
@@ -252,33 +254,25 @@ const PostType = ({
 };
 
 const Main = styled.div`
+   box-sizing: border-box;
     display: flex;
-    align-items: center;
-    width: min(600px, 100%);
-    margin: 4px 0;
-    padding: 16px;
-    background: var(--center-channel-bg);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-    box-shadow: var(--elevation-1);
-    color: var(--center-channel-color);
-    border-radius: 4px;
-
-    container: main / inline-size;
-
-    &:hover {
-        border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    }
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+    background: rgb(236 236 236);
+    border: 1px solid rgb(222, 224, 224);
+    border-radius: 12px;
+    flex: 0 0 auto;
+    order: 0;
+    align-self: stretch;
+    color: black;
+    font-family: "GraphikArabic";
+    font-weight: normal;
+    width: fit-content;
 `;
 
 const SubMain = styled.div`
-    display: flex;
-    align-items: center;
-    width: 100%;
-    flex-wrap: wrap;
-    row-gap: 12px;
-
-    container-type: inline-size;
-
+display: inline-flex;
     @container main (inline-size < 566px) {
         flex-direction: column;
         align-items: flex-start;
@@ -290,11 +284,14 @@ const SubMain = styled.div`
 `;
 
 const Left = styled.div`
-    display: flex;
-    flex-grow: 10;
-    overflow: hidden;
-    white-space: nowrap;
+   display: flex;
+    justify-content: center;
     align-items: center;
+    padding-left: 5px;
+    padding-inline-end: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    direction: rtl;
 `;
 
 const Right = styled.div`
@@ -306,7 +303,6 @@ const Right = styled.div`
     @container main (inline-size < 566px) {
       width: 100%;
       justify-content: space-between;
-      flex-wrap: wrap;
     }
 
     &:empty {
@@ -328,39 +324,39 @@ const RowDivider = styled.hr`
 `;
 
 const CallIndicator = styled.div<{ $ended: boolean }>`
-    display: flex;
+   display: inline-flex;
     justify-content: center;
     align-items: center;
-    background: ${(props) => (props.$ended ? 'rgba(var(--center-channel-color-rgb), 0.08)' : 'var(--online-indicator)')};
-    border-radius: 24px;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    gap: 8px;
+    background: var(--online-indicator);
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
 `;
 
 const MessageWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin: 0 12px;
+    display: inline-flex;
+    margin: 2px 0px;
     overflow: hidden;
+    font-family: 'GraphikArabic';
+     font-weight: normal;
 `;
 
 const Message = styled.span`
-    font-weight: 600;
-    font-family: Metropolis;
-    font-size: 16px;
     line-height: 24px;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--center-channel-color);
+    padding-inline-end: 4px;
+     padding-left: 4px;
+     font-family: 'GraphikArabic';
+     font-weight: normal;
+     font-size: 14px;
 `;
 
 const SubMessage = styled.div`
     white-space: normal;
-    font-size: 12px;
-    line-height: 16px;
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: 14px;
+    line-height: 24px;
+
 `;
 
 const Profiles = styled.div`
@@ -372,9 +368,18 @@ const Button = styled.button`
     display: flex;
     align-items: center;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 10px 16px;
     cursor: pointer;
+    background: #3cca3c;
+`;
+const ArtifactsContainer = styled.div`
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
 `;
 
 const JoinButton = styled(Button)`
@@ -382,6 +387,7 @@ const JoinButton = styled(Button)`
     line-height: 20px;
     color: var(--center-channel-bg);
     background: var(--online-indicator);
+    margin: 3px;
 
     &:hover {
         background: linear-gradient(0deg, var(--online-indicator), var(--online-indicator)),
@@ -410,6 +416,8 @@ const LeaveButton = styled(DotMenuButton)`
     line-height: 20px;
     color: var(--button-color);
     background: var(--error-text);
+    margin: 4px;
+    border-radius: 10px;
 
     &:hover {
         background: linear-gradient(0deg, var(--error-text), var(--error-text)),
@@ -427,8 +435,9 @@ const LeaveButton = styled(DotMenuButton)`
 `;
 
 const ButtonText = styled.span`
-    font-weight: 600;
     margin: 0 8px;
+    font-weight: normal;
+    font-family: "GraphikArabic";
 `;
 
 const DisabledButton = styled(Button)`
@@ -441,13 +450,14 @@ const Divider = styled.span`
     margin: 0 4px;
 `;
 
-const ArtifactsContainer = styled.div`
+// eslint-disable-next-line unused-imports/no-unused-vars
+const RecordingsContainer = styled.div`
     display: flex;
     align-items: center;
     font-size: 12px;
     line-height: 16px;
     white-space: nowrap;
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    color: #2f987e;
 `;
 
 export default PostType;

@@ -47,7 +47,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
                 />
             </ModalTitle>
             <VerticalSpacer $size={8}/>
-            <ModalBody css={'text-align: left'}>
+            <ModalBody css={'text-align: start'}>
                 <FormattedMessage
                     defaultMessage={'Welcome to your Mattermost Enterprise trial! It expires on {trialExpirationDate}. ' +
                         'You now have access to <recordingsDocsLink>Call recordings</recordingsDocsLink>,' +

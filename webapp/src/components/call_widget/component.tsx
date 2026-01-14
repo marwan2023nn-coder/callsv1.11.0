@@ -82,8 +82,10 @@ import {
     isGMChannel,
     isPrivateChannel,
     isPublicChannel,
+    notificationsStopRinging,
     sendDesktopEvent,
     shareAudioWithScreen,
+    stopOutgoingRingback,
     untranslatable,
 } from 'src/utils';
 import styled from 'styled-components';
@@ -849,6 +851,9 @@ export default class CallWidget extends React.PureComponent<Props, State> {
     }
 
     onDisconnectClick = () => {
+        stopOutgoingRingback();
+        notificationsStopRinging();
+
         if (this.state.expandedViewWindow) {
             this.state.expandedViewWindow.close();
         }
@@ -1028,7 +1033,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                         >
 
                             <PopOutIcon
-                                style={{width: '16px', height: '16px', fill: 'white', marginRight: '8px'}}
+                                style={{width: '16px', height: '16px', fill: 'white', marginInlineEnd: '8px'}}
                             />
                             <span>{formatMessage({defaultMessage: 'Pop out'})}</span>
                         </button>
@@ -1080,8 +1085,6 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                 onToggle={() => this.onShareScreenToggle()}
                 tooltipText={shareScreenTooltipText}
                 tooltipSubtext={shareScreenTooltipSubtext}
-                // eslint-disable-next-line no-undefined
-                shortcut={noScreenPermissions ? undefined : reverseKeyMappings.widget[SHARE_UNSHARE_SCREEN][0]}
                 bgColor={isSharing ? 'rgba(var(--dnd-indicator-rgb), 0.16)' : ''}
                 icon={<ShareIcon style={{fill}}/>}
                 unavailable={noScreenPermissions}
@@ -2139,6 +2142,8 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         const settingsButtonLabel = formatMessage({defaultMessage: 'More options'});
         const leaveMenuLabel = formatMessage({defaultMessage: 'Leave call'});
 
+        const openPopOutTooltipPosition = document.documentElement.getAttribute('dir') === 'rtl' ? 'right' : 'left';
+
         return (
             <div
                 id='calls-widget'
@@ -2207,7 +2212,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             ariaLabel={openPopOutLabel}
                             onToggle={this.onExpandClick}
                             tooltipText={openPopOutLabel}
-                            tooltipPosition='left'
+                            tooltipPosition={openPopOutTooltipPosition}
                             bgColor=''
                             icon={
                                 <ShowIcon
@@ -2230,13 +2235,12 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             onToggle={this.onParticipantsButtonClick}
                             bgColor={this.state.showParticipantsList ? 'rgba(var(--button-bg-rgb), 0.08)' : ''}
                             tooltipText={showParticipantsListLabel}
-                            shortcut={reverseKeyMappings.widget[PARTICIPANTS_LIST_TOGGLE][0]}
                             icon={
                                 <ParticipantsIcon
                                     style={{fill: this.state.showParticipantsList ? 'var(--button-bg)' : ''}}
                                 />
                             }
-                            style={{marginRight: 'auto'}}
+                            style={{marginInlineEnd: 'auto'}}
                         >
                             <span
                                 style={{
@@ -2254,8 +2258,6 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             ariaLabel={muteTooltipText}
                             // eslint-disable-next-line no-undefined
                             onToggle={noInputDevices ? undefined : this.onMuteToggle}
-                            // eslint-disable-next-line no-undefined
-                            shortcut={noInputDevices || noAudioPermissions ? undefined : reverseKeyMappings.widget[MUTE_UNMUTE][0]}
                             tooltipText={muteTooltipText}
                             tooltipSubtext={muteTooltipSubtext}
                             bgColor={this.isMuted() ? '' : 'rgba(61, 184, 135, 0.16)'}
@@ -2274,7 +2276,6 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                                 id='raise-hand'
                                 ariaLabel={handTooltipText}
                                 onToggle={() => this.onRaiseHandToggle()}
-                                shortcut={reverseKeyMappings.widget[RAISE_LOWER_HAND][0]}
                                 tooltipText={handTooltipText}
                                 bgColor={this.isHandRaised() ? 'rgba(var(--away-indicator-rgb), 0.16)' : ''}
                                 icon={
@@ -2313,7 +2314,6 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             placement={'top-start'}
                             strategy={'fixed'}
                             onOpenChange={this.onLeaveMenuOpen}
-                            shortcut={reverseKeyMappings.widget[LEAVE_CALL][0]}
                             tooltipText={leaveMenuLabel}
                         >
                             <LeaveCallMenu

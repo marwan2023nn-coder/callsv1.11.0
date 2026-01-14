@@ -53,7 +53,7 @@ const IconWrapper = styled.div<{$unavailable: boolean, $margin?: string}>`
 const UnavailableIcon = styled.div`
   position: absolute;
   top: -60%;
-  right: -50%;
+  inset-inline-end: -50%;
   color: var(--dnd-indicator);
   font-size: 12px;
 

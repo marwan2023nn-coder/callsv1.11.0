@@ -49,7 +49,7 @@ describe('RTCDServiceURL', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <RTCDServiceURL
                         {...baseProps}
                         {...props}
@@ -126,7 +126,7 @@ describe('RTCDServiceURL', () => {
 
         render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <RTCDServiceURL
                         {...baseProps}
                         onChange={onChange}

@@ -95,7 +95,7 @@ const Spinner = styled.span<{ $size: number }>`
     border-radius: 50%;
     display: inline-block;
     border-top: 2px solid currentColor;
-    border-right: 2px solid transparent;
+    border-inline-end:2px solid transparent;
     box-sizing: border-box;
     animation: spin 1s linear infinite;
 

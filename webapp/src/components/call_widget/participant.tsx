@@ -175,7 +175,7 @@ const ParticipantListItem = styled.li<{ $hover: boolean }>`
 `;
 
 const StyledDotMenu = styled(DotMenu)`
-    margin-right: -4px;
+    margin-inline-end: -4px;
 `;
 
 const StyledDotMenuButton = styled(DotMenuButton)<{ $isActive: boolean }>`

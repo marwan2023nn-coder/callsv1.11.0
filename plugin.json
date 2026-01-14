@@ -1,7 +1,7 @@
 {
   "id": "com.mattermost.calls",
-  "name": "Calls",
-  "description": "Integrates real-time voice communication in Mattermost",
+  "name": "المكالمات",
+  "description": "يوفّر تكاملاً لاتصالات صوتية فورية داخل workspace",
   "homepage_url": "https://github.com/mattermost/mattermost-plugin-calls/",
   "support_url": "https://github.com/mattermost/mattermost-plugin-calls/issues",
   "icon_path": "assets/plugin_icon.svg",
@@ -18,80 +18,80 @@
     "bundle_path": "webapp/dist/main.js"
   },
   "settings_schema": {
-    "header": "Calls plugin enables voice calls with screensharing in channels. See [documentation](https://mattermost.com/pl/calls-make?utm_source=mattermost&utm_medium=in-product&utm_content=calls_admin_settings) to learn more.",
+    "header": "تُمكّن إضافة المكالمات إجراء مكالمات صوتية مع مشاركة الشاشة داخل القنوات. راجع [التوثيق](https://workspace.com/pl/calls-make?utm_source=workspace&utm_medium=in-product&utm_content=calls_admin_settings) لمعرفة المزيد.",
     "footer": "",
     "sections": [
       {
         "key": "GeneralSettings",
-        "title": "General Settings",
-        "subtitle": "Settings for participants, screen sharing, ringing, and more",
+        "title": "الإعدادات العامة",
+        "subtitle": "إعدادات المشاركين ومشاركة الشاشة والرنين والمزيد",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "DefaultEnabled",
-            "display_name": "Test mode",
+            "display_name": "وضع الاختبار",
             "type": "custom",
-            "help_text": "When test mode is enabled, only system admins are able to start calls in channels. This allows testing to confirm calls are working as expected.",
+            "help_text": "عند تفعيل وضع الاختبار، سيكون بإمكان مسؤولي النظام فقط بدء المكالمات في القنوات. يساعد ذلك على الاختبار والتأكد من أن المكالمات تعمل كما هو متوقع.",
             "hosting": "on-prem"
           },
           {
             "key": "MaxCallParticipants",
-            "display_name": "Max call participants",
+            "display_name": "الحد الأقصى لمشاركي المكالمة",
             "type": "number",
-            "help_text": "The maximum number of participants that can join a call. If left empty, or set to 0, an unlimited number of participants can join.",
+            "help_text": "العدد الأقصى للمشاركين الذين يمكنهم الانضمام إلى مكالمة. إذا تُرك الحقل فارغاً أو تم تعيينه إلى 0، فسيكون العدد غير محدود.",
             "default": 0,
             "hosting": "on-prem"
           },
           {
             "key": "AllowScreenSharing",
-            "display_name": "Allow screen sharing",
+            "display_name": "السماح بمشاركة الشاشة",
             "type": "bool",
             "default": true,
-            "help_text": "When set to true, call participants can share their screen."
+            "help_text": "عند تفعيل هذا الخيار، يمكن لمشاركي المكالمة مشاركة شاشاتهم."
           },
           {
             "key": "EnableSimulcast",
-            "display_name": "Enable simulcast for screen sharing (Experimental)",
+            "display_name": "تفعيل Simulcast لمشاركة الشاشة (تجريبي)",
             "type": "bool",
             "default": false,
-            "help_text": "When set to true, simulcast for screen sharing is enabled. This can help to improve screen sharing quality."
+            "help_text": "عند تفعيل هذا الخيار، سيتم تفعيل Simulcast لمشاركة الشاشة. يمكن أن يساعد ذلك على تحسين جودة مشاركة الشاشة."
           },
           {
             "key": "EnableRinging",
-            "display_name": "Enable call ringing",
+            "display_name": "تفعيل رنين المكالمات",
             "type": "bool",
             "default": false,
-            "help_text": "When set to true, ringing functionality is enabled: participants in direct or group messages will receive a desktop alert and a ringing notification when a call is started. Changing this setting requires a plugin restart."
+            "help_text": "عند تفعيل هذا الخيار، سيتم تفعيل الرنين: سيتلقى المشاركون في الرسائل المباشرة أو الجماعية تنبيهاً على سطح المكتب وإشعار رنين عند بدء مكالمة. يتطلب تغيير هذا الإعداد إعادة تشغيل الإضافة."
           },
           {
             "key": "EnableAV1",
-            "display_name": "Enable AV1 codec for screen sharing (Experimental)",
+            "display_name": "تفعيل ترميز AV1 لمشاركة الشاشة (تجريبي)",
             "type": "bool",
             "default": false,
-            "help_text": "When set to true it enables using the AV1 codec to encode screen sharing tracks. This can result in improved screen sharing quality for clients that support it.\nNote: this setting won't apply when EnableSimulcast is true."
+            "help_text": "عند تفعيل هذا الخيار، سيتم استخدام ترميز AV1 لترميز مسارات مشاركة الشاشة. قد يؤدي ذلك إلى تحسين جودة مشاركة الشاشة لدى العملاء الذين يدعمونه.\nملاحظة: لن يتم تطبيق هذا الإعداد عندما يكون EnableSimulcast مفعّلاً."
           },
           {
             "key": "EnableDCSignaling",
-            "display_name": "Use data channels for signaling (Experimental)",
+            "display_name": "استخدام قنوات البيانات للإشارة (تجريبي)",
             "type": "bool",
             "default": false,
-            "help_text": "When set to true, clients will use WebRTC data channels for signaling of new media tracks. This can result in a more efficient and less race-prone process, especially in case of frequent WebSocket disconnections."
+            "help_text": "عند تفعيل هذا الخيار، ستستخدم التطبيقات قنوات بيانات WebRTC لإشارة مسارات الوسائط الجديدة. قد ينتج عن ذلك عملية أكثر كفاءة وأقل عرضة لحدوث تعارضات، خصوصاً عند تكرار انقطاع WebSocket."
           }
         ]
       },
       {
         "key": "RTCDService",
-        "title": "RTCD Service",
-        "subtitle": "Configure a dedicated service used to offload calls and efficiently support scalable and secure deployments",
+        "title": "خدمة RTCD",
+        "subtitle": "تهيئة خدمة مخصصة لتفريغ عبء المكالمات ودعم عمليات نشر قابلة للتوسع وآمنة بكفاءة",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "RTCDServiceURL",
-            "display_name": "RTCD service URL",
+            "display_name": "رابط خدمة RTCD",
             "type": "text",
-            "help_text": "(Optional) The URL to a running RTCD service instance that should host the calls. When set (non empty) all calls will be handled by the external service.",
+            "help_text": "(اختياري) رابط مثيل خدمة RTCD يعمل ويستضيف المكالمات. عند ضبطه (غير فارغ)، سيتم التعامل مع جميع المكالمات عبر الخدمة الخارجية.",
             "placeholder": "https://rtcd.example.com",
             "hosting": "on-prem"
           }
@@ -99,52 +99,52 @@
       },
       {
         "key": "RTCServer",
-        "title": "RTC Server",
-        "subtitle": "Network configuration for the integrated RTC server",
+        "title": "خادم RTC",
+        "subtitle": "إعدادات الشبكة لخادم RTC المدمج",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "UDPServerAddress",
-            "display_name": "RTC Server Address (UDP)",
+            "display_name": "عنوان خادم RTC (UDP)",
             "type": "text",
-            "help_text": "The local IP address used by the RTC server to listen on for UDP connections.",
+            "help_text": "عنوان IP المحلي الذي يستخدمه خادم RTC للاستماع لاتصالات UDP.",
             "default": "",
             "placeholder": "127.0.0.1",
             "hosting": "on-prem"
           },
           {
             "key": "TCPServerAddress",
-            "display_name": "RTC Server Address (TCP)",
+            "display_name": "عنوان خادم RTC (TCP)",
             "type": "text",
-            "help_text": "The local IP address used by the RTC server to listen on for TCP connections.",
+            "help_text": "عنوان IP المحلي الذي يستخدمه خادم RTC للاستماع لاتصالات TCP.",
             "default": "",
             "placeholder": "127.0.0.1",
             "hosting": "on-prem"
           },
           {
             "key": "UDPServerPort",
-            "display_name": "RTC Server Port (UDP)",
+            "display_name": "منفذ خادم RTC (UDP)",
             "type": "number",
-            "help_text": "The UDP port the RTC server will listen on.",
+            "help_text": "منفذ UDP الذي سيستمع عليه خادم RTC.",
             "default": 8443,
             "placeholder": "8443",
             "hosting": "on-prem"
           },
           {
             "key": "TCPServerPort",
-            "display_name": "RTC Server Port (TCP)",
+            "display_name": "منفذ خادم RTC (TCP)",
             "type": "number",
-            "help_text": "The TCP port the RTC server will listen on.",
+            "help_text": "منفذ TCP الذي سيستمع عليه خادم RTC.",
             "default": 8443,
             "placeholder": "8443",
             "hosting": "on-prem"
           },
           {
             "key": "EnableIPv6",
-            "display_name": "(Experimental) Enable IPv6 support",
+            "display_name": "(تجريبي) تفعيل دعم IPv6",
             "type": "bool",
-            "help_text": "When set to true, the RTC service will work in dual-stack mode, listening for IPv6 connections and generating candidates in addition to IPv4 ones.",
+            "help_text": "عند تفعيل هذا الخيار، ستعمل خدمة RTC بوضع مزدوج (Dual-Stack)، وتستمع لاتصالات IPv6 وتولّد مرشحين بالإضافة إلى مرشحي IPv4.",
             "default": false,
             "hosting": "on-prem"
           }
@@ -152,107 +152,107 @@
       },
       {
         "key": "ICEAndTURN",
-        "title": "ICE and TURN",
+        "title": "ICE و TURN",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "ICEHostOverride",
-            "display_name": "ICE Host Override",
+            "display_name": "تجاوز (Override) مضيف ICE",
             "type": "text",
-            "help_text": "(Optional) The IP address to be used as the host ICE candidate. If empty, it defaults to resolving via STUN.",
+            "help_text": "(اختياري) عنوان IP الذي سيتم استخدامه كمرشح مضيف (Host) لـ ICE. إذا كان فارغاً، سيتم تحديده افتراضياً عبر STUN.",
             "default": "",
             "hosting": "on-prem"
           },
           {
             "key": "ICEHostPortOverride",
-            "display_name": "ICE Host Port Override",
+            "display_name": "تجاوز (Override) منفذ مضيف ICE",
             "type": "number",
-            "help_text": "(Optional) A port number to be used as an override for host candidates in place of the one used to listen on.\nNote: this port will apply to both UDP and TCP host candidates",
+            "help_text": "(اختياري) رقم منفذ لاستخدامه كتجاوز لمرشحي المضيف بدلاً من المنفذ المستخدم للاستماع.\nملاحظة: سيُطبق هذا المنفذ على مرشحي مضيف UDP وTCP معاً",
             "hosting": "on-prem"
           },
           {
             "key": "ICEServersConfigs",
-            "display_name": "ICE Servers Configurations",
+            "display_name": "تهيئة خوادم ICE",
             "type": "longtext",
             "secret": true,
-            "help_text": "(Optional) A list of ICE servers (STUN/TURN) configurations to use. This field should contain a valid JSON array.",
-            "default": "[{\"urls\":[\"stun:stun.global.calls.mattermost.com:3478\"]}]",
+            "help_text": "(اختياري) قائمة بإعدادات خوادم ICE (STUN/TURN) لاستخدامها. يجب أن يحتوي هذا الحقل على مصفوفة JSON صالحة.",
+            "default": "[{\"urls\":[\"stun:stun.global.calls.workspace.com:3478\"]}]",
             "placeholder": "[{\n \"urls\":[\"turn:turnserver.example.org:3478\"],\n \"username\": \"webrtc\",\n \"credential\": \"turnpassword\"\n}]",
             "hosting": "on-prem"
           },
           {
             "key": "TURNStaticAuthSecret",
-            "display_name": "TURN Static Auth Secret",
+            "display_name": "سر المصادقة الثابت لـ TURN",
             "type": "text",
             "secret": true,
             "default": "",
-            "help_text": "(Optional) The secret key used to generate TURN short-lived authentication credentials.",
+            "help_text": "(اختياري) المفتاح السري المستخدم لتوليد بيانات اعتماد مصادقة TURN قصيرة العمر.",
             "hosting": "on-prem"
           },
           {
             "key": "TURNCredentialsExpirationMinutes",
-            "display_name": "TURN Credentials Expiration (minutes)",
+            "display_name": "انتهاء صلاحية بيانات اعتماد TURN (بالدقائق)",
             "type": "number",
             "default": 240,
-            "help_text": "(Optional) The number of minutes that the generated TURN credentials will be valid for.",
+            "help_text": "(اختياري) عدد الدقائق التي ستكون خلالها بيانات اعتماد TURN المولّدة صالحة.",
             "hosting": "on-prem"
           },
           {
             "key": "ServerSideTURN",
-            "display_name": "Server Side TURN",
+            "display_name": "TURN من جهة الخادم",
             "type": "bool",
             "default": false,
-            "help_text": "(Optional) When enabled, it will pass and use the configured TURN candidates to server initiated connections.",
+            "help_text": "(اختياري) عند تفعيله، سيتم تمرير مرشحي TURN المُهيّئين واستخدامهم لاتصالات يبدأها الخادم.",
             "hosting": "on-prem"
           }
         ]
       },
       {
         "key": "CallRecordings",
-        "title": "Call recordings",
-        "subtitle": "Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Mattermost",
+        "title": "تسجيلات المكالمات",
+        "subtitle": "تشمل التسجيلات عرض نافذة المكالمة بالكامل مع مسار صوت المشاركين وأي فيديو لمشاركة الشاشة. يتم تخزين التسجيلات داخل workspace",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "EnableRecordings",
-            "display_name": "Enable call recordings",
+            "display_name": "تفعيل تسجيل المكالمات",
             "type": "bool",
             "default": false,
-            "help_text": "(Optional) When set to true, call recordings are enabled."
+            "help_text": "(اختياري) عند تفعيل هذا الخيار، سيتم تفعيل تسجيل المكالمات."
           },
           {
             "key": "JobServiceURL",
-            "display_name": "Job service URL",
+            "display_name": "رابط خدمة المهام",
             "type": "text",
-            "help_text": "The URL to a running calls job service instance used for call recordings.",
+            "help_text": "رابط مثيل خدمة مهام المكالمات (Calls Job Service) العامل والمستخدم لتسجيل المكالمات.",
             "placeholder": "https://calls-job-service.example.com"
           },
           {
             "key": "MaxRecordingDuration",
-            "display_name": "Maximum call recording duration",
+            "display_name": "المدة القصوى لتسجيل المكالمة",
             "type": "number",
             "default": 60,
-            "help_text": "The maximum duration (in minutes) for call recordings. Value must be in the range [15, 180]."
+            "help_text": "المدة القصوى (بالدقائق) لتسجيلات المكالمات. يجب أن تكون القيمة ضمن المجال [15, 180]."
           },
           {
             "key": "RecordingQuality",
-            "display_name": "Call recording quality",
+            "display_name": "جودة تسجيل المكالمة",
             "type": "dropdown",
             "default": "medium",
-            "help_text": "The audio and video quality of call recordings.\n Note: this setting can affect the overall performance of the job service and the number of concurrent recording jobs that can be run.",
+            "help_text": "جودة الصوت والفيديو في تسجيلات المكالمات.\nملاحظة: قد يؤثر هذا الإعداد على الأداء العام لخدمة المهام وعدد مهام التسجيل المتزامنة الممكن تشغيلها.",
             "options": [
               {
-                "display_name": "Low",
+                "display_name": "منخفضة",
                 "value": "low"
               },
               {
-                "display_name": "Medium",
+                "display_name": "متوسطة",
                 "value": "medium"
               },
               {
-                "display_name": "High",
+                "display_name": "عالية",
                 "value": "high"
               }
             ],
@@ -262,24 +262,24 @@
       },
       {
         "key": "CallTranscriptions",
-        "title": "Call transcriptions",
-        "subtitle": "Allows calls to be transcribed to text files. Recordings must be enabled",
+        "title": "تفريغ المكالمات إلى نص",
+        "subtitle": "يسمح بتحويل المكالمات إلى ملفات نصية. يجب تفعيل التسجيلات",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "EnableTranscriptions",
-            "display_name": "Enable call transcriptions (Beta)",
+            "display_name": "تفعيل تفريغ المكالمات إلى نص (تجريبي)",
             "type": "bool",
             "default": false,
-            "help_text": "(Optional) When set to true, post-call transcriptions are enabled."
+            "help_text": "(اختياري) عند تفعيل هذا الخيار، سيتم تفعيل التفريغ النصي بعد انتهاء المكالمة."
           },
           {
             "key": "TranscribeAPI",
-            "display_name": "Call transcriber API",
+            "display_name": "واجهة API لتفريغ المكالمات",
             "type": "dropdown",
             "default": "whisper.cpp",
-            "help_text": "The speech-to-text API to use for post-call transcriptions.",
+            "help_text": "واجهة تحويل الكلام إلى نص المستخدمة للتفريغ بعد انتهاء المكالمة.",
             "options": [
               {
                 "display_name": "Whisper.CPP",
@@ -294,21 +294,21 @@
           },
           {
             "key": "TranscriberModelSize",
-            "display_name": "Call transcriber model size",
+            "display_name": "حجم نموذج التفريغ",
             "type": "dropdown",
             "default": "base",
-            "help_text": "The speech-to-text model size to use for post-call transcriptions. Heavier models will produce more accurate results at the expense of processing time and resources usage.",
+            "help_text": "حجم نموذج تحويل الكلام إلى نص المستخدم للتفريغ بعد المكالمة. النماذج الأكبر تعطي دقة أعلى على حساب وقت المعالجة واستخدام الموارد.",
             "options": [
               {
-                "display_name": "Tiny",
+                "display_name": "صغير جداً",
                 "value": "tiny"
               },
               {
-                "display_name": "Base",
+                "display_name": "أساسي",
                 "value": "base"
               },
               {
-                "display_name": "Small",
+                "display_name": "صغير",
                 "value": "small"
               }
             ],
@@ -316,24 +316,24 @@
           },
           {
             "key": "TranscriberNumThreads",
-            "display_name": "Call transcriber threads",
+            "display_name": "عدد خيوط المعالجة للمُفرِّغ",
             "type": "number",
             "default": 2,
-            "help_text": "The number of threads used by the post-call transcriber. This must be in the range [1, numCPUs]."
+            "help_text": "عدد خيوط المعالجة المستخدمة في التفريغ بعد المكالمة. يجب أن تكون القيمة ضمن المجال [1, numCPUs]."
           },
           {
             "key": "TranscribeAPIAzureSpeechKey",
-            "display_name": "Azure API Key",
+            "display_name": "مفتاح Azure API",
             "type": "text",
-            "help_text": "The API key for Azure Speech Services",
+            "help_text": "مفتاح API لخدمات Azure Speech",
             "default": "",
             "hosting": "on-prem"
           },
           {
             "key": "TranscribeAPIAzureSpeechRegion",
-            "display_name": "Azure API Region",
+            "display_name": "منطقة Azure API",
             "type": "text",
-            "help_text": "The API region for Azure Speech Services",
+            "help_text": "منطقة API لخدمات Azure Speech",
             "default": "",
             "hosting": "on-prem"
           }
@@ -341,35 +341,35 @@
       },
       {
         "key": "CallLiveCaptions",
-        "title": "Live captions",
-        "subtitle": "Displays spoken words as text captions during a call. Recordings and transcriptions must be enabled",
+        "title": "الترجمة الفورية (عناوين مباشرة)",
+        "subtitle": "يعرض الكلمات المنطوقة كعناوين نصية أثناء المكالمة. يجب تفعيل التسجيلات والتفريغ النصي",
         "custom": true,
         "fallback": true,
         "settings": [
           {
             "key": "EnableLiveCaptions",
-            "display_name": "Enable live captions (Beta)",
+            "display_name": "تفعيل الترجمة الفورية (تجريبي)",
             "type": "bool",
             "default": false,
-            "help_text": "(Optional) When set to true, live captions are enabled."
+            "help_text": "(اختياري) عند تفعيل هذا الخيار، سيتم تفعيل الترجمة الفورية."
           },
           {
             "key": "LiveCaptionsModelSize",
-            "display_name": "Live captions: Model size",
+            "display_name": "الترجمة الفورية: حجم النموذج",
             "type": "dropdown",
             "default": "tiny",
-            "help_text": "The speech-to-text model size to use for live captions. Heavier models will produce more accurate results at the expense of processing time and resources usage.",
+            "help_text": "حجم نموذج تحويل الكلام إلى نص المستخدم للترجمة الفورية. النماذج الأكبر تعطي نتائج أدق على حساب وقت المعالجة واستخدام الموارد.",
             "options": [
               {
-                "display_name": "Tiny",
+                "display_name": "صغير جداً",
                 "value": "tiny"
               },
               {
-                "display_name": "Base",
+                "display_name": "أساسي",
                 "value": "base"
               },
               {
-                "display_name": "Small",
+                "display_name": "صغير",
                 "value": "small"
               }
             ],
@@ -377,24 +377,24 @@
           },
           {
             "key": "LiveCaptionsNumTranscribers",
-            "display_name": "Live captions: Number of transcribers used per call",
+            "display_name": "الترجمة الفورية: عدد المُفرِّغات المستخدمة لكل مكالمة",
             "type": "number",
             "default": 1,
-            "help_text": "The number of separate live-captions transcribers for each call. Each transcribes one audio stream at a time. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
+            "help_text": "عدد مُفرِّغات الترجمة الفورية المنفصلة لكل مكالمة. كل مُفرِّغ يُفرّغ مساراً صوتياً واحداً في كل مرة. يجب أن يكون حاصل ضرب LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber ضمن المجال [1, numCPUs]."
           },
           {
             "key": "LiveCaptionsNumThreadsPerTranscriber",
-            "display_name": "Live captions: Number of threads per transcriber",
+            "display_name": "الترجمة الفورية: عدد خيوط المعالجة لكل مُفرِّغ",
             "type": "number",
             "default": 2,
-            "help_text": "The number of threads per live-captions transcriber. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
+            "help_text": "عدد خيوط المعالجة لكل مُفرِّغ ترجمة فورية. يجب أن يكون حاصل ضرب LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber ضمن المجال [1, numCPUs]."
           },
           {
             "key": "LiveCaptionsLanguage",
-            "display_name": "Live captions language",
+            "display_name": "لغة الترجمة الفورية",
             "type": "text",
-            "default": "en",
-            "help_text": "The language passed to the live captions transcriber. Should be a 2-letter ISO 639 Set 1 language code, e.g. 'en'. If blank, will be set to English 'en' as default."
+            "default": "ar",
+            "help_text": "اللغة التي تُمرر إلى مُفرِّغ الترجمة الفورية. يجب أن تكون رمز لغة من حرفين وفق ISO 639-1 مثل 'ar'. إذا تُركت فارغة، سيتم استخدام الإنجليزية 'ar' افتراضياً."
           }
         ]
       }
@@ -402,163 +402,163 @@
     "settings": [
       {
         "key": "DefaultEnabled",
-        "display_name": "Test mode",
+        "display_name": "وضع الاختبار",
         "type": "custom",
-        "help_text": "When test mode is enabled, only system admins are able to start calls in channels. This allows testing to confirm calls are working as expected.",
+        "help_text": "عند تفعيل وضع الاختبار، سيكون بإمكان مسؤولي النظام فقط بدء المكالمات في القنوات. يساعد ذلك على الاختبار والتأكد من أن المكالمات تعمل كما هو متوقع.",
         "hosting": "on-prem"
       },
       {
         "key": "UDPServerAddress",
-        "display_name": "RTC Server Address (UDP)",
+        "display_name": "عنوان خادم RTC (UDP)",
         "type": "text",
-        "help_text": "The local IP address used by the RTC server to listen on for UDP connections.",
+        "help_text": "عنوان IP المحلي الذي يستخدمه خادم RTC للاستماع لاتصالات UDP.",
         "default": "",
         "placeholder": "127.0.0.1",
         "hosting": "on-prem"
       },
       {
         "key": "TCPServerAddress",
-        "display_name": "RTC Server Address (TCP)",
+        "display_name": "عنوان خادم RTC (TCP)",
         "type": "text",
-        "help_text": "The local IP address used by the RTC server to listen on for TCP connections.",
+        "help_text": "عنوان IP المحلي الذي يستخدمه خادم RTC للاستماع لاتصالات TCP.",
         "default": "",
         "placeholder": "127.0.0.1",
         "hosting": "on-prem"
       },
       {
         "key": "UDPServerPort",
-        "display_name": "RTC Server Port (UDP)",
+        "display_name": "منفذ خادم RTC (UDP)",
         "type": "number",
-        "help_text": "The UDP port the RTC server will listen on.",
+        "help_text": "منفذ UDP الذي سيستمع عليه خادم RTC.",
         "default": 8443,
         "placeholder": "8443",
         "hosting": "on-prem"
       },
       {
         "key": "TCPServerPort",
-        "display_name": "RTC Server Port (TCP)",
+        "display_name": "منفذ خادم RTC (TCP)",
         "type": "number",
-        "help_text": "The TCP port the RTC server will listen on.",
+        "help_text": "منفذ TCP الذي سيستمع عليه خادم RTC.",
         "default": 8443,
         "placeholder": "8443",
         "hosting": "on-prem"
       },
       {
         "key": "ICEHostOverride",
-        "display_name": "ICE Host Override",
+        "display_name": "تجاوز (Override) مضيف ICE",
         "type": "text",
-        "help_text": "(Optional) The IP address to be used as the host ICE candidate. If empty, it defaults to resolving via STUN.",
+        "help_text": "(اختياري) عنوان IP الذي سيتم استخدامه كمرشح مضيف (Host) لـ ICE. إذا كان فارغاً، سيتم تحديده افتراضياً عبر STUN.",
         "default": "",
         "hosting": "on-prem"
       },
       {
         "key": "ICEHostPortOverride",
-        "display_name": "ICE Host Port Override",
+        "display_name": "تجاوز (Override) منفذ مضيف ICE",
         "type": "number",
-        "help_text": "(Optional) A port number to be used as an override for host candidates in place of the one used to listen on.\nNote: this port will apply to both UDP and TCP host candidates",
+        "help_text": "(اختياري) رقم منفذ لاستخدامه كتجاوز لمرشحي المضيف بدلاً من المنفذ المستخدم للاستماع.\nملاحظة: سيُطبق هذا المنفذ على مرشحي مضيف UDP وTCP معاً",
         "hosting": "on-prem"
       },
       {
         "key": "RTCDServiceURL",
-        "display_name": "RTCD service URL",
+        "display_name": "رابط خدمة RTCD",
         "type": "text",
-        "help_text": "(Optional) The URL to a running RTCD service instance that should host the calls. When set (non empty) all calls will be handled by the external service.",
+        "help_text": "(اختياري) رابط مثيل خدمة RTCD يعمل ويستضيف المكالمات. عند ضبطه (غير فارغ)، سيتم التعامل مع جميع المكالمات عبر الخدمة الخارجية.",
         "placeholder": "https://rtcd.example.com",
         "hosting": "on-prem"
       },
       {
         "key": "MaxCallParticipants",
-        "display_name": "Max call participants",
+        "display_name": "الحد الأقصى لمشاركي المكالمة",
         "type": "number",
-        "help_text": "The maximum number of participants that can join a call. If left empty, or set to 0, an unlimited number of participants can join.",
+        "help_text": "العدد الأقصى للمشاركين الذين يمكنهم الانضمام إلى مكالمة. إذا تُرك الحقل فارغاً أو تم تعيينه إلى 0، فسيكون العدد غير محدود.",
         "default": 0,
         "hosting": "on-prem"
       },
       {
         "key": "ICEServersConfigs",
-        "display_name": "ICE Servers Configurations",
+        "display_name": "تهيئة خوادم ICE",
         "type": "longtext",
-        "help_text": "(Optional) A list of ICE servers (STUN/TURN) configurations to use. This field should contain a valid JSON array.",
-        "default": "[{\"urls\":[\"stun:stun.global.calls.mattermost.com:3478\"]}]",
+        "help_text": "(اختياري) قائمة بإعدادات خوادم ICE (STUN/TURN) لاستخدامها. يجب أن يحتوي هذا الحقل على مصفوفة JSON صالحة.",
+        "default": "[{\"urls\":[\"stun:stun.global.calls.workspace.com:3478\"]}]",
         "placeholder": "[{\n \"urls\":[\"turn:turnserver.example.org:3478\"],\n \"username\": \"webrtc\",\n \"credential\": \"turnpassword\"\n}]",
         "hosting": "on-prem"
       },
       {
         "key": "TURNStaticAuthSecret",
-        "display_name": "TURN Static Auth Secret",
+        "display_name": "سر المصادقة الثابت لـ TURN",
         "type": "text",
         "default": "",
-        "help_text": "(Optional) The secret key used to generate TURN short-lived authentication credentials.",
+        "help_text": "(اختياري) المفتاح السري المستخدم لتوليد بيانات اعتماد مصادقة TURN قصيرة العمر.",
         "hosting": "on-prem"
       },
       {
         "key": "TURNCredentialsExpirationMinutes",
-        "display_name": "TURN Credentials Expiration (minutes)",
+        "display_name": "انتهاء صلاحية بيانات اعتماد TURN (بالدقائق)",
         "type": "number",
         "default": 240,
-        "help_text": "(Optional) The number of minutes that the generated TURN credentials will be valid for.",
+        "help_text": "(اختياري) عدد الدقائق التي ستكون خلالها بيانات اعتماد TURN المولّدة صالحة.",
         "hosting": "on-prem"
       },
       {
         "key": "ServerSideTURN",
-        "display_name": "Server Side TURN",
+        "display_name": "TURN من جهة الخادم",
         "type": "bool",
         "default": false,
-        "help_text": "(Optional) When enabled, it will pass and use the configured TURN candidates to server initiated connections.",
+        "help_text": "(اختياري) عند تفعيله، سيتم تمرير مرشحي TURN المُهيّئين واستخدامهم لاتصالات يبدأها الخادم.",
         "hosting": "on-prem"
       },
       {
         "key": "AllowScreenSharing",
-        "display_name": "Allow screen sharing",
+        "display_name": "السماح بمشاركة الشاشة",
         "type": "bool",
         "default": true,
-        "help_text": "When set to true, call participants can share their screen."
+        "help_text": "عند تفعيل هذا الخيار، يمكن لمشاركي المكالمة مشاركة شاشاتهم."
       },
       {
         "key": "EnableSimulcast",
-        "display_name": "Enable simulcast for screen sharing (Experimental)",
+        "display_name": "تفعيل Simulcast لمشاركة الشاشة (تجريبي)",
         "type": "bool",
         "default": false,
-        "help_text": "When set to true, simulcast for screen sharing is enabled. This can help to improve screen sharing quality."
+        "help_text": "عند تفعيل هذا الخيار، سيتم تفعيل Simulcast لمشاركة الشاشة. يمكن أن يساعد ذلك على تحسين جودة مشاركة الشاشة."
       },
       {
         "key": "EnableRecordings",
-        "display_name": "Enable call recordings",
+        "display_name": "تفعيل تسجيل المكالمات",
         "type": "bool",
         "default": false,
-        "help_text": "(Optional) When set to true, call recordings are enabled."
+        "help_text": "(اختياري) عند تفعيل هذا الخيار، سيتم تفعيل تسجيل المكالمات."
       },
       {
         "key": "JobServiceURL",
-        "display_name": "Job service URL",
+        "display_name": "رابط خدمة المهام",
         "type": "text",
-        "help_text": "The URL to a running calls job service instance used for call recordings.",
+        "help_text": "رابط مثيل خدمة مهام المكالمات (Calls Job Service) العامل والمستخدم لتسجيل المكالمات.",
         "placeholder": "https://calls-job-service.example.com"
       },
       {
         "key": "MaxRecordingDuration",
-        "display_name": "Maximum call recording duration",
+        "display_name": "المدة القصوى لتسجيل المكالمة",
         "type": "number",
         "default": 60,
-        "help_text": "The maximum duration (in minutes) for call recordings. Value must be in the range [15, 180]."
+        "help_text": "المدة القصوى (بالدقائق) لتسجيلات المكالمات. يجب أن تكون القيمة ضمن المجال [15, 180]."
       },
       {
         "key": "RecordingQuality",
-        "display_name": "Call recording quality",
+        "display_name": "جودة تسجيل المكالمة",
         "type": "dropdown",
         "default": "medium",
-        "help_text": "The audio and video quality of call recordings.\n Note: this setting can affect the overall performance of the job service and the number of concurrent recording jobs that can be run.",
+        "help_text": "جودة الصوت والفيديو في تسجيلات المكالمات.\nملاحظة: قد يؤثر هذا الإعداد على الأداء العام لخدمة المهام وعدد مهام التسجيل المتزامنة الممكن تشغيلها.",
         "options": [
           {
-            "display_name": "Low",
+            "display_name": "منخفضة",
             "value": "low"
           },
           {
-            "display_name": "Medium",
+            "display_name": "متوسطة",
             "value": "medium"
           },
           {
-            "display_name": "High",
+            "display_name": "عالية",
             "value": "high"
           }
         ],
@@ -566,17 +566,17 @@
       },
       {
         "key": "EnableTranscriptions",
-        "display_name": "Enable call transcriptions (Experimental)",
+        "display_name": "تفعيل تفريغ المكالمات إلى نص (تجريبي)",
         "type": "bool",
         "default": false,
-        "help_text": "(Optional) When set to true, post-call transcriptions are enabled."
+        "help_text": "(اختياري) عند تفعيل هذا الخيار، سيتم تفعيل التفريغ النصي بعد انتهاء المكالمة."
       },
       {
         "key": "TranscribeAPI",
-        "display_name": "Call transcriber API",
+        "display_name": "واجهة API لتفريغ المكالمات",
         "type": "dropdown",
         "default": "whisper.cpp",
-        "help_text": "The speech-to-text API to use for post-call transcriptions.",
+        "help_text": "واجهة تحويل الكلام إلى نص المستخدمة للتفريغ بعد انتهاء المكالمة.",
         "options": [
           {
             "display_name": "Whisper.CPP",
@@ -591,21 +591,21 @@
       },
       {
         "key": "TranscriberModelSize",
-        "display_name": "Call transcriber model size",
+        "display_name": "حجم نموذج التفريغ",
         "type": "dropdown",
         "default": "base",
-        "help_text": "The speech-to-text model size to use for post-call transcriptions. Heavier models will produce more accurate results at the expense of processing time and resources usage.",
+        "help_text": "حجم نموذج تحويل الكلام إلى نص المستخدم للتفريغ بعد المكالمة. النماذج الأكبر تعطي دقة أعلى على حساب وقت المعالجة واستخدام الموارد.",
         "options": [
           {
-            "display_name": "Tiny",
+            "display_name": "صغير جداً",
             "value": "tiny"
           },
           {
-            "display_name": "Base",
+            "display_name": "أساسي",
             "value": "base"
           },
           {
-            "display_name": "Small",
+            "display_name": "صغير",
             "value": "small"
           }
         ],
@@ -613,51 +613,51 @@
       },
       {
         "key": "TranscribeAPIAzureSpeechKey",
-        "display_name": "Azure Speech Services API Key",
+        "display_name": "مفتاح Azure API",
         "type": "text",
-        "help_text": "The API key for Azure Speech Services",
+        "help_text": "مفتاح API لخدمات Azure Speech",
         "default": "",
         "hosting": "on-prem"
       },
       {
         "key": "TranscribeAPIAzureSpeechRegion",
-        "display_name": "Azure Speech Services API Region",
+        "display_name": "منطقة Azure API",
         "type": "text",
-        "help_text": "The API region for Azure Speech Services",
+        "help_text": "منطقة API لخدمات Azure Speech",
         "default": "",
         "hosting": "on-prem"
       },
       {
         "key": "TranscriberNumThreads",
-        "display_name": "Call transcriber threads",
+        "display_name": "عدد خيوط المعالجة للمُفرِّغ",
         "type": "number",
         "default": 2,
-        "help_text": "The number of threads used by the post-call transcriber. This must be in the range [1, numCPUs]."
+        "help_text": "عدد خيوط المعالجة المستخدمة في التفريغ بعد المكالمة. يجب أن تكون القيمة ضمن المجال [1, numCPUs]."
       },
       {
         "key": "EnableLiveCaptions",
-        "display_name": "Enable live captions (Experimental)",
+        "display_name": "تفعيل الترجمة الفورية (تجريبي)",
         "type": "bool",
         "default": false,
-        "help_text": "(Optional) When set to true, live captions are enabled."
+        "help_text": "(اختياري) عند تفعيل هذا الخيار، سيتم تفعيل الترجمة الفورية."
       },
       {
         "key": "LiveCaptionsModelSize",
-        "display_name": "Live captions: Model size",
+        "display_name": "الترجمة الفورية: حجم النموذج",
         "type": "dropdown",
         "default": "tiny",
-        "help_text": "The speech-to-text model size to use for live captions. Heavier models will produce more accurate results at the expense of processing time and resources usage.",
+        "help_text": "حجم نموذج تحويل الكلام إلى نص المستخدم للترجمة الفورية. النماذج الأكبر تعطي نتائج أدق على حساب وقت المعالجة واستخدام الموارد.",
         "options": [
           {
-            "display_name": "Tiny",
+            "display_name": "صغير جداً",
             "value": "tiny"
           },
           {
-            "display_name": "Base",
+            "display_name": "أساسي",
             "value": "base"
           },
           {
-            "display_name": "Small",
+            "display_name": "صغير",
             "value": "small"
           }
         ],
@@ -665,53 +665,53 @@
       },
       {
         "key": "LiveCaptionsNumTranscribers",
-        "display_name": "Live captions: Number of transcribers used per call",
+        "display_name": "الترجمة الفورية: عدد المُفرِّغات المستخدمة لكل مكالمة",
         "type": "number",
         "default": 1,
-        "help_text": "The number of separate live-captions transcribers for each call. Each transcribes one audio stream at a time. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
+        "help_text": "عدد مُفرِّغات الترجمة الفورية المنفصلة لكل مكالمة. كل مُفرِّغ يُفرّغ مساراً صوتياً واحداً في كل مرة. يجب أن يكون حاصل ضرب LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber ضمن المجال [1, numCPUs]."
       },
       {
         "key": "LiveCaptionsNumThreadsPerTranscriber",
-        "display_name": "Live captions: Number of threads per transcriber",
+        "display_name": "الترجمة الفورية: عدد خيوط المعالجة لكل مُفرِّغ",
         "type": "number",
         "default": 2,
-        "help_text": "The number of threads per live-captions transcriber. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
+        "help_text": "عدد خيوط المعالجة لكل مُفرِّغ ترجمة فورية. يجب أن يكون حاصل ضرب LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber ضمن المجال [1, numCPUs]."
       },
       {
         "key": "LiveCaptionsLanguage",
-        "display_name": "Live captions language",
+        "display_name": "لغة الترجمة الفورية",
         "type": "text",
-        "default": "en",
-        "help_text": "The language passed to the live captions transcriber. Should be a 2-letter ISO 639 Set 1 language code, e.g. 'en'. If blank, will be set to English 'en' as default."
+        "default": "ar",
+        "help_text": "اللغة التي تُمرر إلى مُفرِّغ الترجمة الفورية. يجب أن تكون رمز لغة من حرفين وفق ISO 639-1 مثل 'ar'. إذا تُركت فارغة، سيتم استخدام الإنجليزية 'ar' افتراضياً."
       },
       {
         "key": "EnableIPv6",
-        "display_name": "Enable IPv6 support (Experimental)",
+        "display_name": "(تجريبي) تفعيل دعم IPv6",
         "type": "bool",
-        "help_text": "When set to true, the RTC service will work in dual-stack mode, listening for IPv6 connections and generating candidates in addition to IPv4 ones.",
+        "help_text": "عند تفعيل هذا الخيار، ستعمل خدمة RTC بوضع مزدوج (Dual-Stack)، وتستمع لاتصالات IPv6 وتولّد مرشحين بالإضافة إلى مرشحي IPv4.",
         "default": false,
         "hosting": "on-prem"
       },
       {
         "key": "EnableRinging",
-        "display_name": "Enable call ringing",
+        "display_name": "تفعيل رنين المكالمات",
         "type": "bool",
         "default": false,
-        "help_text": "When set to true, ringing functionality is enabled: participants in direct or group messages will receive a desktop alert and a ringing notification when a call is started. Changing this setting requires a plugin restart."
+        "help_text": "عند تفعيل هذا الخيار، سيتم تفعيل الرنين: سيتلقى المشاركون في الرسائل المباشرة أو الجماعية تنبيهاً على سطح المكتب وإشعار رنين عند بدء مكالمة. يتطلب تغيير هذا الإعداد إعادة تشغيل الإضافة."
       },
       {
         "key": "EnableAV1",
-        "display_name": "Enable AV1 codec for screen sharing (Experimental)",
+        "display_name": "تفعيل ترميز AV1 لمشاركة الشاشة (تجريبي)",
         "type": "bool",
         "default": false,
-        "help_text": "When set to true it enables using the AV1 codec to encode screen sharing tracks. This can result in improved screen sharing quality for clients that support it.\nNote: this setting won't apply when EnableSimulcast is true."
+        "help_text": "عند تفعيل هذا الخيار، سيتم استخدام ترميز AV1 لترميز مسارات مشاركة الشاشة. قد يؤدي ذلك إلى تحسين جودة مشاركة الشاشة لدى العملاء الذين يدعمونه.\nملاحظة: لن يتم تطبيق هذا الإعداد عندما يكون EnableSimulcast مفعّلاً."
       },
       {
         "key": "EnableDCSignaling",
-        "display_name": "Use data channels for signaling (Experimental)",
+        "display_name": "استخدام قنوات البيانات للإشارة (تجريبي)",
         "type": "bool",
         "default": false,
-        "help_text": "When set to true, clients will use WebRTC data channels for signaling of new media tracks. This can result in a more efficient and less race-prone process, especially in case of frequent WebSocket disconnections."
+        "help_text": "عند تفعيل هذا الخيار، ستستخدم التطبيقات قنوات بيانات WebRTC لإشارة مسارات الوسائط الجديدة. قد ينتج عن ذلك عملية أكثر كفاءة وأقل عرضة لحدوث تعارضات، خصوصاً عند تكرار انقطاع WebSocket."
       }
     ]
   },

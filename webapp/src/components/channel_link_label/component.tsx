@@ -45,23 +45,25 @@ const ChannelLinkLabel = (props: Props) => {
             }
         >
 
-            <span
+              <span
+                className='calls-sidebar-active-call-icon'
                 data-testid={'calls-sidebar-active-call-icon'}
                 style={
                     {
-                        display: 'flex',
+                        display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         height: 'auto',
                         minWidth: '20px',
                         marginLeft: 'auto',
-                        marginRight: '4px',
+                        marginInlineEnd: '4px',
+                        fill: '#00987e',
                     }
                 }
             >
                 <ActiveCallIcon
-                    fill={props.theme.sidebarText}
-                    style={{minWidth: '12px', maxWidth: '12px', minHeight: '12px', maxHeight: '12px'}}
+                    fill={'#00987e'}
+                    style={{minWidth: '10px', maxWidth: '10px', minHeight: '10px', maxHeight: '10px', fill: '#00987e'}}
                 />
             </span>
         </OverlayTrigger>

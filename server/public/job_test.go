@@ -72,7 +72,7 @@ func TestTranscribingJobInfoIsValid(t *testing.T) {
 			info: TranscribingJobInfo{
 				Transcriptions: []Transcription{
 					{
-						Language: "en",
+						Language: "ar",
 						FileIDs:  []string{"srn9te5wnifg98ekrurcr7ty8c", "gyzdsttw9jbxfgm9b4otburw7o"},
 					},
 				},
@@ -95,7 +95,7 @@ func TestTranscribingJobInfoIsValid(t *testing.T) {
 				PostID: "5khxhbp6t3r9tpxy6cxxqyrpge",
 				Transcriptions: []Transcription{
 					{
-						Language: "en",
+						Language: "ar",
 						FileIDs:  []string{"srn9te5wnifg98ekrurcr7ty8c"},
 					},
 				},
@@ -108,7 +108,7 @@ func TestTranscribingJobInfoIsValid(t *testing.T) {
 				JobID: "g719uqqnrjry5jof9cjqe5zhcy",
 				Transcriptions: []Transcription{
 					{
-						Language: "en",
+						Language: "ar",
 						FileIDs:  []string{"srn9te5wnifg98ekrurcr7ty8c", "gyzdsttw9jbxfgm9b4otburw7o"},
 					},
 				},
@@ -122,7 +122,7 @@ func TestTranscribingJobInfoIsValid(t *testing.T) {
 				PostID: "5khxhbp6t3r9tpxy6cxxqyrpge",
 				Transcriptions: []Transcription{
 					{
-						Language: "en",
+						Language: "ar",
 						FileIDs:  []string{"srn9te5wnifg98ekrurcr7ty8c", "gyzdsttw9jbxfgm9b4otburw7o"},
 					},
 				},
@@ -246,7 +246,7 @@ func TestTranscriptionsToClientCaptions(t *testing.T) {
 			},
 			Transcription{
 				Title:    "title",
-				Language: "en",
+				Language: "ar",
 				FileIDs: []string{
 					"fileC",
 					"fileD",

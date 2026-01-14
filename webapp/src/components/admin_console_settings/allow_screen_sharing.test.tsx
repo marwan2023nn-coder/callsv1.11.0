@@ -42,7 +42,7 @@ describe('AllowScreenSharing', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <AllowScreenSharing
                         {...baseProps}
                         {...props}

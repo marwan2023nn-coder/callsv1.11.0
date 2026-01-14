@@ -91,12 +91,17 @@ import {
     getUserDisplayName,
     notificationsStopRinging,
     playSound,
+    startOutgoingRingback,
+    stopOutgoingRingback,
 } from './utils';
 
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of
 // state mutating operations.
 export function handleCallEnd(store: Store, ev: WebSocketMessage<EmptyData>) {
     const channelID = ev.data.channelID || ev.broadcast.channel_id;
+    if (getCallsClient()?.channelID === channelID) {
+        stopOutgoingRingback();
+    }
     store.dispatch(callEnd(channelID));
 }
 
@@ -153,6 +158,10 @@ export function handleCallStart(store: Store, ev: WebSocketMessage<CallStartData
     });
 
     if (getCallsClient()?.channelID === channelID) {
+        const currentUserID = getCurrentUserId(store.getState());
+        if (ev.data.owner_id === currentUserID) {
+            startOutgoingRingback();
+        }
         const channel = getChannel(store.getState(), channelID);
         if (channel) {
             followThread(store, channel.id, channel.team_id);
@@ -167,6 +176,12 @@ export function handleCallStart(store: Store, ev: WebSocketMessage<CallStartData
 // state mutating operations.
 export function handleUserLeft(store: Store, ev: WebSocketMessage<UserLeftData>) {
     const channelID = ev.data.channelID || ev.broadcast.channel_id;
+    if (getCallsClient()?.channelID === channelID) {
+        const currentUserID = getCurrentUserId(store.getState());
+        if (ev.data.user_id === currentUserID) {
+            stopOutgoingRingback();
+        }
+    }
 
     store.dispatch(userLeft(channelID, ev.data.user_id, ev.data.session_id));
 }
@@ -180,6 +195,9 @@ export function handleUserJoined(store: Store, ev: WebSocketMessage<UserJoinedDa
     const sessionID = ev.data.session_id;
 
     if (window.callsClient?.channelID === channelID) {
+        if (userID !== currentUserID) {
+            stopOutgoingRingback();
+        }
         if (sessionID === getCallsClientSessionID()) {
             playSound('join_self');
         } else if (userID !== currentUserID && shouldPlayJoinUserSound(store.getState())) {

@@ -50,7 +50,7 @@ describe('EnableTranscriptions', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableTranscriptions
                         {...baseProps}
                         {...props}
@@ -80,7 +80,7 @@ describe('EnableTranscriptions', () => {
 
         render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableTranscriptions {...baseProps}/>
                 </IntlProvider>
             </Provider>,

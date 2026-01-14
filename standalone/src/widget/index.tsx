@@ -17,8 +17,11 @@ import {
 import {Store} from 'plugin/types/mattermost-webapp';
 import {
     fetchTranslationsFile,
+    getTranslations,
+    notificationsStopRinging,
     playSound, sendDesktopError,
     sendDesktopEvent,
+    stopOutgoingRingback,
 } from 'plugin/utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -26,6 +29,20 @@ import {IntlProvider} from 'react-intl';
 import {Provider} from 'react-redux';
 
 import init, {InitCbProps} from '../init';
+
+function setDocumentDirection(locale: string) {
+    const normalized = (locale || '').toLowerCase();
+    const isRTL = normalized.startsWith('ar');
+
+    document.documentElement.setAttribute('lang', locale);
+    document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+    document.body?.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+}
+
+function stopAllSounds() {
+    stopOutgoingRingback();
+    notificationsStopRinging();
+}
 
 async function initWidget({store, startingCall}: InitCbProps) {
     if (window.desktopAPI?.getAppInfo) {
@@ -48,10 +65,16 @@ async function initWidget({store, startingCall}: InitCbProps) {
         sendDesktopEvent('get-app-version');
     }
 
-    const locale = getCurrentUserLocale(store.getState()) || 'en';
+    const locale = getCurrentUserLocale(store.getState()) || 'ar';
+
+    setDocumentDirection(locale);
+
+    // Ensure any ringing/ringback is stopped even if the widget window is closed directly.
+    window.addEventListener('beforeunload', stopAllSounds);
+    window.addEventListener('pagehide', stopAllSounds);
 
     let messages;
-    if (locale !== 'en') {
+    if (locale !== 'ar') {
         try {
             messages = await fetchTranslationsFile(locale);
         } catch (err) {
@@ -59,12 +82,16 @@ async function initWidget({store, startingCall}: InitCbProps) {
         }
     }
 
+    if (!messages || Object.keys(messages).length === 0) {
+        messages = getTranslations(locale);
+    }
+
     ReactDOM.render(
         <Provider store={store}>
             <IntlProvider
                 locale={locale}
                 key={locale}
-                defaultLocale='en'
+                defaultLocale='ar'
                 messages={messages}
             >
                 <CallWidget
@@ -103,6 +130,8 @@ async function initStoreWidget(store: Store, channelID: string) {
 }
 
 function deinitWidget(err?: Error) {
+    stopAllSounds();
+
     playSound('leave_self');
 
     if (err) {

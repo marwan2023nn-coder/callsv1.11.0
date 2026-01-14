@@ -185,7 +185,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 zIndex: '101',
             },
             headerSpreader: {
-                marginRight: 'auto',
+                marginInlineEnd: 'auto',
             },
             controls: {
                 display: 'flex',
@@ -1406,9 +1406,9 @@ const ToTheRight = styled.div`
 const MuteOthersButton = styled.button`
     display: flex;
     padding: 8px 8px;
-    margin-right: 6px;
+    margin-inline-end: 6px;
     gap: 6px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-size: 11px;
     font-weight: 600;
     line-height: 16px;

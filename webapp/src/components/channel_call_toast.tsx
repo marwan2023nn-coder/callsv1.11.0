@@ -42,7 +42,7 @@ const ChannelCallToast = () => {
         <div
             id='calls-channel-toast'
             className='toast toast__visible'
-            style={{backgroundColor: '#339970'}}
+            style={{backgroundColor: 'rgb(var(--button-bg-rgb))'}}
         >
             <div
                 className='toast__message toast__pointer'
@@ -78,7 +78,7 @@ const ChannelCallToast = () => {
                         display: 'flex',
                         alignItems: 'center',
                         height: '100%',
-                        right: '40px',
+                        insetInlineEnd: '40px',
                     }
                 }
             >

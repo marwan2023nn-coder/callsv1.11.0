@@ -43,7 +43,7 @@ describe('UDPServerPort', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <UDPServerPort
                         {...baseProps}
                         {...props}

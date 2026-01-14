@@ -43,7 +43,7 @@ describe('TCPServerAddress', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <TCPServerAddress
                         {...baseProps}
                         {...props}

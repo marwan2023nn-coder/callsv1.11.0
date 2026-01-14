@@ -51,7 +51,7 @@ describe('EnableLiveCaptions', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableLiveCaptions
                         {...baseProps}
                         {...props}
@@ -82,7 +82,7 @@ describe('EnableLiveCaptions', () => {
 
         render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableLiveCaptions {...baseProps}/>
                 </IntlProvider>
             </Provider>,

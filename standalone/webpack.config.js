@@ -161,7 +161,7 @@ module.exports = {
                     path.resolve(__dirname, './i18n'),
                     path.resolve(__dirname, '../webapp/i18n'),
                 ],
-                exclude: [/en\.json$/],
+                exclude: [/ar\.json$/],
                 use: [
                     {
                         loader: 'file-loader?name=i18n/[name].[contenthash].[ext]',

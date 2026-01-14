@@ -225,7 +225,7 @@ func (p *Plugin) getTranslationFunc(locale string) i18n.TranslateFunc {
 		return i18n.GetUserTranslations(locale)
 	}
 
-	locale = "en"
+	locale = "ar"
 	cfg := p.API.GetConfig()
 	if cfg == nil {
 		p.LogError("failed to get configuration")

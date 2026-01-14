@@ -8,15 +8,13 @@ import React, {useState} from 'react';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import {useIntl} from 'react-intl';
 import {useSelector} from 'react-redux';
-import CompassIcon from 'src/components/icons/compassIcon';
 import {Header, Spinner, SubHeader} from 'src/components/shared';
 import {
-    areGroupCallsAllowed,
     callsShowButton,
     channelIDForCurrentCall,
     clientConnecting,
     currentChannelHasCall,
-    isCloudProfessionalOrEnterpriseorEnterpriseAdvanceOrTrial,
+     isCloudProfessionalOrEnterpriseorEnterpriseAdvanceOrTrial,
     isCloudStarter,
     isLimitRestricted,
     maxParticipants,
@@ -35,19 +33,18 @@ const ChannelHeaderButton = () => {
     const hasCall = useSelector(currentChannelHasCall);
     const isAdmin = useSelector(isCurrentUserSystemAdmin);
     const cloudStarter = useSelector(isCloudStarter);
-    const isCloudPaid = useSelector(isCloudProfessionalOrEnterpriseorEnterpriseAdvanceOrTrial);
+    const isCloudPaid = useSelector( isCloudProfessionalOrEnterpriseorEnterpriseAdvanceOrTrial);
     const limitRestricted = useSelector(isLimitRestricted);
     const maxCallParticipants = useSelector(maxParticipants);
     const isChannelArchived = channel && channel.delete_at > 0;
     const isClientConnecting = useSelector(clientConnecting);
-    const callsAllowed = useSelector(areGroupCallsAllowed) || isDMChannel(channel);
 
     const {formatMessage} = useIntl();
 
     const [joining, setJoining] = useState(false); // doesn't matter, will be set below
     const onClick = () => setJoining(hasCall);
 
-    if (!show || !channel || !callsAllowed) {
+    if (!show || !channel) {
         return null;
     }
 
@@ -56,31 +53,55 @@ const ChannelHeaderButton = () => {
 
     let callButtonText;
     if (hasCall) {
-        callButtonText = formatMessage({defaultMessage: 'Join call'});
+        callButtonText = formatMessage({defaultMessage: 'الانضمام إلى المكالمة'});
     } else {
-        callButtonText = formatMessage({defaultMessage: 'Start call'});
+        callButtonText = formatMessage({defaultMessage: 'بدء المكالمة'});
     }
 
     if (isClientConnecting && joining) {
-        callButtonText = formatMessage({defaultMessage: 'Joining call…'});
+        callButtonText = formatMessage({defaultMessage: 'جارٍ الانضمام إلى المكالمة...'});
     } else if (isClientConnecting) {
-        callButtonText = formatMessage({defaultMessage: 'Starting call…'});
+        // eslint-disable-next-line unused-imports/no-unused-vars
+        callButtonText = formatMessage({defaultMessage: 'جارٍ بدء المكالمة...'});
     }
 
     const button = (
         <CallButton
             id='calls-join-button'
-            className={'style--none call-button ' + (inCall || restricted ? 'disabled' : '')}
+            className={'IconContainer-hXqplC cshkYr control ' + (inCall || restricted ? 'disabled' : '')}
+            style={{display: 'flex',
+                width: '18px',
+                placeItems: 'center',
+                placeContent: 'center',
+                border: 'none',
+                background: 'rgba(0, 0, 0, 0)',
+                borderRadius: '4px',
+                color: '#00987e',
+                padding: '0px',
+                margin: '0px',
+            }}
             disabled={isChannelArchived || isDeactivatedDM}
             $restricted={restricted}
             $isCloudPaid={isCloudPaid}
             $isClientConnecting={isClientConnecting}
             onClick={onClick}
         >
-            {isClientConnecting ? <Spinner $size={12}/> : <CompassIcon icon='phone'/>}
-            <CallButtonText>
+            {isClientConnecting ? <Spinner $size={12}/> : <svg
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 512 512'
+                width={'17px'}
+                height={'16px'}
+            // eslint-disable-next-line react/jsx-closing-bracket-location
+            >
+                <path
+                    d='M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z'
+                    fill='rgb(var(--button-bg-rgb))'
+                />
+            </svg>
+            }
+            {/* <CallButtonText>
                 {callButtonText}
-            </CallButtonText>
+            </CallButtonText> */}
             {withUpsellIcon &&
                 <UpsellIcon className={'icon icon-key-variant'}/>
             }
@@ -94,7 +115,7 @@ const ChannelHeaderButton = () => {
                 rootClose={true}
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
-                        {formatMessage({defaultMessage: 'Calls are not available in archived channels.'})}
+                        {formatMessage({defaultMessage: 'المكالمات غير متاحة في القنوات المؤرشفة.'})}
                     </Tooltip>
                 }
             >
@@ -110,7 +131,7 @@ const ChannelHeaderButton = () => {
                 rootClose={true}
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
-                        {formatMessage({defaultMessage: 'Calls are not available in a DM with a deactivated user.'})}
+                        {formatMessage({defaultMessage: 'المكالمات غير متاحة في المحادثة المباشرة مع مستخدم معطل.'})}
                     </Tooltip>
                 }
             >
@@ -127,10 +148,10 @@ const ChannelHeaderButton = () => {
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
                         <Header>
-                            {formatMessage({defaultMessage: 'Mattermost Cloud Professional feature'})}
+                            {formatMessage({defaultMessage: 'ميزة Mattermost Cloud Professional'})}
                         </Header>
                         <SubHeader>
-                            {formatMessage({defaultMessage: 'This is a paid feature, available with a free 30-day trial'})}
+                            {formatMessage({defaultMessage: 'هذه ميزة مدفوعة، متاحة مع تجربة مجانية لمدة 30 يومًا'})}
                         </SubHeader>
                     </Tooltip>
                 }
@@ -149,23 +170,23 @@ const ChannelHeaderButton = () => {
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
                         <Header>
-                            {formatMessage({defaultMessage: 'This call is at its maximum capacity of {count, plural, =1 {# participant} other {# participants}}.'}, {count: maxCallParticipants})}
+                            {formatMessage({defaultMessage: 'هذه المكالمة وصلت إلى الحد الأقصى من {count, plural, =1 {مشارك واحد} other {# مشاركين}}.'}, {count: maxCallParticipants})}
                         </Header>
 
                         {cloudStarter && !isAdmin &&
-                            <SubHeader>
-                                {formatMessage({defaultMessage: 'Contact your system admin for more information about call capacity.'})}
-                            </SubHeader>
+                        <SubHeader>
+                            {formatMessage({defaultMessage: 'اتصل بمسؤول النظام الخاص بك لمزيد من المعلومات حول سعة المكالمة.'})}
+                        </SubHeader>
                         }
                         {cloudStarter && isAdmin &&
-                            <SubHeader>
-                                {formatMessage({defaultMessage: 'Upgrade to Cloud Professional or Cloud Enterprise to enable group calls with more than {count, plural, =1 {# participant} other {# participants}}.'}, {count: maxCallParticipants})}
-                            </SubHeader>
+                        <SubHeader>
+                            {formatMessage({defaultMessage: 'قم بالترقية إلى Cloud Professional أو Cloud Enterprise لتمكين المكالمات الجماعية لأكثر من {count, plural, =1 {مشارك واحد} other {# مشاركين}}.'}, {count: maxCallParticipants})}
+                        </SubHeader>
                         }
                         {isCloudPaid &&
-                            <SubHeader>
-                                {formatMessage({defaultMessage: 'At the moment, {count} is the participant limit for cloud calls.'}, {count: maxCallParticipants})}
-                            </SubHeader>
+                        <SubHeader>
+                            {formatMessage({defaultMessage: 'حاليًا، {count} هو الحد الأقصى لعدد المشاركين في المكالمات السحابية.'}, {count: maxCallParticipants})}
+                        </SubHeader>
                         }
                     </Tooltip>
                 }
@@ -186,7 +207,7 @@ const CallButton = styled.button<{ $restricted: boolean, $isCloudPaid: boolean, 
         ${(props) => props.$restricted && css`
             color: rgba(var(--center-channel-color-rgb), 0.48);
             border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-            margin-right: 4px;
+            margin-inline-end: 4px;
         `}
         cursor: ${(props) => (props.$restricted && props.$isCloudPaid ? 'not-allowed' : 'pointer')};
     }
@@ -203,7 +224,7 @@ const UpsellIcon = styled.i`
     // &&&&& is to override the call-button styles
     &&&&& {
         position: absolute;
-        right: 52px;
+        inset-inline-end: 52px;
         top: 12px;
         color: var(--button-bg);
         width: 16px;
@@ -213,11 +234,14 @@ const UpsellIcon = styled.i`
     }
 `;
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const CallButtonText = styled.span`
   &&&& {
     font-size: 12px;
     line-height: 16px;
     font-weight: 600;
+    display: none;
+
   }
 `;
 

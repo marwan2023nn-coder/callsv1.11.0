@@ -42,7 +42,7 @@ describe('EnableRinging', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableRinging
                         {...baseProps}
                         {...props}

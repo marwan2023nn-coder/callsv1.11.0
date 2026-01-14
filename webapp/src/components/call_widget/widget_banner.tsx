@@ -215,7 +215,7 @@ export const DefaultLeftButton = styled.button`
     color: var(--button-bg);
     font-weight: 600;
     padding: 4px 10px;
-    margin-right: 2px;
+    margin-inline-end: 2px;
     border-radius: 4px;
     background: rgba(var(--center-channel-color-rgb), 0.08);
 `;

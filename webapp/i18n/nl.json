@@ -38,7 +38,7 @@
   "5yUTF3": "De opname- en transcriptiebestanden van het gesprek worden verwerkt en in de gespreksdraadje geplaatst. Weet je zeker dat je de opname en transcriptie wilt stoppen?",
   "6AKf56": "Deelnemen aan de oproep",
   "6HPRG7": "ICE Host Port Override",
-  "6R+29J": "De taal die wordt doorgegeven aan de live transcripties verwerker. Dit moet een 2-letter ISO 639 Set 1 taalcode zijn, bijv. 'en'. Als dit veld leeg is, wordt het standaard ingesteld op Engels 'en'.",
+  "6R+29J": "De taal die wordt doorgegeven aan de live transcripties verwerker. Dit moet een 2-letter ISO 639 Set 1 taalcode zijn, bijv. 'ar'. Als dit veld leeg is, wordt het standaard ingesteld op Engels 'ar'.",
   "6XllQM": "Mattermost toegang geven tot de microfoon.",
   "6aGJYU": "Er is geen lopende oproep in het kanaal.",
   "6cjovA": "Je kunt de opname vinden in het draadje van dit gesprek zodra dit klaar is.",

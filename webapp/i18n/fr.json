@@ -38,7 +38,7 @@
   "5yUTF3": "Les fichiers d'enregistrement et de transcription de l'appel seront traités et publiés dans le fil de discussion de cet appel. Êtes-vous sûr de vouloir arrêter l'enregistrement et la transcription ?",
   "6AKf56": "Joindre l'appel",
   "6HPRG7": "Port de l'hôte ICE forcé",
-  "6R+29J": "La langue passée au transcripteur des sous-titres en direct. Doit être un code de langue ISO 639 Set 1 en 2 lettres, e.g. 'fr'. Si vide, il sera configuré en Anglais 'en' par défaut.",
+  "6R+29J": "La langue passée au transcripteur des sous-titres en direct. Doit être un code de langue ISO 639 Set 1 en 2 lettres, e.g. 'fr'. Si vide, il sera configuré en Anglais 'ar' par défaut.",
   "6XllQM": "Autoriser le microphone d'accéder à Mattermost.",
   "6aGJYU": "Il n'y a pas d'appel en cours dans le canal.",
   "6cjovA": "Vous pourrez retrouver l'enregistrement dans le fil de discussion de cet appel quand il aura fini d'être traité.",

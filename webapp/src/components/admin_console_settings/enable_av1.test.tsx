@@ -42,7 +42,7 @@ describe('EnableAV1', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableAV1
                         {...baseProps}
                         {...props}

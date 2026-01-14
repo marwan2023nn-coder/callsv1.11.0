@@ -132,7 +132,7 @@ export const DefaultLeftButton = styled.button`
     font-weight: 600;
     padding: 10px 16px;
     border-radius: 4px;
-    margin-right: 6px;
+    margin-inline-end: 6px;
 
     &:hover {
         background: rgba(var(--button-bg-rgb), 0.9);

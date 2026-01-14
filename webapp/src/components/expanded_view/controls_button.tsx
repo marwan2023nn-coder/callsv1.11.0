@@ -5,7 +5,6 @@ import React, {useRef} from 'react';
 import {OverlayTrigger} from 'react-bootstrap';
 import CompassIcon from 'src/components/icons/compassIcon';
 import {StyledTooltip} from 'src/components/shared';
-import Shortcut from 'src/components/shortcut';
 import styled, {css} from 'styled-components';
 
 export type Props = {
@@ -55,9 +54,6 @@ export default function ControlsButton(props: Props) {
                     $isDisabled={props.disabled}
                 >
                     <div>{props.tooltipText}</div>
-                    {props.shortcut &&
-                        <Shortcut shortcut={props.shortcut}/>
-                    }
                     {props.tooltipSubtext &&
                         <TooltipSubtext>
                             {props.tooltipSubtext}
@@ -113,7 +109,7 @@ export const UnreadDot = styled.span<{$padding: string}>`
     align-items: center;
     z-index: 1;
     top: 0;
-    right: 0;
+    inset-inline-end: 0;
     transform: translate(50%, -50%);
     min-width: 8px;
     min-height: 8px;
@@ -192,7 +188,7 @@ const ButtonIcon = styled.div`
 const UnavailableIcon = styled.div`
     position: absolute;
     top: -6px;
-    right: -6px;
+    inset-inline-end: -6px;
     color: var(--dnd-indicator);
     font-size: 14px;
 
@@ -204,4 +200,5 @@ const UnavailableIcon = styled.div`
 
 const TooltipSubtext = styled.div`
     opacity: 0.56;
+    background-color: #00987e;
 `;

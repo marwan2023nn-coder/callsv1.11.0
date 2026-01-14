@@ -46,7 +46,7 @@ export default function CallLiveCaptionsSection(props: {settingsList: React.Reac
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Live captions'})}
-                            {<EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
+                            {<EnterprisePill>{untranslatable('نسخة المؤسسات')}</EnterprisePill>}
                         </SectionTitle>
                         {subtitle}
                     </div>

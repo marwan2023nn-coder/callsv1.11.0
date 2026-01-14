@@ -34,7 +34,7 @@ const Container = styled.div`
     align-self: flex-start;
     gap: 5px;
     margin-left: auto;
-    margin-right: 4px;
+    margin-inline-end: 4px;
     z-index: 10;
 `;
 

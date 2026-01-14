@@ -22,7 +22,7 @@ describe('GeneralSettingsSection', () => {
 
     const renderComponent = () => {
         return render(
-            <IntlProvider locale='en'>
+            <IntlProvider locale='ar'>
                 <GeneralSettingsSection settingsList={settingsList}/>
             </IntlProvider>,
         );

@@ -149,7 +149,7 @@ const UpsellIcon = styled.i`
     // &&&&&& is to override the call-button styles
     &&&&&& {
       position: absolute;
-      right: 10px;
+      inset-inline-end: 10px;
       top: 16px;
       color: var(--button-bg);
       width: 16px;

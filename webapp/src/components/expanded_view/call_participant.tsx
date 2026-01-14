@@ -228,7 +228,7 @@ const MuteIconWrapper = styled.div<{$isMuted: boolean, $padding: number, $size: 
   justify-content: center;
   align-items: center;
   bottom: 0;
-  right: 0;
+  inset-inline-end: 0;
   border-radius: 20px;
   padding: ${({$padding}) => $padding}px;
   background: ${({$isMuted}) => $isMuted ? 'color-mix(in srgb, var(--calls-bg), var(--button-color) 12%)' : '#3DB887'};
@@ -306,5 +306,5 @@ const StyledDotMenuButton = styled(DotMenuButton)`
 const StyledDotMenu = styled(DotMenu)<{$pos: number}>`
     position: absolute;
     top: ${({$pos}) => $pos}px;
-    right: ${({$pos}) => $pos}px;
+    inset-inline-end: ${({$pos}) => $pos}px;
 `;

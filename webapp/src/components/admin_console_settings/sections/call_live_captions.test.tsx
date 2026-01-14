@@ -42,7 +42,7 @@ describe('CallLiveCaptionsSection', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <CallLiveCaptionsSection settingsList={settingsList}/>
                 </IntlProvider>
             </Provider>,

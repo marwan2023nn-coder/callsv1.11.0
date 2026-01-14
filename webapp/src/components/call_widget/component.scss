@@ -2,7 +2,12 @@
 	-webkit-animation: slide-top 4s ease-in-out 0.2s both;
 	        animation: slide-top 4s ease-in-out 0.2s both;
 }
-
+.tooltip .tooltip-inner{
+  background:#00987e !important;
+}
+.tooltip.top .tooltip-arrow{
+  border-top-color: #00987e !important;
+}
 @-webkit-keyframes slide-top {
   0%,100% {
     -webkit-transform: translateY(100%);

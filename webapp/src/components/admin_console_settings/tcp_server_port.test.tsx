@@ -43,7 +43,7 @@ describe('TCPServerPort', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <TCPServerPort
                         {...baseProps}
                         {...props}

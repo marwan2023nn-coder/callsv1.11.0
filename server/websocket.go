@@ -709,7 +709,7 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 					&model.Post{
 						UserId:    p.botSession.UserId,
 						ChannelId: channelID,
-						Message:   "Currently calls are not enabled for non-admin users. You can change the setting through the system console",
+						Message:   "المكالمات غير مفعّلة حاليًا للمستخدمين غير الإداريين. يمكنك تغيير هذا الإعداد من خلال وحدة تحكم النظام.",
 					},
 				)
 			}

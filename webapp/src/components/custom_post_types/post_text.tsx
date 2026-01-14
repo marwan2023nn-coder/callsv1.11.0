@@ -39,7 +39,7 @@ const PostText = (props: Props) => {
 };
 
 export const UpdateBody = styled.div`
-    padding-right: 6px;
+    padding-inline-end: 6px;
 `;
 
 export default PostText;

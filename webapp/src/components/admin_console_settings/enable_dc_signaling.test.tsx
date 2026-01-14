@@ -42,7 +42,7 @@ describe('EnableDCSignaling', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableDCSignaling
                         {...baseProps}
                         {...props}

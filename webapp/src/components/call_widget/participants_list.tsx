@@ -105,7 +105,6 @@ const styles: Record<string, React.CSSProperties> = ({
         position: 'sticky',
         top: '0',
         transform: 'translateY(-8px)',
-        padding: '8px 0 0 20px',
         color: 'var(--center-channel-color)',
         background: 'var(--center-channel-bg)',
 
@@ -117,15 +116,14 @@ const styles: Record<string, React.CSSProperties> = ({
 const MuteOthersButton = styled.button`
     display: flex;
     padding: 4px 10px;
-    margin-right: 8px;
+    margin-inline-end: 8px;
     margin-left: auto;
-    gap: 6px;
-    font-family: 'Open Sans', sans-serif;
+    gap: 2px;
+    font-family: 'GraphikArabic', sans-serif;
     font-size: 11px;
     font-weight: 600;
     line-height: 16px;
     color: var(--button-bg);
-    align-items: center;
 
     border: none;
     background: none;

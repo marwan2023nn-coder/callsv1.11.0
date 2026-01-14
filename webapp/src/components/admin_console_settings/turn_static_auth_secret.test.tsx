@@ -42,7 +42,7 @@ describe('TURNStaticAuthSecret', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <TURNStaticAuthSecret
                         {...baseProps}
                         {...props}

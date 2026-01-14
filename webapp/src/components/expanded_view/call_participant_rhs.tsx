@@ -105,7 +105,7 @@ const CallParticipantRHS = ({session, profile, isYou, isHost, iAmHost, isSharing
                     <div
                         style={{
                             marginBottom: 4,
-                            marginRight: 2,
+                            marginInlineEnd: 2,
                         }}
                     >
                         <Emoji
@@ -177,7 +177,7 @@ const ParticipantListItem = styled.li<{ $hover: boolean }>`
 
 const StyledDotMenu = styled(DotMenu)`
     display: flex;
-    margin-right: -4px;
+    margin-inline-end: -4px;
 `;
 
 const StyledThreeDotsButton = styled(ThreeDotsButton)`

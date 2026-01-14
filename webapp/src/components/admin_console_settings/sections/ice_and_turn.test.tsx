@@ -22,7 +22,7 @@ describe('ICEAndTURNSection', () => {
 
     const renderComponent = () => {
         return render(
-            <IntlProvider locale='en'>
+            <IntlProvider locale='ar'>
                 <ICEAndTURNSection settingsList={settingsList}/>
             </IntlProvider>,
         );

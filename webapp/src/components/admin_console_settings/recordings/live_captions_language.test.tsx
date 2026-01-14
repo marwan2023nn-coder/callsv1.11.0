@@ -15,7 +15,7 @@ describe('LiveCaptionsLanguage', () => {
         id: 'LiveCaptionsLanguage',
         label: 'Live captions language',
         helpText: null,
-        value: 'en',
+        value: 'ar',
         disabled: false,
         setByEnv: false,
         onChange: jest.fn(),
@@ -36,7 +36,7 @@ describe('LiveCaptionsLanguage', () => {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
                     EnableLiveCaptions: true,
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
                 callsConfigEnvOverrides: {},
             },
@@ -52,7 +52,7 @@ describe('LiveCaptionsLanguage', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <LiveCaptionsLanguage
                         {...baseProps}
                         {...props}
@@ -69,7 +69,7 @@ describe('LiveCaptionsLanguage', () => {
         expect(screen.getByText('The language passed to the live captions transcriber. Should be a 2-letter ISO 639 Set 1 language code, e.g. \'en\'. If blank, will be set to English \'en\' as default.')).toBeInTheDocument();
 
         const input = screen.getByTestId('LiveCaptionsLanguageinput');
-        expect(input).toHaveValue('en');
+        expect(input).toHaveValue('ar');
     });
 
     it('should call onChange when input value changes', async () => {
@@ -97,10 +97,10 @@ describe('LiveCaptionsLanguage', () => {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
                     EnableLiveCaptions: true,
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
                 callsConfigEnvOverrides: {
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
             },
         });
@@ -116,7 +116,7 @@ describe('LiveCaptionsLanguage', () => {
                     EnableRecordings: false,
                     EnableTranscriptions: true,
                     EnableLiveCaptions: true,
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
                 callsConfigEnvOverrides: {},
             },
@@ -132,7 +132,7 @@ describe('LiveCaptionsLanguage', () => {
                     EnableRecordings: true,
                     EnableTranscriptions: false,
                     EnableLiveCaptions: true,
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
                 callsConfigEnvOverrides: {},
             },
@@ -148,7 +148,7 @@ describe('LiveCaptionsLanguage', () => {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
                     EnableLiveCaptions: false,
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
                 callsConfigEnvOverrides: {},
             },
@@ -164,7 +164,7 @@ describe('LiveCaptionsLanguage', () => {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
                     EnableLiveCaptions: true,
-                    LiveCaptionsLanguage: 'en',
+                    LiveCaptionsLanguage: 'ar',
                 },
                 callsConfigEnvOverrides: {},
             },

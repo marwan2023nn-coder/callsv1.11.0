@@ -49,7 +49,7 @@ describe('EnableRecordings', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableRecordings
                         {...baseProps}
                         {...props}
@@ -78,7 +78,7 @@ describe('EnableRecordings', () => {
 
         render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <EnableRecordings {...baseProps}/>
                 </IntlProvider>
             </Provider>,

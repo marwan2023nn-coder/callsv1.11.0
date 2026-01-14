@@ -42,7 +42,7 @@ describe('ICEServersConfigs', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <ICEServersConfigs
                         {...baseProps}
                         {...props}

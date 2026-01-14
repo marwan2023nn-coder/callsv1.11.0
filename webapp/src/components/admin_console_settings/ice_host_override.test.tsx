@@ -43,7 +43,7 @@ describe('ICEHostOverride', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <ICEHostOverride
                         {...baseProps}
                         {...props}

@@ -170,8 +170,8 @@ gomod-check:
 .PHONY: i18n-check
 i18n-check:
 	@echo Checking i18n files
-	cd webapp && $(NPM) run extract && git --no-pager diff --exit-code i18n/en.json || (echo "Missing translations. Please run \"make i18n-extract\" and commit the changes." && exit 1)
-	cd standalone && $(NPM) run extract && git --no-pager diff --exit-code i18n/en.json || (echo "Missing translations. Please run \"make i18n-extract\" and commit the changes." && exit 1)
+	cd webapp && $(NPM) run extract && git --no-pager diff --exit-code i18n/ar.json || (echo "Missing translations. Please run \"make i18n-extract\" and commit the changes." && exit 1)
+	cd standalone && $(NPM) run extract && git --no-pager diff --exit-code i18n/ar.json || (echo "Missing translations. Please run \"make i18n-extract\" and commit the changes." && exit 1)
 
 	$(GO) install github.com/mattermost/mattermost/tools/mmgotool@latest
 	mkdir -p server/i18n

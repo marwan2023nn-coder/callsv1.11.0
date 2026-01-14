@@ -143,7 +143,7 @@ const Notice = styled.div<{ $onWidget?: boolean }>`
 const StyledCompassIcon = styled(CompassIcon)<{ $onWidget?: boolean }>`
     color: var(--away-indicator);
     font-size: ${({$onWidget}) => ($onWidget ? 16 : 18)}px;
-    margin-right: ${({$onWidget}) => ($onWidget ? -4 : -5)}px;
+    margin-inline-end: ${({$onWidget}) => ($onWidget ? -4 : -5)}px;
     margin-left: -3px;
 `;
 

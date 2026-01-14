@@ -34,8 +34,8 @@ func (p *Plugin) createBotSession() (*model.Session, error) {
 
 	botID, err := p.API.EnsureBotUser(&model.Bot{
 		Username:    "calls",
-		DisplayName: "Calls",
-		Description: "Calls Bot",
+		DisplayName: "مكالمات صوتية",
+		Description: "مكالمات صوتية Bot",
 		OwnerId:     manifest.Id,
 	})
 	if err != nil {

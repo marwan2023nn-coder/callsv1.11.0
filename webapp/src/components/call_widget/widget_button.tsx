@@ -4,7 +4,6 @@
 import React, {CSSProperties, useRef, useState} from 'react';
 import {Overlay} from 'react-bootstrap';
 import {StyledTooltip} from 'src/components/shared';
-import Shortcut from 'src/components/shortcut';
 import styled, {css} from 'styled-components';
 
 import UnavailableIconWrapper from './unavailable_icon_wrapper';
@@ -20,7 +19,6 @@ export type Props = {
     onToggle?: () => void,
     unavailable?: boolean,
     disabled?: boolean,
-    shortcut?: string,
     style?: CSSProperties,
     children?: React.ReactNode,
 
@@ -77,9 +75,6 @@ export default function WidgetButton(props: Props) {
                             {props.tooltipSubtext}
                         </TooltipSubtext>
                     }
-                    {props.shortcut &&
-                        <Shortcut shortcut={props.shortcut}/>
-                    }
                 </StyledTooltip>
             </Overlay>
             }
@@ -117,4 +112,5 @@ const Button = styled.button<{$bgColor: string, $bgColorHover?: string, $isDisab
 
 const TooltipSubtext = styled.div`
   opacity: 0.56;
+   background-color: #00987e;
 `;

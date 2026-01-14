@@ -50,7 +50,7 @@ describe('JobServiceURL', () => {
 
         return render(
             <Provider store={store}>
-                <IntlProvider locale='en'>
+                <IntlProvider locale='ar'>
                     <JobServiceURL
                         {...baseProps}
                         {...props}

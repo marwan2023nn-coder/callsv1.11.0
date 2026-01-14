@@ -534,7 +534,7 @@ func (p *Plugin) checkAPIRateLimits(userID string) error {
 	limiter := p.apiLimiters[userID]
 	p.apiLimitersMut.RUnlock()
 	if limiter == nil {
-		limiter = rate.NewLimiter(1, 10)
+		limiter = rate.NewLimiter(5, 50)
 		p.apiLimitersMut.Lock()
 		p.apiLimiters[userID] = limiter
 		p.apiLimitersMut.Unlock()

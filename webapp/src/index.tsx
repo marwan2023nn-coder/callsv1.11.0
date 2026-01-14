@@ -368,7 +368,20 @@ export default class Plugin {
         registry.registerPostTypeComponent(CALL_RECORDING_POST_TYPE, PostTypeRecording);
         registry.registerPostTypeComponent(CALL_TRANSCRIPTION_POST_TYPE, PostTypeTranscription);
         registry.registerPostTypeComponent('custom_cloud_trial_req', PostTypeCloudTrialRequest);
-        registry.registerNeedsTeamRoute('/expanded', injectIntl(ExpandedView));
+        const ExpandedViewWithI18n = (props: any) => {
+            const locale = getCurrentUserLocale(store.getState()) || 'ar';
+            return (
+                <IntlProvider
+                    locale={locale}
+                    key={locale}
+                    defaultLocale='ar'
+                    messages={getTranslations(locale)}
+                >
+                    {React.createElement(injectIntl(ExpandedView), props)}
+                </IntlProvider>
+            );
+        };
+        registry.registerNeedsTeamRoute('/expanded', ExpandedViewWithI18n);
         registry.registerGlobalComponent(injectIntl(SwitchCallModal));
         registry.registerGlobalComponent(injectIntl(ScreenSourceModal));
         registry.registerGlobalComponent(injectIntl(IncomingCallContainer));
@@ -571,7 +584,7 @@ export default class Plugin {
         registry.registerSiteStatisticsHandler(async () => {
             let stats: Record<string, PluginAnalyticsRow> = {};
             try {
-                const locale = getCurrentUserLocale(store.getState()) || 'en';
+                const locale = getCurrentUserLocale(store.getState()) || 'ar';
                 stats = convertStatsToPanels(await getCallsStats(), getServerVersion(store.getState()), getTranslations(locale));
             } catch (err) {
                 logErr(err);
@@ -688,14 +701,14 @@ export default class Plugin {
                 });
                 window.currentCallData = CurrentCallDataDefault;
 
-                const locale = getCurrentUserLocale(state) || 'en';
+                const locale = getCurrentUserLocale(state) || 'ar';
 
                 ReactDOM.render(
                     <Provider store={store}>
                         <IntlProvider
                             locale={locale}
                             key={locale}
-                            defaultLocale='en'
+                            defaultLocale='ar'
                             messages={getTranslations(locale)}
                         >
                             <CallWidget/>
