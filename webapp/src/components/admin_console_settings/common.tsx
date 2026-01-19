@@ -1,7 +1,7 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {ReactNode} from 'react';
+import React, { ReactNode } from 'react';
 import GenericModal from 'src/components/generic_modal';
 import CompassIcon from 'src/components/icons/compassIcon';
 import styled from 'styled-components';
@@ -17,11 +17,11 @@ export const Label = styled.span`
     margin-inline-end: 8px;
 `;
 
-export const EnterprisePill = ({children}: {children: ReactNode}) => (
-    <Enterprise>
-        <CompassIcon icon={'key-variant'}/>
-        {children}
-    </Enterprise>
+export const EnterprisePill = ({ children }: { children: ReactNode }) => (
+  <Enterprise>
+    <CompassIcon icon={'key-variant'} />
+    {children}
+  </Enterprise>
 );
 
 const Enterprise = styled.div`
@@ -60,7 +60,7 @@ export const Title = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Metropolis', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
@@ -90,7 +90,7 @@ export const FooterText = styled.div`
 `;
 
 export const ModalTitle = styled.div`
-    font-family: 'Metropolis', sans-serif;
+    font-family: 'GraphikArabic', sans-serif;
     font-style: normal;
     font-weight: 600;
     font-size: 22px;
@@ -115,7 +115,7 @@ export const StyledModal = styled(GenericModal)`
     text-align: center;
 `;
 
-export const RadioInput = styled.input<{disabled: boolean}>`
+export const RadioInput = styled.input<{ disabled: boolean }>`
 && {
   display: grid;
   width: 1.6rem;
@@ -128,8 +128,8 @@ export const RadioInput = styled.input<{disabled: boolean}>`
   cursor: pointer;
   background-color: white;
   margin: 0;
-  opacity: ${({disabled}) => (disabled ? 0.5 : 1.0)};
-  cursor: ${({disabled}) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1.0)};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
   &:checked {
     border-color: var(--denim-button-bg);
@@ -152,7 +152,7 @@ export const RadioInput = styled.input<{disabled: boolean}>`
 }
 `;
 
-export const RadioInputLabel = styled.label<{$disabled: boolean}>`
+export const RadioInputLabel = styled.label<{ $disabled: boolean }>`
   display: inline-flex;
   margin-top: 8px;
   margin-inline-end: 24px;
@@ -166,12 +166,12 @@ export const RadioInputLabel = styled.label<{$disabled: boolean}>`
   gap: 8px;
   line-height: 20px;
 
-  opacity: ${({$disabled}) => ($disabled ? 0.5 : 1.0)};
-  cursor: ${({$disabled}) => ($disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1.0)};
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const SectionTitle = styled.div`
-  font-family: 'Metropolis', sans-serif;
+  font-family: 'GraphikArabic', sans-serif;
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
@@ -182,15 +182,15 @@ export const SectionTitle = styled.div`
 
 export const UnavailableSubtitle = styled.div`
   color: var(--center-channel-color-72);
-  font-family: "Open Sans";
+  font-family: "GraphikArabic";
   font-size: 14px;
   font-style: italic;
   font-weight: 400;
   line-height: 20px;
 `;
 
-export const TextInput = styled.input<{disabled: boolean}>`
+export const TextInput = styled.input<{ disabled: boolean }>`
 && {
-  cursor: ${({disabled}) => (disabled ? 'not-allowed' : 'auto')};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
 }
 `;

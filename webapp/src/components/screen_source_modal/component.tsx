@@ -60,7 +60,7 @@ export default class ScreenSourceModal extends React.PureComponent<Props, State>
         },
         title: {
             fontWeight: 600,
-            fontFamily: 'Metropolis',
+            fontFamily: 'GraphikArabic',
             fontSize: '22px',
             lineHeight: '28px',
         },
