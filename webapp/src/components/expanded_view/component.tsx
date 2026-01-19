@@ -261,7 +261,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 alignItems: 'center',
                 background: 'rgba(var(--center-channel-color-rgb), 0.04)',
                 borderBottom: '1px solid rgba(var(--center-channel-color-rgb), 0.08)',
-                fontFamily: 'Metropolis, sans-serif',
+                fontFamily: 'GraphikArabic, sans-serif',
                 fontWeight: 600,
                 fontSize: '16px',
                 padding: '0 16px',

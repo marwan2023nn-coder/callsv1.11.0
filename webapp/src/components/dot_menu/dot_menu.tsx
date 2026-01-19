@@ -38,7 +38,7 @@ export const DropdownMenu = styled.div`
     list-style: none;
 
     padding: 8px 0;
-    font-family: Open Sans;
+    font-family: GraphikArabic;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

@@ -292,33 +292,42 @@ func (p *Plugin) handleDismissNotification(w http.ResponseWriter, r *http.Reques
 	// Special case for DM calls: "dismiss" is treated as "ignore/reject" and ends the call for both users.
 	// This is intentionally scoped to DMs only to avoid allowing any participant in group calls to end the call.
 	if isDM {
-		// Ask clients to disconnect themselves.
-		p.publishWebSocketEvent(wsEventCallEnd, map[string]interface{}{}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
-
 		callID := state.Call.ID
 		nodeID := state.Call.Props.NodeID
 		go func() {
 			// Wait a few seconds for the call to end cleanly. If this doesn't happen we force end it.
-			time.Sleep(5 * time.Second)
+			// This also gives time for the other party to join in case the mobile app
+			// auto-dismisses the notification on answer.
+			time.Sleep(3 * time.Second)
 
-			call, err := p.store.GetCall(callID, db.GetCallOpts{})
+			state, err := p.lockCallReturnState(channelID)
 			if err != nil {
-				p.LogError("failed to get call", "err", err.Error())
+				p.LogError("failed to lock call", "err", err.Error())
+				return
+			}
+			defer p.unlockCall(channelID)
+
+			if state == nil || state.Call.ID != callID || state.Call.EndAt != 0 {
 				return
 			}
 
-			sessions, err := p.store.GetCallSessions(callID, db.GetCallSessionOpts{})
-			if err != nil {
-				p.LogError("failed to get call sessions", "err", err.Error())
+			// If more than one user is now in the call, it means the other party joined
+			// while we were waiting. We should not end the call.
+			if len(state.sessions) > 1 {
+				p.LogDebug("aborting call end on dismiss: multiple sessions found", "callID", callID, "sessions", len(state.sessions))
+				return
 			}
 
-			for _, session := range sessions {
+			// Ask clients to disconnect themselves.
+			p.publishWebSocketEvent(wsEventCallEnd, map[string]interface{}{}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
+
+			for _, session := range state.sessions {
 				if err := p.closeRTCSession(session.UserID, session.ID, channelID, nodeID, callID); err != nil {
 					p.LogError(err.Error())
 				}
 			}
 
-			if err := p.cleanCallState(call); err != nil {
+			if err := p.cleanCallState(&state.Call); err != nil {
 				p.LogError(err.Error())
 			}
 		}()
