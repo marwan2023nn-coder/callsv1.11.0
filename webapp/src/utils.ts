@@ -19,9 +19,10 @@ import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import {IntlShape} from 'react-intl';
 import {parseSemVer} from 'semver-parser';
 import CallsClient from 'src/client';
-import {STORAGE_CALLS_SHARE_AUDIO_WITH_SCREEN} from 'src/constants';
+import {STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY, STORAGE_CALLS_SHARE_AUDIO_WITH_SCREEN} from 'src/constants';
 import RestClient from 'src/rest_client';
 import {DesktopMessage} from 'src/types/types';
+import {getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
 import {notificationSounds} from 'src/webapp_globals';
 
 import {logDebug, logErr, logWarn} from './log';
@@ -409,7 +410,9 @@ export function startOutgoingRingback() {
         return;
     }
 
-    let src = RingSound;
+    const selectedRingback = window.localStorage.getItem(STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY) || '';
+    const selectedSrc = selectedRingback ? getRingbackSoundSrc(selectedRingback) : undefined;
+    let src = selectedSrc || RingSound;
     if (src.indexOf('/') === 0) {
         src = getPluginStaticPath() + src;
     }
