@@ -329,5 +329,16 @@
   "yjQNKt": "يتم تعطيل المكالمات في هذه القناة.",
   "yx0b7N": "{count, plural, =1 {# transcription} other {# transcriptions}}",
   "zUH89x": "ستتم معالجة تسجيل المكالمة ونشره في موضوع المكالمة. هل أنت متأكد أنك تريد إيقاف التسجيل؟",
-  "zx0myy": "المشاركون"
+  "zx0myy": "المشاركون",
+  "calls.ringback_sound.title": "نغمة الرنين",
+  "calls.ringback_sound.description": "اختر النغمة المستخدمة أثناء إجراء المكالمة.",
+  "calls.ringback_sound.edit": "تحرير",
+  "calls.ringback_sound.default": "الافتراضية (ring.mp3)",
+  "calls.ringback_sound.save": "حفظ",
+  "calls.ringback_sound.cancel": "إلغاء",
+  "calls.ringback_sound.preview": "معاينة",
+  "calls.ringback_sound.builtin.dynamic": "ديناميكي",
+  "calls.ringback_sound.builtin.calm": "هادئ",
+  "calls.ringback_sound.builtin.urgent": "عاجل",
+  "calls.ringback_sound.builtin.cheerful": "مبهج"
 }
