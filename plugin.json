@@ -1,5 +1,5 @@
 {
-  "id": "com.mattermost.calls",
+  "id": "com.workspace.calls",
   "name": "المكالمات",
   "description": "يوفّر تكاملاً لاتصالات صوتية فورية داخل workspace",
   "homepage_url": "https://github.com/mattermost/mattermost-plugin-calls/",
@@ -77,6 +77,47 @@
             "type": "bool",
             "default": false,
             "help_text": "عند تفعيل هذا الخيار، ستستخدم التطبيقات قنوات بيانات WebRTC لإشارة مسارات الوسائط الجديدة. قد ينتج عن ذلك عملية أكثر كفاءة وأقل عرضة لحدوث تعارضات، خصوصاً عند تكرار انقطاع WebSocket."
+          },
+          {
+            "key": "DefaultOutgoingRingbackSound",
+            "display_name": "النغمة الافتراضية أثناء إجراء اتصال (Ringback)",
+            "type": "dropdown",
+            "default": "default",
+            "help_text": "النغمة الافتراضية التي سيتم تشغيلها أثناء إجراء اتصال عندما لا يختار المستخدم نغمة مخصصة.",
+            "options": [
+              {
+                "display_name": "الافتراضي (ring.mp3)",
+                "value": "default"
+              },
+              {
+                "display_name": "TMessagesProj voip_ringback",
+                "value": "TMessagesProj_src_main_res_raw_voip_ringback.mp3"
+              },
+              {
+                "display_name": "نغمة سلسبيل العشق",
+                "value": "نغمة سلسبيل العشق.mp3"
+              },
+              {
+                "display_name": "يا أهل المدد",
+                "value": "يا أهل المدد.mp3"
+              },
+              {
+                "display_name": "Dynamic",
+                "value": "builtin:Dynamic"
+              },
+              {
+                "display_name": "Calm",
+                "value": "builtin:Calm"
+              },
+              {
+                "display_name": "Urgent",
+                "value": "builtin:Urgent"
+              },
+              {
+                "display_name": "Cheerful",
+                "value": "builtin:Cheerful"
+              }
+            ]
           }
         ]
       },
@@ -712,6 +753,35 @@
         "type": "bool",
         "default": false,
         "help_text": "عند تفعيل هذا الخيار، ستستخدم التطبيقات قنوات بيانات WebRTC لإشارة مسارات الوسائط الجديدة. قد ينتج عن ذلك عملية أكثر كفاءة وأقل عرضة لحدوث تعارضات، خصوصاً عند تكرار انقطاع WebSocket."
+      },
+      {
+        "key": "DefaultOutgoingRingbackSound",
+        "display_name": "النغمة الافتراضية أثناء إجراء اتصال (Ringback)",
+        "type": "dropdown",
+        "default": "default",
+        "help_text": "النغمة الافتراضية التي سيتم تشغيلها أثناء إجراء اتصال عندما لا يختار المستخدم نغمة مخصصة.",
+        "options": [
+          {
+            "display_name": "الافتراضي (ring.mp3)",
+            "value": "default"
+          },
+          {
+            "display_name": "Dynamic",
+            "value": "builtin:Dynamic"
+          },
+          {
+            "display_name": "Calm",
+            "value": "builtin:Calm"
+          },
+          {
+            "display_name": "Urgent",
+            "value": "builtin:Urgent"
+          },
+          {
+            "display_name": "Cheerful",
+            "value": "builtin:Cheerful"
+          }
+        ]
       }
     ]
   },

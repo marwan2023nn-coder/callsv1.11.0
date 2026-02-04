@@ -24,7 +24,7 @@ describe('CallLiveCaptionsSection', () => {
 
     const renderComponent = (storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -60,7 +60,7 @@ describe('CallLiveCaptionsSection', () => {
 
     it('should render with disabled message when recordings are disabled', () => {
         renderComponent({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: false,
                     EnableTranscriptions: true,
@@ -76,7 +76,7 @@ describe('CallLiveCaptionsSection', () => {
 
     it('should render with disabled message when transcriptions are disabled', () => {
         renderComponent({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: false,

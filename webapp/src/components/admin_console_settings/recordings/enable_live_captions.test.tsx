@@ -31,7 +31,7 @@ describe('EnableLiveCaptions', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -63,7 +63,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should render correctly with default value', () => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -116,7 +116,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should handle overridden false value correctly', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -161,7 +161,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -180,7 +180,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should not render when recordings are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: false,
                     EnableTranscriptions: true,
@@ -195,7 +195,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should not render when transcriptions are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: false,
@@ -210,7 +210,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should not render on cloud', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -233,7 +233,7 @@ describe('EnableLiveCaptions', () => {
 
     it('should not render when not enterprise', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,

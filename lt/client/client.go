@@ -494,7 +494,7 @@ func (u *User) getCallsConfig() (map[string]any, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	res, err := u.apiClient.DoAPIRequest(ctx, http.MethodGet,
-		fmt.Sprintf("%s/plugins/com.mattermost.calls/config", u.cfg.SiteURL), "", "")
+		fmt.Sprintf("%s/plugins/com.workspace.calls/config", u.cfg.SiteURL), "", "")
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}

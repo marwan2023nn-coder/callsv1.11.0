@@ -14,7 +14,7 @@ BEGIN
     FROM
         pluginkeyvaluestore
     WHERE
-        pluginid = 'com.mattermost.calls'
+        pluginid = 'com.workspace.calls'
     AND
         LENGTH(pkey) = 26
     AND

@@ -5,7 +5,7 @@ import {WebSocketClient, WebSocketErrorType} from './websocket';
 
 // Mock the manifest
 jest.mock('./manifest', () => ({
-    pluginId: 'com.mattermost.calls',
+    pluginId: 'com.workspace.calls',
 }));
 
 // Mock WebSocket
@@ -227,7 +227,7 @@ describe('WebSocketClient', () => {
             client.on('join', joinSpy);
 
             const joinMessage = {
-                event: 'custom_com.mattermost.calls_join',
+                event: 'custom_com.workspace.calls_join',
                 data: {connID: 'test-conn-id'},
                 seq: 2,
             };
@@ -244,7 +244,7 @@ describe('WebSocketClient', () => {
             client.on('error', errorSpy);
 
             const errorMessage = {
-                event: 'custom_com.mattermost.calls_error',
+                event: 'custom_com.workspace.calls_error',
                 data: {data: 'test error', connID: 'test-conn-id'},
                 seq: 2,
             };
@@ -266,7 +266,7 @@ describe('WebSocketClient', () => {
             client.on('message', messageSpy);
 
             const signalMessage = {
-                event: 'custom_com.mattermost.calls_signal',
+                event: 'custom_com.workspace.calls_signal',
                 data: {test: 'signal data', connID: 'test-conn-id'},
                 seq: 2,
             };
@@ -298,7 +298,7 @@ describe('WebSocketClient', () => {
 
             client.send('test_action', {test: 'data'});
 
-            expect(sendSpy).toHaveBeenCalledWith('{"action":"custom_com.mattermost.calls_test_action","seq":1,"data":{"test":"data"}}');
+            expect(sendSpy).toHaveBeenCalledWith('{"action":"custom_com.workspace.calls_test_action","seq":1,"data":{"test":"data"}}');
         });
 
         it('should send binary messages when binary flag is true', () => {

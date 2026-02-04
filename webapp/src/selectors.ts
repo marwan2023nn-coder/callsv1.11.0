@@ -419,8 +419,15 @@ export const didNotifyForCall = (state: GlobalState, callID: string): boolean =>
 //
 // Config logic
 //
-export const callsConfig = (state: GlobalState): CallsConfig =>
+export type CallsConfigExtended = CallsConfig & {
+    DefaultOutgoingRingbackSound?: string;
+};
+
+export const callsConfig = (state: GlobalState): CallsConfigExtended =>
     pluginState(state).callsConfig;
+
+export const defaultOutgoingRingbackSound = (state: GlobalState): string =>
+    callsConfig(state).DefaultOutgoingRingbackSound || '';
 
 export const iceServers = (state: GlobalState): RTCIceServer[] =>
     callsConfig(state).ICEServersConfigs || [];

@@ -466,7 +466,16 @@ export const removeIncomingCallNotification = (callID: string): ActionFunc => {
 
 export const ringForCall = (callID: string, sound: string) => {
     return (dispatch: DispatchFunc) => {
-        notificationSounds?.ring(sound);
+        try {
+            const maybePromise = notificationSounds?.ring(sound) as unknown;
+            if (maybePromise && typeof (maybePromise as {catch?: unknown}).catch === 'function') {
+                (maybePromise as Promise<unknown>).catch(() => {
+                    // Autoplay might be blocked by the browser.
+                });
+            }
+        } catch {
+            // Autoplay might be blocked by the browser.
+        }
 
         // window.e2eNotificationsSoundedAt is added when running the e2e tests
         if (window.e2eNotificationsSoundedAt) {
@@ -681,7 +690,7 @@ export const selectRHSPost = (postID: string): ActionFuncAsync => {
 export const openCallsUserSettings = (): ActionFuncAsync => {
     return async (dispatch: DispatchFunc) => {
         if (window.WebappUtils && window.WebappUtils.openUserSettings) {
-            dispatch(window.WebappUtils.openUserSettings({activeTab: 'com.mattermost.calls', isContentProductSettings: true}));
+            dispatch(window.WebappUtils.openUserSettings({activeTab: 'com.workspace.calls', isContentProductSettings: true}));
         }
         return {};
     };

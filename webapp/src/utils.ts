@@ -404,14 +404,48 @@ export function playSound(name: string) {
 }
 
 let outgoingRingAudio: HTMLAudioElement | null = null;
+let outgoingRingbackUnlockCleanup: (() => void) | null = null;
 
-export function startOutgoingRingback() {
+function scheduleOutgoingRingbackUnlock(audio: HTMLAudioElement) {
+    if (outgoingRingbackUnlockCleanup) {
+        return;
+    }
+
+    const handler = () => {
+        outgoingRingbackUnlockCleanup?.();
+        outgoingRingbackUnlockCleanup = null;
+
+        if (outgoingRingAudio !== audio) {
+            return;
+        }
+
+        audio.play().catch(() => {
+            // Autoplay might be blocked.
+        });
+    };
+
+    outgoingRingbackUnlockCleanup = () => {
+        window.removeEventListener('pointerdown', handler, true);
+        window.removeEventListener('touchstart', handler, true);
+        window.removeEventListener('click', handler, true);
+    };
+
+    window.addEventListener('pointerdown', handler, {capture: true, once: true});
+    window.addEventListener('touchstart', handler, {capture: true, once: true});
+    window.addEventListener('click', handler, {capture: true, once: true});
+}
+
+export function startOutgoingRingback(defaultRingbackSound?: string) {
     if (outgoingRingAudio) {
         return;
     }
 
     const selectedRingback = window.localStorage.getItem(STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY) || '';
-    const selectedSrc = selectedRingback ? getRingbackSoundSrc(selectedRingback) : undefined;
+    let ringbackKey = selectedRingback || defaultRingbackSound || '';
+    if (ringbackKey === 'default') {
+        ringbackKey = '';
+    }
+    const selectedSrc = ringbackKey ? getRingbackSoundSrc(ringbackKey) : undefined;
     let src = selectedSrc || RingSound;
     if (src.indexOf('/') === 0) {
         src = getPluginStaticPath() + src;
@@ -422,6 +456,7 @@ export function startOutgoingRingback() {
     outgoingRingAudio = audio;
     audio.play().catch(() => {
         // Autoplay might be blocked.
+        scheduleOutgoingRingbackUnlock(audio);
     });
 }
 
@@ -429,6 +464,10 @@ export function stopOutgoingRingback() {
     if (!outgoingRingAudio) {
         return;
     }
+
+    outgoingRingbackUnlockCleanup?.();
+    outgoingRingbackUnlockCleanup = null;
+
     try {
         outgoingRingAudio.pause();
         outgoingRingAudio.src = '';

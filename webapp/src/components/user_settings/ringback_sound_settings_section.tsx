@@ -3,9 +3,11 @@
 
 import React, {useEffect, useRef, useState} from 'react';
 import {useIntl} from 'react-intl';
+import {useSelector} from 'react-redux';
 import {STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY} from 'src/constants';
 import {pluginId} from 'src/manifest';
 import {getRingbackSoundOptions, getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
+import {defaultOutgoingRingbackSound} from 'src/selectors';
 import RingSound from 'src/sounds/ring.mp3';
 
 const PREVIEW_DURATION_MS = 3000;
@@ -21,9 +23,36 @@ export default function RingbackSoundSettingsSection() {
     const description = formatMessage({id: 'calls.ringback_sound.description', defaultMessage: 'Choose the sound used while placing a call.'});
     const editLabel = formatMessage({id: 'calls.ringback_sound.edit', defaultMessage: 'Edit'});
 
-    const defaultOptionLabel = formatMessage({id: 'calls.ringback_sound.default', defaultMessage: 'Default (ring.mp3)'});
-
     const soundOptions = getRingbackSoundOptions();
+    const defaultSound = useSelector(defaultOutgoingRingbackSound);
+    const normalizedDefaultSound = defaultSound === 'default' ? '' : defaultSound;
+
+    const getOptionLabel = (value: string, label: string) => {
+        switch (value) {
+        case 'builtin:Dynamic':
+            return formatMessage({id: 'calls.ringback_sound.builtin.dynamic', defaultMessage: 'Dynamic'});
+        case 'builtin:Calm':
+            return formatMessage({id: 'calls.ringback_sound.builtin.calm', defaultMessage: 'Calm'});
+        case 'builtin:Urgent':
+            return formatMessage({id: 'calls.ringback_sound.builtin.urgent', defaultMessage: 'Urgent'});
+        case 'builtin:Cheerful':
+            return formatMessage({id: 'calls.ringback_sound.builtin.cheerful', defaultMessage: 'Cheerful'});
+        default:
+            return label;
+        }
+    };
+
+    const resolveDefaultLabel = () => {
+        if (!normalizedDefaultSound) {
+            return formatMessage({id: 'calls.ringback_sound.default', defaultMessage: 'Default (ring.mp3)'});
+        }
+
+        const defaultOption = soundOptions.find((opt) => opt.value === normalizedDefaultSound);
+        const label = defaultOption ? getOptionLabel(defaultOption.value, defaultOption.label) : normalizedDefaultSound;
+        return formatMessage({id: 'calls.ringback_sound.default_with_value', defaultMessage: 'Default ({defaultSound})'}, {defaultSound: label});
+    };
+
+    const defaultOptionLabel = resolveDefaultLabel();
 
     const getSavedValue = () => {
         return window.localStorage.getItem(STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY) || '';
@@ -84,7 +113,8 @@ export default function RingbackSoundSettingsSection() {
     const handlePreview = async () => {
         stopPreview();
 
-        const selectedSrc = selectedSound ? getRingbackSoundSrc(selectedSound) : undefined;
+        const previewKey = selectedSound || normalizedDefaultSound;
+        const selectedSrc = previewKey ? getRingbackSoundSrc(previewKey) : undefined;
         const src = resolvePlayableSrc(selectedSrc || RingSound);
 
         const audio = new Audio(src);
@@ -98,21 +128,6 @@ export default function RingbackSoundSettingsSection() {
         previewTimerRef.current = setTimeout(() => {
             stopPreview();
         }, PREVIEW_DURATION_MS);
-    };
-
-    const getOptionLabel = (value: string, label: string) => {
-        switch (value) {
-        case 'builtin:Dynamic':
-            return formatMessage({id: 'calls.ringback_sound.builtin.dynamic', defaultMessage: 'Dynamic'});
-        case 'builtin:Calm':
-            return formatMessage({id: 'calls.ringback_sound.builtin.calm', defaultMessage: 'Calm'});
-        case 'builtin:Urgent':
-            return formatMessage({id: 'calls.ringback_sound.builtin.urgent', defaultMessage: 'Urgent'});
-        case 'builtin:Cheerful':
-            return formatMessage({id: 'calls.ringback_sound.builtin.cheerful', defaultMessage: 'Cheerful'});
-        default:
-            return label;
-        }
     };
 
     if (!active) {

@@ -32,7 +32,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
             id={IDOnPremTrialSuccess}
             {...modalProps}
             confirmButtonText={formatMessage({defaultMessage: 'Set up RTCD services'})}
-            handleConfirm={() => navigateToURL('/admin_console/plugins/plugin_com.mattermost.calls')}
+            handleConfirm={() => navigateToURL('/admin_console/plugins/plugin_com.workspace.calls')}
             onHide={() => null}
         >
             <HandsSvg
@@ -49,7 +49,7 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
             <VerticalSpacer $size={8}/>
             <ModalBody css={'text-align: start'}>
                 <FormattedMessage
-                    defaultMessage={'Welcome to your Mattermost نسخة المؤسسات trial! It expires on {trialExpirationDate}. ' +
+                    defaultMessage={'Welcome to your Workspace نسخة المؤسسات trial! It expires on {trialExpirationDate}. ' +
                         'You now have access to <rtcdDocsLink>RTCD services</rtcdDocsLink>, ' +
                         '<recordingsDocsLink>call recordings</recordingsDocsLink>, ' +
                         '<guestAccountsLink>guest accounts</guestAccountsLink>, ' +

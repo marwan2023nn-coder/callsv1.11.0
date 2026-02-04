@@ -231,14 +231,15 @@ export default async function init(cfg: InitConfig) {
         iceConfigs.push(...configs);
     }
 
+    const dcSignalingEnabled = callsConfig(store.getState()).EnableDCSignaling && hasDCSignalingLockSupport(callsVersionInfo(store.getState()));
     const clientConfig = {
         wsURL: getWSConnectionURL(getConfig(store.getState())),
         iceServers: iceConfigs,
         authToken: getToken(),
         simulcast: callsConfig(store.getState()).EnableSimulcast,
         enableAV1: callsConfig(store.getState()).EnableAV1,
-        dcSignaling: callsConfig(store.getState()).EnableDCSignaling,
-        dcLocking: hasDCSignalingLockSupport(callsVersionInfo(store.getState())),
+        dcSignaling: dcSignalingEnabled,
+        dcLocking: dcSignalingEnabled,
     };
 
     connectCall(joinData, clientConfig, (ev) => {

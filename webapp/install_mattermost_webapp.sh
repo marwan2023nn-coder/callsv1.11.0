@@ -1,6 +1,6 @@
 readonly COMMITHASH=d2c3710265c293281c2b445d4f72f27871c2e127
 
-echo "\n\nInstalling mattermost-webapp from the mattermost repo, using commit hash $COMMITHASH\n"
+echo "\n\nInstalling Workspace webapp dependencies (mattermost-webapp) from the mattermost repo, using commit hash $COMMITHASH\n"
 
 if [ ! -d mattermost-webapp ]; then
 	mkdir mattermost-webapp

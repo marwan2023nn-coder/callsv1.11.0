@@ -14,4 +14,4 @@ export const adminState: UserState = {
 export const userPrefix = 'calls-user';
 export const userPassword = 'U$er-sample1';
 export const channelPrefix = 'calls';
-export const pluginID = 'com.mattermost.calls';
+export const pluginID = 'com.workspace.calls';

@@ -17,7 +17,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "نوصي بشدة بالتبديل إلى [إصدار ماترموست إنتربرايز] (https://workspace.com/pl/install-نسخة المؤسسات-install-upgrade) و[نشر خدمة RTCD] (https://workspace.com/pl/المكالمات-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم ماترموست الرئيسي وقابلية تطويره وموثوقيته."
+        "translation": "نوصي بشدة بالتبديل إلى [إصدار Workspace إنتربرايز] (https://workspace.com/pl/install-نسخة المؤسسات-install-upgrade) و[نشر خدمة RTCD] (https://workspace.com/pl/المكالمات-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم Workspace الرئيسي وقابلية تطويره وموثوقيته."
     },
     {
         "id": "app.call.new_recording_message",

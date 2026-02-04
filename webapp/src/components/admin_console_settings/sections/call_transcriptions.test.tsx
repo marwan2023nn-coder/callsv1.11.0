@@ -24,7 +24,7 @@ describe('CallTranscriptionsSection', () => {
 
     const renderComponent = (storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                 },
@@ -59,7 +59,7 @@ describe('CallTranscriptionsSection', () => {
 
     it('should render with disabled message when recordings are disabled', () => {
         renderComponent({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: false,
                 },
@@ -74,7 +74,7 @@ describe('CallTranscriptionsSection', () => {
 
     it('should not render on cloud', () => {
         renderComponent({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                 },
@@ -94,7 +94,7 @@ describe('CallTranscriptionsSection', () => {
 
     it('should not render when not enterprise', () => {
         renderComponent({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                 },

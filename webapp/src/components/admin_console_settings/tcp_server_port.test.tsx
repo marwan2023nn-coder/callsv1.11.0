@@ -31,7 +31,7 @@ describe('TCPServerPort', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TCPServerPort: 8443,
                 },
@@ -83,7 +83,7 @@ describe('TCPServerPort', () => {
 
     it('should be disabled when RTCD is enabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TCPServerPort: 8443,
                 },
@@ -99,7 +99,7 @@ describe('TCPServerPort', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     TCPServerPort: 8443,
                 },

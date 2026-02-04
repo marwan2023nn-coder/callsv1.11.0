@@ -43,7 +43,7 @@ endif
 # Used for semver bumping
 PROTECTED_BRANCH := main
 APP_NAME    := $(shell basename -s .git `git config --get remote.origin.url`)
-CURRENT_VERSION := $(shell git describe --abbrev=0 --tags)
+CURRENT_VERSION := $(shell git describe --abbrev=0 --tags 2>/dev/null || echo v0.0.0)
 VERSION_PARTS := $(subst ., ,$(subst v,,$(subst -rc, ,$(CURRENT_VERSION))))
 MAJOR := $(word 1,$(VERSION_PARTS))
 MINOR := $(word 2,$(VERSION_PARTS))

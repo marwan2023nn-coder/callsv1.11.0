@@ -1,4 +1,4 @@
-Mattermost Calls
+Workspace Calls
 
 ©2020-present Mattermost, Inc. All Rights Reserved. See LICENSE.txt for license information.
 
@@ -764,7 +764,7 @@ Mozilla Public License Version 2.0
     means any form of the work other than Source Code Form.
 
 1.7. "Larger Work"
-    means a work that combines Covered Software with other material, in 
+    means a work that combines Covered Software with other material, in
     a separate file or files, that is not Covered Software.
 
 1.8. "License"
@@ -1424,7 +1424,7 @@ This is the golang client integration for Pyroscope
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 
 
 ---

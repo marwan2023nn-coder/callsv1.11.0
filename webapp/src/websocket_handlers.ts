@@ -80,6 +80,7 @@ import {
     calls,
     channelIDForCurrentCall,
     profilesInCurrentCallMap,
+    defaultOutgoingRingbackSound,
     ringingEnabled,
     shouldPlayJoinUserSound,
 } from './selectors';
@@ -158,7 +159,7 @@ export function handleCallStart(store: Store, ev: WebSocketMessage<CallStartData
     if (getCallsClient()?.channelID === channelID) {
         const currentUserID = getCurrentUserId(store.getState());
         if (ev.data.owner_id === currentUserID) {
-            startOutgoingRingback();
+            startOutgoingRingback(defaultOutgoingRingbackSound(store.getState()));
         }
         const channel = getChannel(store.getState(), channelID);
         if (channel) {

@@ -288,7 +288,7 @@ test.describe('popout window', () => {
 
         // Trigger ws disconnect.
         await popOut.evaluate(() => {
-            const wsClient = window.plugins['com.mattermost.calls'].wsClient;
+            const wsClient = window.plugins['com.workspace.calls'].wsClient;
             wsClient.conn.close();
         });
 

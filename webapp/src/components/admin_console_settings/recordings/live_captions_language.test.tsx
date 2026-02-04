@@ -31,7 +31,7 @@ describe('LiveCaptionsLanguage', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -92,7 +92,7 @@ describe('LiveCaptionsLanguage', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -111,7 +111,7 @@ describe('LiveCaptionsLanguage', () => {
 
     it('should not render when recordings are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: false,
                     EnableTranscriptions: true,
@@ -127,7 +127,7 @@ describe('LiveCaptionsLanguage', () => {
 
     it('should not render when transcriptions are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: false,
@@ -143,7 +143,7 @@ describe('LiveCaptionsLanguage', () => {
 
     it('should not render when live captions are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,
@@ -159,7 +159,7 @@ describe('LiveCaptionsLanguage', () => {
 
     it('should not render on cloud', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     EnableTranscriptions: true,

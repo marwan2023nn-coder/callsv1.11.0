@@ -728,14 +728,21 @@ export default class CallsClient extends EventEmitter {
             }
 
             this.localScreenTrack = null;
-
             if (!this.ws || !this.peer) {
                 return;
             }
 
-            await this.peer.removeTrack(screenTrack.id);
+            const safeRemoveTrack = async (track: MediaStreamTrack, label: string) => {
+                try {
+                    await this.peer?.removeTrack(track.id);
+                } catch (err) {
+                    logWarn(`failed to remove ${label} track`, err);
+                }
+            };
+
+            await safeRemoveTrack(screenTrack, 'screen');
             if (screenAudioTrack) {
-                await this.peer.removeTrack(screenAudioTrack.id);
+                await safeRemoveTrack(screenAudioTrack, 'screen audio');
             }
 
             this.ws.send('screen_off');

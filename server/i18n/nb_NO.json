@@ -1,7 +1,7 @@
 [
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "Installasjonen din opplever tung bruk fra Mattermost Calls, og det kan påvirke systemytelsen og responsen negativt."
+        "translation": "Installasjonen din opplever tung bruk fra Workspace Calls, og det kan påvirke systemytelsen og responsen negativt."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",

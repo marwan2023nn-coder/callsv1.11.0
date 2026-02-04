@@ -77,7 +77,7 @@ sleep 5
 echo "Patching calls config ..."
 docker exec --env="XDG_CONFIG_HOME=/mattermost/config" \
 	${CONTAINER_SERVER}1 \
-	/mattermost/bin/mmctl plugin disable com.mattermost.calls
+	/mattermost/bin/mmctl plugin disable com.workspace.calls
 sleep 2
 docker exec --env="XDG_CONFIG_HOME=/mattermost/config" \
 	${CONTAINER_SERVER}1 \
@@ -85,7 +85,7 @@ docker exec --env="XDG_CONFIG_HOME=/mattermost/config" \
 sleep 2
 docker exec --env="XDG_CONFIG_HOME=/mattermost/config" \
 	${CONTAINER_SERVER}1 \
-	/mattermost/bin/mmctl plugin enable com.mattermost.calls
+	/mattermost/bin/mmctl plugin enable com.workspace.calls
 
 echo "Spawning playwright image ..."
 # run e2e

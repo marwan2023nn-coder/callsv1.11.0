@@ -31,7 +31,7 @@ test.describe('admin console', () => {
         await apiSetEnableLiveCaptions(true);
 
         // Go to the plugin settings page.
-        await page.goto(`${baseURL}/admin_console/plugins/plugin_com.mattermost.calls`);
+        await page.goto(`${baseURL}/admin_console/plugins/plugin_com.workspace.calls`);
 
         // Verify page header is present.
         await expect(page.locator('.admin-console__header')).toContainText('Calls');
@@ -48,7 +48,7 @@ test.describe('admin console', () => {
 
     test('config settings', async ({page}) => {
         // Go to the plugin settings page.
-        await page.goto(`${baseURL}/admin_console/plugins/plugin_com.mattermost.calls`);
+        await page.goto(`${baseURL}/admin_console/plugins/plugin_com.workspace.calls`);
 
         // Check radio input
         await page.getByTestId('PluginSettings.PluginStates.com+mattermost+calls.Enablefalse').click();

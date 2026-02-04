@@ -31,7 +31,7 @@ describe('RTCDServiceURL', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     RTCDServiceURL: 'http://localhost:8045',
                 },
@@ -91,7 +91,7 @@ describe('RTCDServiceURL', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     RTCDServiceURL: 'http://localhost:8045',
                 },
@@ -108,7 +108,7 @@ describe('RTCDServiceURL', () => {
     it('should update global state when value changes', async () => {
         const onChange = jest.fn();
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     RTCDServiceURL: '',
                 },

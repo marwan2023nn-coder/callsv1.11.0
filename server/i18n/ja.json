@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "Mattermost Callsの使用量が多く、システムのパフォーマンスと応答性に悪影響を及ぼしている可能性があります。"
+        "translation": "Workspace Callsの使用量が多く、システムのパフォーマンスと応答性に悪影響を及ぼしている可能性があります。"
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",

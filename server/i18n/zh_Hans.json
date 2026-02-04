@@ -5,7 +5,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "Mattermost Calls 占用了您的部署的过多资源，可能对系统性能和响应能力造成负面影响。"
+        "translation": "Workspace Calls 占用了您的部署的过多资源，可能对系统性能和响应能力造成负面影响。"
     },
     {
         "id": "app.call.ended_message",

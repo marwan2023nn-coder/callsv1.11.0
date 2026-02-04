@@ -9,7 +9,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "Votre installation subit une charge élevée provenant de Mattermost Calls qui peut impacter négativement la performance et la réactivité du système."
+        "translation": "Votre installation subit une charge élevée provenant de Workspace Calls qui peut impacter négativement la performance et la réactivité du système."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",

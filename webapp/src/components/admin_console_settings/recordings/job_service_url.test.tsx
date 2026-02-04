@@ -31,7 +31,7 @@ describe('JobServiceURL', () => {
 
     const renderComponent = (props = {}, storeOverrides = {}) => {
         const store = mockStore({
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     JobServiceURL: 'http://localhost:8086',
@@ -90,7 +90,7 @@ describe('JobServiceURL', () => {
 
     it('should show environment override warning when setting is overridden', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     JobServiceURL: 'http://localhost:8086',
@@ -107,7 +107,7 @@ describe('JobServiceURL', () => {
 
     it('should not render when recordings are disabled', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: false,
                     JobServiceURL: 'http://localhost:8086',
@@ -121,7 +121,7 @@ describe('JobServiceURL', () => {
 
     it('should not render on cloud', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     JobServiceURL: 'http://localhost:8086',
@@ -143,7 +143,7 @@ describe('JobServiceURL', () => {
 
     it('should not render when not enterprise', () => {
         renderComponent({}, {
-            'plugins-com.mattermost.calls': {
+            'plugins-com.workspace.calls': {
                 callsConfig: {
                     EnableRecordings: true,
                     JobServiceURL: 'http://localhost:8086',

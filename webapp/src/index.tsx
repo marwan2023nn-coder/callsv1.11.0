@@ -44,6 +44,7 @@ import EnableDCSignaling from 'src/components/admin_console_settings/enable_dc_s
 import EnableIPv6 from 'src/components/admin_console_settings/enable_ipv6';
 import EnableRinging from 'src/components/admin_console_settings/enable_ringing';
 import EnableSimulcast from 'src/components/admin_console_settings/enable_simulcast';
+import DefaultOutgoingRingbackSound from 'src/components/admin_console_settings/default_outgoing_ringback_sound';
 import ICEHostOverride from 'src/components/admin_console_settings/ice_host_override';
 import ICEHostPortOverride from 'src/components/admin_console_settings/ice_host_port_override';
 import ICEServersConfigs from 'src/components/admin_console_settings/ice_servers_configs';
@@ -528,6 +529,7 @@ export default class Plugin {
         registry.registerAdminConsoleCustomSetting('EnableAV1', EnableAV1);
         registry.registerAdminConsoleCustomSetting('EnableRinging', EnableRinging);
         registry.registerAdminConsoleCustomSetting('EnableDCSignaling', EnableDCSignaling);
+        registry.registerAdminConsoleCustomSetting('DefaultOutgoingRingbackSound', DefaultOutgoingRingbackSound);
 
         // RTCD Service
         if (registry.registerAdminConsoleCustomSection) {
@@ -696,13 +698,14 @@ export default class Plugin {
                     }
                 }
 
+                const dcSignalingEnabled = callsConfig(state).EnableDCSignaling && hasDCSignalingLockSupport(callsVersionInfo(state));
                 window.callsClient = new CallsClient({
                     wsURL: getWSConnectionURL(getConfig(state)),
                     iceServers: iceConfigs,
                     simulcast: callsConfig(state).EnableSimulcast,
                     enableAV1: callsConfig(state).EnableAV1,
-                    dcSignaling: callsConfig(state).EnableDCSignaling,
-                    dcLocking: hasDCSignalingLockSupport(callsVersionInfo(state)),
+                    dcSignaling: dcSignalingEnabled,
+                    dcLocking: dcSignalingEnabled,
                 });
                 window.currentCallData = CurrentCallDataDefault;
 
@@ -1009,7 +1012,7 @@ export default class Plugin {
             if (currentCallChannelID) {
                 if (wsClient) {
                     logDebug('requesting call state through ws');
-                    wsClient.sendMessage('custom_com.mattermost.calls_call_state', {channelID: currentCallChannelID});
+                    wsClient.sendMessage('custom_com.workspace.calls_call_state', {channelID: currentCallChannelID});
                 } else {
                     logErr('unexpected missing wsClient');
                 }

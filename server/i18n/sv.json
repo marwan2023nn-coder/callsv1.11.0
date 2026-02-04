@@ -37,7 +37,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "Din användning av Mattermost Calls är hög och det kan påverka systemets prestanda och svarstid negativt."
+        "translation": "Din användning av Workspace Calls är hög och det kan påverka systemets prestanda och svarstid negativt."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",

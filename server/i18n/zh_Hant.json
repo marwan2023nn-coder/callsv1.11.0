@@ -17,7 +17,7 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "您的系統目前因 Mattermost Calls 使用量過高，可能對整體效能與回應速度造成負面影響。"
+        "translation": "您的系統目前因 Workspace Calls 使用量過高，可能對整體效能與回應速度造成負面影響。"
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
