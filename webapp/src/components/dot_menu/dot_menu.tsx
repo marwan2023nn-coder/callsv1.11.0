@@ -85,7 +85,7 @@ const DotMenu = ({
     dotMenuButton: MenuButton = DotMenuButton,
     dropdownMenu: Menu = DropdownMenu,
     id,
-    shortcut,
+    shortcut: _shortcut,
     tooltipText,
     tooltipSubtext,
     ariaLabel,

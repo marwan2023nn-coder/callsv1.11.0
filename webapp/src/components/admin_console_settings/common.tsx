@@ -1,7 +1,7 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, { ReactNode } from 'react';
+import React, {ReactNode} from 'react';
 import GenericModal from 'src/components/generic_modal';
 import CompassIcon from 'src/components/icons/compassIcon';
 import styled from 'styled-components';
@@ -17,11 +17,11 @@ export const Label = styled.span`
     margin-inline-end: 8px;
 `;
 
-export const EnterprisePill = ({ children }: { children: ReactNode }) => (
-  <Enterprise>
-    <CompassIcon icon={'key-variant'} />
-    {children}
-  </Enterprise>
+export const EnterprisePill = ({children}: { children: ReactNode }) => (
+    <Enterprise>
+        <CompassIcon icon={'key-variant'}/>
+        {children}
+    </Enterprise>
 );
 
 const Enterprise = styled.div`
@@ -128,8 +128,8 @@ export const RadioInput = styled.input<{ disabled: boolean }>`
   cursor: pointer;
   background-color: white;
   margin: 0;
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1.0)};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({disabled}) => (disabled ? 0.5 : 1.0)};
+  cursor: ${({disabled}) => (disabled ? 'not-allowed' : 'pointer')};
 
   &:checked {
     border-color: var(--denim-button-bg);
@@ -166,8 +166,8 @@ export const RadioInputLabel = styled.label<{ $disabled: boolean }>`
   gap: 8px;
   line-height: 20px;
 
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1.0)};
-  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({$disabled}) => ($disabled ? 0.5 : 1.0)};
+  cursor: ${({$disabled}) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const SectionTitle = styled.div`
@@ -191,6 +191,6 @@ export const UnavailableSubtitle = styled.div`
 
 export const TextInput = styled.input<{ disabled: boolean }>`
 && {
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
+  cursor: ${({disabled}) => (disabled ? 'not-allowed' : 'auto')};
 }
 `;
