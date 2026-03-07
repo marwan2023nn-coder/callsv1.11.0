@@ -19,7 +19,7 @@ import SmileyIcon from 'src/components/icons/smiley_icon';
 import UnraisedHandIcon from 'src/components/icons/unraised_hand';
 import {StyledTooltip} from 'src/components/shared';
 import {EmojiIndicesByAlias} from 'src/emojis/emoji';
-import {MAKE_REACTION, RAISE_LOWER_HAND, reverseKeyMappings} from 'src/shortcuts';
+import {MAKE_REACTION, reverseKeyMappings} from 'src/shortcuts';
 import {getCallsClient} from 'src/utils';
 import styled, {css} from 'styled-components';
 

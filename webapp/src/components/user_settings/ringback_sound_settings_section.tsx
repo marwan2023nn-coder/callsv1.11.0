@@ -6,9 +6,9 @@ import {useIntl} from 'react-intl';
 import {useSelector} from 'react-redux';
 import {STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY} from 'src/constants';
 import {pluginId} from 'src/manifest';
-import {getRingbackSoundOptions, getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
 import {defaultOutgoingRingbackSound} from 'src/selectors';
 import RingSound from 'src/sounds/ring.mp3';
+import {getRingbackSoundOptions, getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
 
 const PREVIEW_DURATION_MS = 3000;
 
@@ -114,7 +114,7 @@ export default function RingbackSoundSettingsSection() {
         stopPreview();
 
         const previewKey = selectedSound || normalizedDefaultSound;
-        const selectedSrc = previewKey ? getRingbackSoundSrc(previewKey) : undefined;
+        const selectedSrc = previewKey ? getRingbackSoundSrc(previewKey) : '';
         const src = resolvePlayableSrc(selectedSrc || RingSound);
 
         const audio = new Audio(src);

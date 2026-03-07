@@ -45,7 +45,7 @@ const ChannelLinkLabel = (props: Props) => {
             }
         >
 
-              <span
+            <span
                 className='calls-sidebar-active-call-icon'
                 data-testid={'calls-sidebar-active-call-icon'}
                 style={

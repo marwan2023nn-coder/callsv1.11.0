@@ -62,7 +62,6 @@ import {
     MUTE_UNMUTE,
     PARTICIPANTS_LIST_TOGGLE,
     RAISE_LOWER_HAND,
-    reverseKeyMappings,
     SHARE_UNSHARE_SCREEN,
 } from 'src/shortcuts';
 import {ModalData} from 'src/types/mattermost-webapp';

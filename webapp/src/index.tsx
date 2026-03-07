@@ -39,12 +39,12 @@ import {
 } from 'src/actions';
 import {navigateToURL} from 'src/browser_routing';
 import AllowScreenSharing from 'src/components/admin_console_settings/allow_screen_sharing';
+import DefaultOutgoingRingbackSound from 'src/components/admin_console_settings/default_outgoing_ringback_sound';
 import EnableAV1 from 'src/components/admin_console_settings/enable_av1';
 import EnableDCSignaling from 'src/components/admin_console_settings/enable_dc_signaling';
 import EnableIPv6 from 'src/components/admin_console_settings/enable_ipv6';
 import EnableRinging from 'src/components/admin_console_settings/enable_ringing';
 import EnableSimulcast from 'src/components/admin_console_settings/enable_simulcast';
-import DefaultOutgoingRingbackSound from 'src/components/admin_console_settings/default_outgoing_ringback_sound';
 import ICEHostOverride from 'src/components/admin_console_settings/ice_host_override';
 import ICEHostPortOverride from 'src/components/admin_console_settings/ice_host_port_override';
 import ICEServersConfigs from 'src/components/admin_console_settings/ice_servers_configs';

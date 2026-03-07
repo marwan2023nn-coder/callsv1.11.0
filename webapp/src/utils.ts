@@ -21,8 +21,8 @@ import {parseSemVer} from 'semver-parser';
 import CallsClient from 'src/client';
 import {STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY, STORAGE_CALLS_SHARE_AUDIO_WITH_SCREEN} from 'src/constants';
 import RestClient from 'src/rest_client';
-import {DesktopMessage} from 'src/types/types';
 import {getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
+import {DesktopMessage} from 'src/types/types';
 import {notificationSounds} from 'src/webapp_globals';
 
 import {logDebug, logErr, logWarn} from './log';
@@ -265,6 +265,7 @@ export async function getScreenStream(sourceID?: string, withAudio?: boolean): P
             if (sourceID) {
                 options.chromeMediaSourceId = sourceID;
             }
+            // eslint-disable-next-line no-await-in-loop
             screenStream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     mandatory: options,
@@ -278,6 +279,7 @@ export async function getScreenStream(sourceID?: string, withAudio?: boolean): P
     } else {
         // browser
         try {
+            // eslint-disable-next-line no-await-in-loop
             screenStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
                 audio: Boolean(withAudio),
@@ -322,7 +324,8 @@ export async function getProfilesByIds(state: GlobalState, ids: string[]): Promi
         }
     }
     if (missingIds.length > 0) {
-        profiles.push(...(await RestClient.getProfilesByIds(missingIds)));
+        const fetchedProfiles = await RestClient.getProfilesByIds(missingIds);
+        profiles.push(...fetchedProfiles);
     }
     return profiles;
 }
@@ -445,7 +448,7 @@ export function startOutgoingRingback(defaultRingbackSound?: string) {
     if (ringbackKey === 'default') {
         ringbackKey = '';
     }
-    const selectedSrc = ringbackKey ? getRingbackSoundSrc(ringbackKey) : undefined;
+    const selectedSrc = ringbackKey ? getRingbackSoundSrc(ringbackKey) : '';
     let src = selectedSrc || RingSound;
     if (src.indexOf('/') === 0) {
         src = getPluginStaticPath() + src;
@@ -564,10 +567,12 @@ export async function fetchTranslationsFile(locale: string) {
             if (!filename) {
                 throw new Error(`translations file not found for locale '${candidate}'`);
             }
+            // eslint-disable-next-line no-await-in-loop
             const res = await fetch(filename.indexOf('/') === 0 ? getPluginStaticPath() + filename : filename);
             if (!res.ok) {
                 throw new Error(`failed to fetch translations for locale '${candidate}': ${res.status}`);
             }
+            // eslint-disable-next-line no-await-in-loop
             const translations = await res.json();
             logDebug(`loaded i18n file for locale '${candidate}'`);
             return translations;
@@ -684,13 +689,16 @@ export async function runWithRetry(fn: () => any, retryIntervalMs = 100, maxAtte
     for (let i = 1; i < maxAttempts + 1; i++) {
         try {
             // eslint-disable-next-line no-await-in-loop
-            return await fn();
+            const result = await fn();
+            return result;
         } catch (err) {
             const waitMs = Math.floor((retryIntervalMs * i) + (Math.random() * retryIntervalMs));
             logErr(err);
             logDebug(`run failed (${i}), retrying in ${waitMs}ms`);
-            // eslint-disable-next-line no-await-in-loop
-            await sleep(waitMs);
+            if (i < maxAttempts) {
+                // eslint-disable-next-line no-await-in-loop
+                await sleep(waitMs);
+            }
         }
     }
 

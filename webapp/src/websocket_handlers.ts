@@ -79,8 +79,8 @@ import {logErr} from './log';
 import {
     calls,
     channelIDForCurrentCall,
-    profilesInCurrentCallMap,
     defaultOutgoingRingbackSound,
+    profilesInCurrentCallMap,
     ringingEnabled,
     shouldPlayJoinUserSound,
 } from './selectors';

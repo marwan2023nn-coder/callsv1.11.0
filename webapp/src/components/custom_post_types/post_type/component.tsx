@@ -1,26 +1,26 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import { Post } from '@mattermost/types/posts';
-import { GlobalState } from '@mattermost/types/store';
-import { UserProfile } from '@mattermost/types/users';
-import { DateTime } from 'luxon';
-import { getUser } from 'mattermost-redux/selectors/entities/users';
-import React, { useCallback } from 'react';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import {Post} from '@mattermost/types/posts';
+import {GlobalState} from '@mattermost/types/store';
+import {UserProfile} from '@mattermost/types/users';
+import {DateTime} from 'luxon';
+import {getUser} from 'mattermost-redux/selectors/entities/users';
+import React, {useCallback} from 'react';
+import {OverlayTrigger, Tooltip} from 'react-bootstrap';
+import {useIntl} from 'react-intl';
+import {useSelector} from 'react-redux';
 import ConnectedProfiles from 'src/components/connected_profiles';
-import DotMenu, { DotMenuButton } from 'src/components/dot_menu/dot_menu';
+import DotMenu, {DotMenuButton} from 'src/components/dot_menu/dot_menu';
 import ActiveCallIcon from 'src/components/icons/active_call_icon';
 import CallIcon from 'src/components/icons/call_icon';
 import CompassIcon from 'src/components/icons/compassIcon';
 import LeaveCallIcon from 'src/components/icons/leave_call_icon';
-import { useDismissJoin } from 'src/components/incoming_calls/hooks';
-import { LeaveCallMenu } from 'src/components/leave_call_menu';
-import { Header, SubHeader } from 'src/components/shared';
+import {useDismissJoin} from 'src/components/incoming_calls/hooks';
+import {LeaveCallMenu} from 'src/components/leave_call_menu';
+import {Header, SubHeader} from 'src/components/shared';
 import Timestamp from 'src/components/timestamp';
-import { idForCallInChannel } from 'src/selectors';
+import {idForCallInChannel} from 'src/selectors';
 import {
     callStartedTimestampFn,
     getCallPropsFromPost,
@@ -55,9 +55,9 @@ const PostType = ({
     isHost,
 }: Props) => {
     const intl = useIntl();
-    const { formatMessage } = intl;
+    const {formatMessage} = intl;
     const hourCycle: 'h23' | 'h12' = militaryTime ? 'h23' : 'h12';
-    const timeFormat = { ...DateTime.TIME_24_SIMPLE, hourCycle };
+    const timeFormat = {...DateTime.TIME_24_SIMPLE, hourCycle};
 
     const callProps = getCallPropsFromPost(post);
 
@@ -92,9 +92,9 @@ const PostType = ({
         <ArtifactsContainer>
             <CompassIcon
                 icon='file-video-outline'
-                style={{ display: 'inline', fontSize: '16px' }}
+                style={{display: 'inline', fontSize: '16px'}}
             />
-            <span>{formatMessage({ defaultMessage: '{count, plural, =1 {# recording} other {# recordings}}' }, { count: recordings.length })}</span>
+            <span>{formatMessage({defaultMessage: '{count, plural, =1 {# recording} other {# recordings}}'}, {count: recordings.length})}</span>
         </ArtifactsContainer>
     ) : null;
 
@@ -102,65 +102,74 @@ const PostType = ({
         <ArtifactsContainer>
             <CompassIcon
                 icon='file-text-outline'
-                style={{ display: 'inline', fontSize: '16px' }}
+                style={{display: 'inline', fontSize: '16px'}}
             />
-            <span>{formatMessage({ defaultMessage: '{count, plural, =1 {# transcription} other {# transcriptions}}' }, { count: transcriptions.length })}</span>
+            <span>{formatMessage({defaultMessage: '{count, plural, =1 {# transcription} other {# transcriptions}}'}, {count: transcriptions.length})}</span>
         </ArtifactsContainer>
     ) : null;
 
     const duration = callProps.end_at - callProps.start_at;
     const isMissedCall = duration >= 59000 && callProps.participants.length <= 1;
 
-    const subMessage = callProps.start_at > 0 && callProps.end_at > 0 ? (
-        endReason === 'ignored' ? (
+    let subMessage = null;
+    if (callProps.start_at > 0 && callProps.end_at > 0) {
+        if (endReason === 'ignored') {
+            subMessage = (
+                <>
+                    <span>
+                        {formatMessage({id: 'app.call.ignored_message', defaultMessage: 'Call ignored'})}
+                    </span>
+                </>
+            );
+        } else if (endReason === 'no_answer' || isMissedCall) {
+            subMessage = (
+                <>
+                    <span>
+                        {formatMessage({id: 'app.call.no_answer_message', defaultMessage: 'Missed call'})}
+                    </span>
+                </>
+            );
+        } else {
+            subMessage = (
+                <>
+                    <span>
+                        {formatMessage(
+                            {id: 'app.call.started_at_message', defaultMessage: 'Call started at {startTime}'},
+                            {startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat)},
+                        )}
+                    </span>
+                    <Divider>{untranslatable('•')}</Divider>
+                    <span>
+                        {formatMessage(
+                            {id: 'app.call.ended_at_message', defaultMessage: 'Call ended at {endTime}'},
+                            {endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat)},
+                        )}
+                    </span>
+                </>
+            );
+        }
+    } else {
+        subMessage = (
             <>
-                <span>
-                    {formatMessage({defaultMessage: 'تم تجاهل المكالمة'})}
-                </span>
+                <Timestamp
+                    timestampFn={timestampFn}
+                    interval={5000}
+                />
+                {untranslatable(' ')}
+                {
+                    formatMessage({id: 'app.call.started_by_user', defaultMessage: 'by {user}'}, {user: getUserDisplayName(user)})
+                }
             </>
-        ) : endReason === 'no_answer' || isMissedCall ? (
-            <>
-                <span>
-                    {formatMessage({defaultMessage: 'مكالمة لم يرد عليها'})}
-                </span>
-            </>
-        ) : (
-            <>
-                <span>
-                    {formatMessage(
-                        { defaultMessage: 'بَدَأَ المكالمة في {startTime}' },
-                        { startTime: DateTime.fromMillis(callProps.start_at).toLocaleString(timeFormat) },
-                    )}
-                </span>
-                <Divider>{untranslatable('•')}</Divider>
-                <span>
-                    {formatMessage(
-                        { defaultMessage: 'انتهت المكالمة في {endTime}' },
-                        { endTime: DateTime.fromMillis(callProps.end_at).toLocaleString(timeFormat) },
-                    )}
-                </span>
-            </>
-        )
-    ) : (
-        <>
-            <Timestamp
-                timestampFn={timestampFn}
-                interval={5000}
-            />
-            {untranslatable(' ')}
-            {
-                formatMessage({ defaultMessage: 'by {user}' }, { user: getUserDisplayName(user) })
-            }
-        </>
-    );
+        );
+    }
 
     let joinButton = (
         <JoinButton onClick={onJoin}>
             <ActiveCallIcon
                 fill='var(--center-channel-bg)'
-                style={{ width: '16px', height: '16px' }}
+                style={{width: '16px', height: '16px'}}
             />
-            <ButtonText>{formatMessage({ defaultMessage: 'الانضمام إلى المكالمة' })}</ButtonText>
+            <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'Join call'})}</ButtonText>
         </JoinButton>
     );
 
@@ -172,32 +181,32 @@ const PostType = ({
                 overlay={
                     <Tooltip id='tooltip-limit'>
                         <Header>
-                            {formatMessage({ defaultMessage: 'Sorry, participants per call are currently limited to {count}.' }, { count: maxParticipants })}
+                            {formatMessage({id: 'app.call.limit_reached', defaultMessage: 'Sorry, participants per call are currently limited to {count}.'}, {count: maxParticipants})}
                         </Header>
                         {isCloudPaid &&
                             <SubHeader>
-                                {formatMessage({ defaultMessage: 'This is because calls is in the beta phase. We’re working to remove this limit soon.' })}
+                                {formatMessage({id: 'app.call.limit_reached.cloud_paid', defaultMessage: 'This is because calls is in the beta phase. We’re working to remove this limit soon.'})}
                             </SubHeader>
                         }
                     </Tooltip>
                 }
             >
                 <DisabledButton>
-                    <CallIcon fill='rgba(var(--center-channel-color-rgb), 0.32)' />
-                    <ButtonText>{formatMessage({ defaultMessage: 'الانضمام إلى المكالمة' })}</ButtonText>
+                    <CallIcon fill='rgba(var(--center-channel-color-rgb), 0.32)'/>
+                    <ButtonText>{formatMessage({id: 'app.call.join_call', defaultMessage: 'Join call'})}</ButtonText>
                 </DisabledButton>
             </OverlayTrigger>
         );
     }
 
-    const compactTitle = compactDisplay && !isRHS ? <br /> : <></>;
+    const compactTitle = compactDisplay && !isRHS ? <br/> : <></>;
     const title = callProps.title ? <h3 className='markdown__heading'>{callProps.title}</h3> : compactTitle;
     const callActive = callProps.end_at === 0;
     const inCall = connectedID === post.channel_id;
     const iconAndText = (
         <>
-            <LeaveCallIcon style={{ fill: 'var(--button-color)', width: '18px', height: '16px' }} />
-            <ButtonText>{formatMessage({ defaultMessage: 'Leave' })}</ButtonText>
+            <LeaveCallIcon style={{fill: 'var(--button-color)', width: '18px', height: '16px'}}/>
+            <ButtonText>{formatMessage({defaultMessage: 'Leave'})}</ButtonText>
         </>
     );
     const button = inCall ? (
@@ -226,20 +235,20 @@ const PostType = ({
                             {callActive &&
                                 <ActiveCallIcon
                                     fill='#00987e'
-                                    style={{ width: '14px', height: '14px' }}
+                                    style={{width: '14px', height: '14px'}}
                                 />
                             }
                             {!callActive &&
                                 <LeaveCallIcon
                                     fill={'rgba(var(--center-channel-color-rgb), 0.72)'}
-                                    style={{ width: '24px', height: '20px' }}
+                                    style={{width: '24px', height: '20px'}}
                                 />
                             }
                         </CallIndicator>
                         <MessageWrapper>
                             <Message>
                                 {callActive &&
-                                    formatMessage({ defaultMessage: 'Call started' })
+                                    formatMessage({defaultMessage: 'Call started'})
                                 }
                                 {/* {!callActive &&
                                     formatMessage({defaultMessage: 'Call ended'})
@@ -248,7 +257,7 @@ const PostType = ({
                             <SubMessage>{subMessage}</SubMessage>
                         </MessageWrapper>
                     </Left>
-                    {(recordings.length > 0 || callActive) && <RowDivider />}
+                    {(recordings.length > 0 || callActive) && <RowDivider/>}
                     <Right>
                         {callActive &&
                             <>
