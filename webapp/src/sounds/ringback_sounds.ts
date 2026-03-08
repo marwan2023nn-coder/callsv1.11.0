@@ -12,14 +12,16 @@ const EXCLUDED_FILENAMES = new Set(['ring.mp3', 'join_self.mp3', 'join_user.mp3'
 
 const ringbackSoundsMap: Record<string, string> = {};
 
-if (typeof (require as any).context !== 'undefined') {
-    const soundsContext = require.context('./', false, /\.mp3$/);
+try {
+    const soundsContext = (require as any).context('./', false, /\.mp3$/);
 
     soundsContext.keys().forEach((key: string) => {
         const filename = String(key).replace('./', '');
         const mod = soundsContext(key);
         ringbackSoundsMap[filename] = mod?.default ?? mod;
     });
+} catch (e) {
+    // require.context is not available (e.g. in tests)
 }
 
 type RingbackSoundOption = {
