@@ -66,7 +66,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                 <FormattedMessage
                                     defaultMessage={'Use your own WebRTC service'}
                                 />
-                                <EnterprisePill>{untranslatable('workspace')}</EnterprisePill>
+                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -94,12 +94,12 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                 <HorizontalSpacer $size={16}/>
                                 <FooterText>
                                     <FormattedMessage
-                                        defaultMessage={'By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>Mattermost Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails.'}
+                                        defaultMessage={'By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>Workspace Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails.'}
                                         values={{
                                             b: (text: string) => <b>{text}</b>,
                                             linkEvaluation: (text: string) => (
                                                 <a
-                                                    href=''
+                                                    href='https://mattermost.com/software-evaluation-agreement'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -108,7 +108,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                                             ),
                                             linkPrivacy: (text: string) => (
                                                 <a
-                                                    href=''
+                                                    href='https://mattermost.com/privacy-policy/'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -136,7 +136,7 @@ export default function RTCDServiceSection(props: {settingsList: React.ReactNode
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'RTCD Service'})}
-                            {!cloud && <EnterprisePill>{untranslatable('workspace')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
                             {formatMessage({defaultMessage: 'Configure a dedicated service used to offload calls and efficiently support scalable and secure deployments'})}

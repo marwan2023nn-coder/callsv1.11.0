@@ -71,7 +71,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                 <FormattedMessage
                                     defaultMessage={'Get access to call recordings, transcriptions, and live captions'}
                                 />
-                                <EnterprisePill>{untranslatable('نسخة المؤسسات')}</EnterprisePill>
+                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -99,7 +99,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                 <HorizontalSpacer $size={16}/>
                                 <FooterText>
                                     <FormattedMessage
-                                        defaultMessage={'By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>Mattermost Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails.'}
+                                        defaultMessage={'By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>Workspace Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails.'}
                                         values={{
                                             b: (text: string) => <b>{text}</b>,
                                             linkEvaluation: (text: string) => (
@@ -141,10 +141,10 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Call recordings'})}
-                            {!cloud && <EnterprisePill>{untranslatable('نسخة المؤسسات')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
-                            {formatMessage({defaultMessage: 'Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Mattermost'})}
+                            {formatMessage({defaultMessage: 'Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Workspace'})}
                         </div>
                     </div>
                     <div className='section-body'>

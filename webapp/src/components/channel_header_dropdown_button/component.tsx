@@ -83,7 +83,7 @@ const ChannelHeaderDropdownButton = ({
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
                         <Header>
-                            {formatMessage({defaultMessage: 'Mattermost Cloud Professional feature'})}
+                            {formatMessage({defaultMessage: 'Workspace Cloud Professional feature'})}
                         </Header>
                         <SubHeader>
                             {formatMessage({defaultMessage: 'This is a paid feature, available with a free 30-day trial'})}
