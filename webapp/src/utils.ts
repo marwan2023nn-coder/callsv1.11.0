@@ -261,6 +261,7 @@ export async function getScreenStream(sourceID?: string, withAudio?: boolean): P
             // electron
             const options = {
                 chromeMediaSource: 'desktop',
+                maxFrameRate: 10,
             } as Record<string, unknown>;
             if (sourceID) {
                 options.chromeMediaSourceId = sourceID;
@@ -281,7 +282,9 @@ export async function getScreenStream(sourceID?: string, withAudio?: boolean): P
         try {
             // eslint-disable-next-line no-await-in-loop
             screenStream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
+                video: {
+                    frameRate: {max: 10},
+                },
                 audio: Boolean(withAudio),
             });
         } catch (err) {
