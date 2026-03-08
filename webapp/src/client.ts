@@ -12,7 +12,7 @@ import {zlibSync, strToU8} from 'fflate';
 import {AudioDevices, CallsClientConfig, CallsClientStats, TrackInfo} from 'src/types/types';
 
 import {logDebug, logErr, logInfo, logWarn, persistClientLogs} from './log';
-import {getScreenStream, getPersistentStorage} from './utils';
+import {getScreenStream, getPersistentStorage, setSDPMaxVideoBW} from './utils';
 import {WebSocketClient, WebSocketError, WebSocketErrorType} from './websocket';
 import {
     STORAGE_CALLS_CLIENT_STATS_KEY,
@@ -428,8 +428,20 @@ export default class CallsClient extends EventEmitter {
                     data: zlibSync(strToU8(payload)),
                 }, true);
             };
-            peer.on('offer', sdpHandler);
-            peer.on('answer', sdpHandler);
+            const sdpHandlerWithBW = (sdp: RTCSessionDescription) => {
+                let sdpStr = sdp.sdp;
+                if (sdp.type === 'offer' || sdp.type === 'answer') {
+                    // Set a max bitrate of 2Mbps for screen sharing.
+                    sdpStr = setSDPMaxVideoBW(sdpStr, 2000);
+                }
+                sdpHandler({
+                    type: sdp.type,
+                    sdp: sdpStr,
+                } as RTCSessionDescription);
+            };
+
+            peer.on('offer', sdpHandlerWithBW);
+            peer.on('answer', sdpHandlerWithBW);
 
             peer.on('candidate', (candidate) => {
                 ws.send('ice', {
@@ -447,15 +459,26 @@ export default class CallsClient extends EventEmitter {
             peer.on('stream', (remoteStream) => {
                 logDebug('new remote stream received', remoteStream.id);
                 for (const track of remoteStream.getTracks()) {
-                    logDebug('remote track', track.kind, track.id);
+                    logDebug('remote track', track.kind, track.id, track.readyState);
+                    track.onended = () => {
+                        logDebug('remote track ended', track.kind, track.id);
+                    };
+                    track.onmute = () => {
+                        logDebug('remote track muted', track.kind, track.id);
+                    };
+                    track.onunmute = () => {
+                        logDebug('remote track unmuted', track.kind, track.id);
+                    };
                 }
 
                 this.streams.push(remoteStream);
 
                 if (remoteStream.getAudioTracks().length > 0) {
+                    logDebug('remote voice stream identified', remoteStream.id);
                     this.emit('remoteVoiceStream', remoteStream);
                     this.remoteVoiceTracks.push(...remoteStream.getAudioTracks());
                 } else if (remoteStream.getVideoTracks().length > 0) {
+                    logDebug('remote screen stream identified', remoteStream.id);
                     this.emit('remoteScreenStream', remoteStream);
                     this.remoteScreenTrack = remoteStream.getVideoTracks()[0];
                 }
@@ -705,10 +728,20 @@ export default class CallsClient extends EventEmitter {
 
     public async setScreenStream(screenStream: MediaStream) {
         if (!this.ws || !this.peer || this.localScreenTrack || !screenStream) {
+            logWarn('setScreenStream: missing prerequisites', Boolean(this.ws), Boolean(this.peer), Boolean(this.localScreenTrack), Boolean(screenStream));
             return;
         }
 
         const screenTrack = screenStream.getVideoTracks()[0];
+        if (!screenTrack) {
+            logErr('setScreenStream: no video track found in stream');
+            return;
+        }
+
+        if ('contentHint' in screenTrack) {
+            screenTrack.contentHint = 'text';
+        }
+
         this.localScreenTrack = screenTrack;
 
         const screenAudioTrack = screenStream.getAudioTracks()[0];
@@ -723,17 +756,21 @@ export default class CallsClient extends EventEmitter {
         this.streams.push(screenStream);
 
         screenTrack.onended = async () => {
+            logDebug('local screen track ended');
+
             if (screenAudioTrack) {
                 screenAudioTrack.stop();
             }
 
             this.localScreenTrack = null;
             if (!this.ws || !this.peer) {
+                logDebug('setScreenStream onended: client or peer already closed');
                 return;
             }
 
             const safeRemoveTrack = async (track: MediaStreamTrack, label: string) => {
                 try {
+                    logDebug(`removing ${label} track from peer`, track.id);
                     await this.peer?.removeTrack(track.id);
                 } catch (err) {
                     logWarn(`failed to remove ${label} track`, err);
