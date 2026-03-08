@@ -9,3 +9,15 @@ global.TextEncoder = TextEncoder;
 
 // @ts-ignore
 global.TextDecoder = TextDecoder;
+
+// Mock require.context for Jest
+if (typeof (require as any).context === 'undefined') {
+    const context = () => {
+        const res = (key: string) => ({default: key});
+        res.keys = () => [];
+        res.resolve = (key: string) => key;
+        res.id = 'mock';
+        return res;
+    };
+    (require as any).context = context;
+}
