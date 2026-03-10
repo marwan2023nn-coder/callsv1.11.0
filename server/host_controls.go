@@ -287,8 +287,7 @@ func (p *Plugin) remoteControlOn(requesterID, channelID, sessionID string) error
 		return errors.Wrap(ErrNotAllowed, "remote control already granted")
 	}
 
-	ust, ok := state.sessions[sessionID]
-	if !ok {
+	if _, ok := state.sessions[sessionID]; !ok {
 		return ErrNotInCall
 	}
 
