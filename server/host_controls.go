@@ -91,19 +91,19 @@ func (p *Plugin) muteSession(requesterID, channelID, sessionID string) error {
 		}
 	}
 
-	ust, ok := state.sessions[sessionID]
+	ustM, ok := state.sessions[sessionID]
 	if !ok {
 		return ErrNotInCall
 	}
 
-	if !ust.Unmuted {
+	if !ustM.Unmuted {
 		return nil
 	}
 
 	p.publishWebSocketEvent(wsEventHostMute, map[string]interface{}{
 		"channel_id": channelID,
 		"session_id": sessionID,
-	}, &WebSocketBroadcast{UserID: ust.UserID, ReliableClusterSend: true})
+	}, &WebSocketBroadcast{UserID: ustM.UserID, ReliableClusterSend: true})
 
 	return nil
 }
@@ -158,7 +158,7 @@ func (p *Plugin) screenOff(requesterID, channelID, sessionID string) error {
 		return nil
 	}
 
-	ust, ok := state.sessions[sessionID]
+	ustS, ok := state.sessions[sessionID]
 	if !ok {
 		return ErrNotInCall
 	}
@@ -166,7 +166,7 @@ func (p *Plugin) screenOff(requesterID, channelID, sessionID string) error {
 	p.publishWebSocketEvent(wsEventHostScreenOff, map[string]interface{}{
 		"channel_id": channelID,
 		"session_id": sessionID,
-	}, &WebSocketBroadcast{UserID: ust.UserID, ReliableClusterSend: true})
+	}, &WebSocketBroadcast{UserID: ustS.UserID, ReliableClusterSend: true})
 
 	return nil
 }
@@ -187,12 +187,12 @@ func (p *Plugin) lowerHand(requesterID, channelID, sessionID string) error {
 		}
 	}
 
-	ust, ok := state.sessions[sessionID]
+	ustL, ok := state.sessions[sessionID]
 	if !ok {
 		return ErrNotInCall
 	}
 
-	if ust.RaisedHand == 0 {
+	if ustL.RaisedHand == 0 {
 		return nil
 	}
 
@@ -201,7 +201,7 @@ func (p *Plugin) lowerHand(requesterID, channelID, sessionID string) error {
 		"channel_id": channelID,
 		"session_id": sessionID,
 		"host_id":    requesterID,
-	}, &WebSocketBroadcast{UserID: ust.UserID, ReliableClusterSend: true})
+	}, &WebSocketBroadcast{UserID: ustL.UserID, ReliableClusterSend: true})
 
 	return nil
 }
@@ -222,7 +222,7 @@ func (p *Plugin) hostRemoveSession(requesterID, channelID, sessionID string) err
 		}
 	}
 
-	ust, ok := state.sessions[sessionID]
+	ustR, ok := state.sessions[sessionID]
 	if !ok {
 		return ErrNotInCall
 	}
@@ -233,7 +233,7 @@ func (p *Plugin) hostRemoveSession(requesterID, channelID, sessionID string) err
 		"call_id":    state.Call.ID,
 		"channel_id": channelID,
 		"session_id": sessionID,
-		"user_id":    ust.UserID,
+		"user_id":    ustR.UserID,
 	}, &WebSocketBroadcast{
 		ChannelID:           channelID,
 		ReliableClusterSend: true,
@@ -254,12 +254,12 @@ func (p *Plugin) hostRemoveSession(requesterID, channelID, sessionID string) err
 			return
 		}
 
-		ust, ok := state.sessions[sessionID]
+		ustRR, ok := state.sessions[sessionID]
 		if !ok {
 			return
 		}
 
-		if err := p.closeRTCSession(ust.UserID, sessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
+		if err := p.closeRTCSession(ustRR.UserID, sessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
 			p.LogError("hostRemoveSession: failed to close RTC session", "err", err.Error())
 		}
 	}()
