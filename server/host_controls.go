@@ -279,11 +279,15 @@ func (p *Plugin) remoteControlOn(requesterID, channelID, sessionID string) error
 	}
 
 	// Only the user currently sharing their screen can grant remote control.
-	if requesterID != state.sessions[state.Props.ScreenSharingSessionID].UserID {
+	sharerSession, ok := state.sessions[state.Props.ScreenSharingSessionID]
+	if !ok || requesterID != sharerSession.UserID {
 		return ErrNoPermissions
 	}
 
 	if state.Props.RemoteControlSessionID != "" {
+		if state.Props.RemoteControlSessionID == sessionID {
+			return nil
+		}
 		return errors.Wrap(ErrNotAllowed, "remote control already granted")
 	}
 
@@ -320,7 +324,8 @@ func (p *Plugin) remoteControlOff(requesterID, channelID string) error {
 	}
 
 	// Only the user sharing screen or the host can revoke remote control.
-	if requesterID != state.sessions[state.Props.ScreenSharingSessionID].UserID && requesterID != state.Call.GetHostID() {
+	sharerSession, ok := state.sessions[state.Props.ScreenSharingSessionID]
+	if (!ok || requesterID != sharerSession.UserID) && requesterID != state.Call.GetHostID() {
 		if isAdmin := p.API.HasPermissionTo(requesterID, model.PermissionManageSystem); !isAdmin {
 			return ErrNoPermissions
 		}

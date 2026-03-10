@@ -355,6 +355,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     };
 
     handleKeyUp = (ev: KeyboardEvent) => {
+        if (this.handleInputEvent(ev)) {
+            return;
+        }
+
         if (isActiveElementInteractable() && !this.expandedRootRef.current?.contains(document.activeElement)) {
             return;
         }
@@ -979,6 +983,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         muted={true}
                         autoPlay={true}
                         onClick={(ev) => ev.preventDefault()}
+                        onContextMenu={(ev) => ev.preventDefault()}
                         onMouseMove={this.onMouseMovePlayer}
                         onMouseDown={this.onMouseDownPlayer}
                         onMouseUp={this.onMouseUpPlayer}

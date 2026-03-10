@@ -75,7 +75,7 @@ func newUserSession(userID, channelID, connID, callID string, rtc bool) *session
 		wsReconnectCh:  make(chan struct{}),
 		leaveCh:        make(chan struct{}),
 		rtcCloseCh:     make(chan struct{}),
-		wsMsgLimiter:   rate.NewLimiter(10, 100),
+		wsMsgLimiter:   rate.NewLimiter(100, 200),
 		rtc:            rtc,
 	}
 }
