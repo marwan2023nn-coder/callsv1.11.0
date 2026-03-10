@@ -72,6 +72,7 @@ type CallProps struct {
 	NodeID                 string              `json:"node_id,omitempty"`
 	Participants           map[string]struct{} `json:"participants,omitempty"`
 	HostLockedUserID       string              `json:"host_locked_user_id,omitempty"`
+	RemoteControlSessionID string              `json:"remote_control_session_id,omitempty"`
 }
 
 type CallStats struct {

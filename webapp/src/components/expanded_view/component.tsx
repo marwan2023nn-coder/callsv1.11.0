@@ -123,6 +123,7 @@ interface Props extends RouteComponentProps {
     transcriptionsEnabled: boolean,
     isAdmin: boolean,
     hostControlsAllowed: boolean,
+    remoteControlSessionID?: string,
     openModal: <P>(modalData: ModalData<P>) => void;
 }
 
@@ -372,8 +373,87 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         }
     };
 
+    handleInputEvent = (ev: MouseEvent | KeyboardEvent) => {
+        if (!window.callsClient || !this.props.remoteControlSessionID || this.props.remoteControlSessionID !== this.props.currentSession?.session_id) {
+            return false;
+        }
+
+        if (this.props.screenSharingSession?.session_id === this.props.currentSession?.session_id) {
+            return false;
+        }
+
+        // If the user is interacting with some UI element in the app (like RHS chat),
+        // we don't want to capture keyboard events.
+        if (ev instanceof KeyboardEvent && isActiveElementInteractable() && !this.expandedRootRef.current?.contains(document.activeElement)) {
+            return false;
+        }
+
+        const video = this.screenPlayer;
+        if (!video) {
+            return false;
+        }
+
+        const rect = video.getBoundingClientRect();
+        const videoRatio = video.videoWidth / video.videoHeight;
+        const elementRatio = rect.width / rect.height;
+
+        let data: any = {
+            type: ev.type,
+        };
+
+        if (ev instanceof MouseEvent) {
+            let contentWidth, contentHeight, offsetX, offsetY;
+
+            if (elementRatio > videoRatio) {
+                contentHeight = rect.height;
+                contentWidth = contentHeight * videoRatio;
+                offsetX = (rect.width - contentWidth) / 2;
+                offsetY = 0;
+            } else {
+                contentWidth = rect.width;
+                contentHeight = contentWidth / videoRatio;
+                offsetX = 0;
+                offsetY = (rect.height - contentHeight) / 2;
+            }
+
+            const x = (ev.clientX - rect.left - offsetX) / contentWidth;
+            const y = (ev.clientY - rect.top - offsetY) / contentHeight;
+
+            if (x < 0 || x > 1 || y < 0 || y > 1) {
+                return false;
+            }
+
+            data = {
+                ...data,
+                x,
+                y,
+                button: ev.button,
+                buttons: ev.buttons,
+            };
+        } else if (ev instanceof KeyboardEvent) {
+            data = {
+                ...data,
+                key: ev.key,
+                code: ev.code,
+                ctrlKey: ev.ctrlKey,
+                shiftKey: ev.shiftKey,
+                altKey: ev.altKey,
+                metaKey: ev.metaKey,
+            };
+        }
+
+        window.callsClient.sendInputEvent(data);
+        ev.preventDefault();
+        ev.stopPropagation();
+        return true;
+    };
+
     handleKBShortcuts = (ev: KeyboardEvent) => {
         if ((!this.props.show || !window.callsClient) && !window.opener) {
+            return;
+        }
+
+        if (this.handleInputEvent(ev)) {
             return;
         }
 
@@ -568,6 +648,39 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             this.screenPlayer.srcObject = this.state.screenStream;
         }
     }
+
+    onMouseMovePlayer = (ev: React.MouseEvent) => {
+        this.handleInputEvent(ev.nativeEvent);
+    };
+
+    onMouseDownPlayer = (ev: React.MouseEvent) => {
+        this.handleInputEvent(ev.nativeEvent);
+    };
+
+    onMouseUpPlayer = (ev: React.MouseEvent) => {
+        this.handleInputEvent(ev.nativeEvent);
+    };
+
+    onWheelPlayer = (ev: React.WheelEvent) => {
+        if (!window.callsClient || !this.props.remoteControlSessionID || this.props.remoteControlSessionID !== this.props.currentSession?.session_id) {
+            return;
+        }
+
+        const video = this.screenPlayer;
+        if (!video) {
+            return;
+        }
+
+        const data = {
+            type: 'wheel',
+            deltaX: ev.deltaX,
+            deltaY: ev.deltaY,
+        };
+
+        window.callsClient.sendInputEvent(data);
+        ev.preventDefault();
+        ev.stopPropagation();
+    };
 
     requestCallState = () => {
         const callsClient = getCallsClient();
@@ -866,6 +979,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         muted={true}
                         autoPlay={true}
                         onClick={(ev) => ev.preventDefault()}
+                        onMouseMove={this.onMouseMovePlayer}
+                        onMouseDown={this.onMouseDownPlayer}
+                        onMouseUp={this.onMouseUpPlayer}
+                        onWheel={this.onWheelPlayer}
                         controls={false}
                     />
                     <StyledMediaControlBar>

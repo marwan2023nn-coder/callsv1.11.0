@@ -69,6 +69,8 @@ import {
     USER_RAISE_HAND,
     USER_REACTED,
     USER_REACTED_TIMEOUT,
+    USER_REMOTE_CONTROL_OFF,
+    USER_REMOTE_CONTROL_ON,
     USER_SCREEN_OFF,
     USER_SCREEN_ON,
     USER_UNMUTED,
@@ -85,6 +87,8 @@ import {
     shouldPlayJoinUserSound,
 } from './selectors';
 import {Store} from './types/mattermost-webapp';
+import {logDebug} from 'src/log';
+
 import {
     followThread,
     getCallsClient,
@@ -425,6 +429,23 @@ export function handleCallHostChanged(store: Store, ev: WebSocketMessage<CallHos
     }, HOST_CONTROL_NOTICE_TIMEOUT);
 }
 
+export function handleInputEvent(_: Store, ev: WebSocketMessage<{ data: string }>) {
+    const client = getCallsClient();
+    if (!client) {
+        return;
+    }
+
+    try {
+        const inputData = JSON.parse(ev.data.data);
+        if (window.desktopAPI && (window.desktopAPI as any).sendRemoteControlEvent) {
+            logDebug('desktopAPI.sendRemoteControlEvent', inputData);
+            (window.desktopAPI as any).sendRemoteControlEvent(inputData);
+        }
+    } catch (err) {
+        logErr('failed to parse input event', err);
+    }
+}
+
 // NOTE: it's important this function is kept synchronous in order to guarantee the order of
 // state mutating operations.
 export function handleCallJobState(store: Store, ev: WebSocketMessage<CallJobStateData>) {
@@ -536,6 +557,27 @@ export function handleHostScreenOff(store: Store, ev: WebSocketMessage<HostContr
     }
 
     client.unshareScreen();
+}
+
+export function handleHostRemoteControlOn(store: Store, ev: WebSocketMessage<HostControlMsg>) {
+    const channelID = ev.data.channel_id;
+    store.dispatch({
+        type: USER_REMOTE_CONTROL_ON,
+        data: {
+            channelID,
+            session_id: ev.data.session_id,
+        },
+    });
+}
+
+export function handleHostRemoteControlOff(store: Store, ev: WebSocketMessage<HostControlMsg>) {
+    const channelID = ev.data.channel_id;
+    store.dispatch({
+        type: USER_REMOTE_CONTROL_OFF,
+        data: {
+            channelID,
+        },
+    });
 }
 
 export function handleHostLowerHand(store: Store, ev: WebSocketMessage<HostControlLowerHand>) {

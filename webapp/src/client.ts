@@ -842,6 +842,12 @@ export default class CallsClient extends EventEmitter {
         this.ws?.send('unraise_hand');
     }
 
+    public sendInputEvent(data: any) {
+        this.ws?.send('input_event', {
+            data: JSON.stringify(data),
+        });
+    }
+
     public sendUserReaction(data: EmojiData) {
         this.ws?.send('react', {
             data: JSON.stringify(data),

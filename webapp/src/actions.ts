@@ -74,6 +74,8 @@ import {
     TRANSCRIBE_API,
     TRANSCRIPTIONS_ENABLED,
     USER_LEFT,
+    USER_REMOTE_CONTROL_OFF,
+    USER_REMOTE_CONTROL_ON,
     USER_SCREEN_ON,
     USERS_STATES,
 } from './action_types';
@@ -525,7 +527,7 @@ export const loadProfilesByIdsIfMissing = (ids: string[]) => {
     };
 };
 
-export const loadCallState = (channelID: string, call: CallState) => (dispatch: DispatchFunc, getState: GetStateFunc) => {
+export const loadCallState = (channelID: string, call: CallState & {remote_control_session_id?: string}) => (dispatch: DispatchFunc, getState: GetStateFunc) => {
     const actions: AnyAction[] = [];
 
     actions.push({
@@ -536,6 +538,8 @@ export const loadCallState = (channelID: string, call: CallState) => (dispatch: 
             startAt: call.start_at,
             ownerID: call.owner_id,
             threadID: call.thread_id,
+            screen_sharing_session_id: call.screen_sharing_session_id,
+            remote_control_session_id: (call as any).remote_control_session_id,
         },
     });
 
@@ -562,6 +566,23 @@ export const loadCallState = (channelID: string, call: CallState) => (dispatch: 
             session_id: call.screen_sharing_session_id,
         },
     });
+
+    if ((call as any).remote_control_session_id) {
+        actions.push({
+            type: USER_REMOTE_CONTROL_ON,
+            data: {
+                channelID,
+                session_id: (call as any).remote_control_session_id,
+            },
+        });
+    } else {
+        actions.push({
+            type: USER_REMOTE_CONTROL_OFF,
+            data: {
+                channelID,
+            },
+        });
+    }
 
     actions.push({
         type: CALL_HOST,
@@ -636,6 +657,23 @@ export const hostScreenOff = async (callID: string, sessionID: string) => {
             method: 'post',
             body: JSON.stringify({session_id: sessionID}),
         },
+    );
+};
+
+export const hostRemoteControlOn = async (callID: string, sessionID: string) => {
+    return RestClient.fetch(
+        `${getPluginPath()}/calls/${callID}/host/remote-control-on`,
+        {
+            method: 'post',
+            body: JSON.stringify({session_id: sessionID}),
+        },
+    );
+};
+
+export const hostRemoteControlOff = async (callID: string) => {
+    return RestClient.fetch(
+        `${getPluginPath()}/calls/${callID}/host/remote-control-off`,
+        {method: 'post'},
     );
 };
 
