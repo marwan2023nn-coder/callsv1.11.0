@@ -661,13 +661,21 @@ export const hostScreenOff = async (callID: string, sessionID: string) => {
 };
 
 export const hostRemoteControlOn = async (callID: string, sessionID: string) => {
-    return RestClient.fetch(
-        `${getPluginPath()}/calls/${callID}/host/remote-control-on`,
-        {
-            method: 'post',
-            body: JSON.stringify({session_id: sessionID}),
-        },
-    );
+    try {
+        await RestClient.fetch(
+            `${getPluginPath()}/calls/${callID}/host/remote-control-on`,
+            {
+                method: 'post',
+                body: JSON.stringify({session_id: sessionID}),
+            },
+        );
+    } catch (err) {
+        // If it's already granted to this user, we don't care.
+        if ((err as any).message?.includes('already granted')) {
+            return;
+        }
+        throw err;
+    }
 };
 
 export const hostRemoteControlOff = async (callID: string) => {

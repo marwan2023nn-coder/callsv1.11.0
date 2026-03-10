@@ -285,6 +285,9 @@ func (p *Plugin) remoteControlOn(requesterID, channelID, sessionID string) error
 	}
 
 	if state.Props.RemoteControlSessionID != "" {
+		if state.Props.RemoteControlSessionID == sessionID {
+			return nil
+		}
 		return errors.Wrap(ErrNotAllowed, "remote control already granted")
 	}
 
