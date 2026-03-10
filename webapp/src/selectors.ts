@@ -79,7 +79,7 @@ export const idForCurrentCall: (state: GlobalState) => string | undefined =
         'idForCurrentCall',
         calls,
         channelIDForCurrentCall,
-        (callsStates, channelID) => callsStates[channelID]?.ID,
+        (callsStates, channelID) => (callsStates ? callsStates[channelID]?.ID : undefined),
     );
 
 export const threadIDForCurrentCall: (state: GlobalState) => string | undefined =
@@ -87,7 +87,7 @@ export const threadIDForCurrentCall: (state: GlobalState) => string | undefined 
         'threadIDForCurrentCall',
         calls,
         channelIDForCurrentCall,
-        (callsStates, channelID) => callsStates[channelID]?.threadID,
+        (callsStates, channelID) => (callsStates ? callsStates[channelID]?.threadID : undefined),
     );
 
 export const teamForCurrentCall: (state: GlobalState) => Team | null =
@@ -173,7 +173,7 @@ export const currentChannelHasCall: (state: GlobalState) => boolean =
         'currentChannelHasCall',
         calls,
         getCurrentChannelId,
-        (callsStates, currChannelId) => Boolean(callsStates[currChannelId]),
+        (callsStates, currChannelId) => (callsStates ? Boolean(callsStates[currChannelId]) : false),
     );
 
 export const sessionsInCurrentCall: (state: GlobalState) => UserSessionState[] =
@@ -235,7 +235,7 @@ export const callStartAtForCurrentCall: (state: GlobalState) => number =
         calls,
         channelIDForCurrentCall,
         getCallsClientInitTime,
-        (callsStates, channelID, initTime) => callsStates[channelID]?.startAt || initTime || 0,
+        (callsStates, channelID, initTime) => (callsStates ? callsStates[channelID]?.startAt : 0) || initTime || 0,
     );
 
 export const callInCurrentChannel: (state: GlobalState) => callState | undefined =
@@ -243,7 +243,7 @@ export const callInCurrentChannel: (state: GlobalState) => callState | undefined
         'callInCurrentChannel',
         calls,
         getCurrentChannelId,
-        (callsStates, currChannelId) => callsStates[currChannelId],
+        (callsStates, currChannelId) => (callsStates ? callsStates[currChannelId] : undefined),
     );
 
 export const idForCallInChannel = (state: GlobalState, channelID: string): string | undefined => {
@@ -267,7 +267,7 @@ export const hostIDForCurrentCall: (state: GlobalState) => string =
         'hostIDForCurrentCall',
         hostsInCalls,
         channelIDForCurrentCall,
-        (hosts, channelID) => hosts[channelID]?.hostID || '',
+        (hosts, channelID) => (hosts ? hosts[channelID]?.hostID : '') || '',
     );
 
 export const hostChangeAtForCurrentCall: (state: GlobalState) => number =
@@ -275,7 +275,7 @@ export const hostChangeAtForCurrentCall: (state: GlobalState) => number =
         'hostChangeAtForCurrentCall',
         hostsInCalls,
         channelIDForCurrentCall,
-        (hosts, channelID) => hosts[channelID]?.hostChangeAt || 0,
+        (hosts, channelID) => (hosts ? hosts[channelID]?.hostChangeAt : 0) || 0,
     );
 
 export const callDismissedNotification = (state: GlobalState, channelID: string) => {
@@ -304,7 +304,7 @@ export const remoteControlSessionIDForCurrentCall: (state: GlobalState) => strin
         'remoteControlSessionIDForCurrentCall',
         remoteControlIDsForCalls,
         channelIDForCurrentCall,
-        (ids, channelID) => ids[channelID] || '',
+        (ids, channelID) => (ids ? ids[channelID] : '') || '',
     );
 
 export const screenSharingSessionIDForCurrentCall: (state: GlobalState) => string =
@@ -312,7 +312,7 @@ export const screenSharingSessionIDForCurrentCall: (state: GlobalState) => strin
         'screenSharingSessionIDForCurrentCall',
         screenSharingIDsForCalls,
         channelIDForCurrentCall,
-        (ids, channelID) => ids[channelID] || '',
+        (ids, channelID) => (ids ? ids[channelID] : '') || '',
     );
 
 export const threadIDForCallInChannel = (state: GlobalState, channelID: string) => {
@@ -328,7 +328,7 @@ export const recordingForCurrentCall: (state: GlobalState) => CallJobReduxState 
         'recordingForCurrentCall',
         recordingsForCalls,
         channelIDForCurrentCall,
-        (recordings, channelID) => recordings[channelID] || {},
+        (recordings, channelID) => (recordings ? recordings[channelID] : {}) || {},
     );
 
 export const hostControlNoticesForCalls = (state: GlobalState): hostControlNoticeState => {
@@ -352,7 +352,7 @@ export const liveCaptionsStateForCurrentCall: (state: GlobalState) => CallJobRed
         'liveCaptionsStateForCurrentCall',
         liveCaptionsStateForCalls,
         channelIDForCurrentCall,
-        (liveCaptions, channelID) => liveCaptions[channelID] || {},
+        (liveCaptions, channelID) => (liveCaptions ? liveCaptions[channelID] : {}) || {},
     );
 
 export const areLiveCaptionsAvailableInCurrentCall: (state: GlobalState) => boolean =
@@ -385,6 +385,9 @@ export const isRecordingInCurrentCall: (state: GlobalState) => boolean =
         recordingsForCalls,
         channelIDForCurrentCall,
         (recordings, channelID) => {
+            if (!recordings) {
+                return false;
+            }
             const recording = recordings[channelID];
             if (!recording) {
                 return false;
