@@ -118,6 +118,8 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 	hostCtrlRouter.HandleFunc("/lower-hand", p.handleLowerHand).Methods("POST")
 	hostCtrlRouter.HandleFunc("/remove", p.handleRemoveSession).Methods("POST")
 	hostCtrlRouter.HandleFunc("/mute-others", p.handleMuteOthers).Methods("POST")
+	hostCtrlRouter.HandleFunc("/remote-control-on", p.handleRemoteControlOn).Methods("POST")
+	hostCtrlRouter.HandleFunc("/remote-control-off", p.handleRemoteControlOff).Methods("POST")
 	hostCtrlRouter.HandleFunc("/end", p.handleEnd).Methods("POST")
 
 	// Bot

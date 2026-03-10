@@ -3,13 +3,16 @@
 
 import React from 'react';
 import {useIntl} from 'react-intl';
-import {hostLowerHand, hostMake, hostMute, hostScreenOff} from 'src/actions';
+import {useSelector} from 'react-redux';
+import {hostLowerHand, hostMake, hostMute, hostRemoteControlOff, hostRemoteControlOn, hostScreenOff} from 'src/actions';
 import {DropdownMenuItem, DropdownMenuSeparator} from 'src/components/dot_menu/dot_menu';
 import MinusCircleOutlineIcon from 'src/components/icons/minus_circle_outline';
 import MonitorAccount from 'src/components/icons/monitor_account';
 import MutedIcon from 'src/components/icons/muted_icon';
+import ScreenIcon from 'src/components/icons/screen_icon';
 import UnraisedHandIcon from 'src/components/icons/unraised_hand';
 import UnshareScreenIcon from 'src/components/icons/unshare_screen';
+import {idForCurrentCall, remoteControlSessionIDForCurrentCall, screenSharingSessionIDForCurrentCall} from 'src/selectors';
 import styled from 'styled-components';
 
 type Props = {
@@ -34,10 +37,17 @@ export const HostControlsMenu = ({
     onRemove,
 }: Props) => {
     const {formatMessage} = useIntl();
+    const currentCallID = useSelector(idForCurrentCall);
+    const screenSharingSessionID = useSelector(screenSharingSessionIDForCurrentCall);
+    const remoteControlSessionID = useSelector(remoteControlSessionIDForCurrentCall);
 
     if (!callID) {
         return null;
     }
+
+    const isSharer = window.callsClient?.getSessionID() === screenSharingSessionID;
+    const canGrantRemoteControl = isSharer && screenSharingSessionID && !remoteControlSessionID && !isSharingScreen;
+    const canRevokeRemoteControl = (isSharer || isHost) && remoteControlSessionID === sessionID;
 
     const muteUnmute = isMuted ? null : (
         <DropdownMenuItem onClick={() => hostMute(callID, sessionID)}>
@@ -71,6 +81,24 @@ export const HostControlsMenu = ({
                         style={{width: '16px', height: '16px'}}
                     />
                     {formatMessage({defaultMessage: 'Lower hand'})}
+                </DropdownMenuItem>
+            }
+            {canGrantRemoteControl &&
+                <DropdownMenuItem onClick={() => hostRemoteControlOn(callID, sessionID)}>
+                    <ScreenIcon
+                        fill='var(--center-channel-color-56)'
+                        style={{width: '16px', height: '16px'}}
+                    />
+                    {formatMessage({defaultMessage: 'Grant remote control'})}
+                </DropdownMenuItem>
+            }
+            {canRevokeRemoteControl &&
+                <DropdownMenuItem onClick={() => hostRemoteControlOff(callID)}>
+                    <ScreenIcon
+                        fill='var(--center-channel-color-56)'
+                        style={{width: '16px', height: '16px'}}
+                    />
+                    {formatMessage({defaultMessage: 'Revoke remote control'})}
                 </DropdownMenuItem>
             }
             {!isHost &&

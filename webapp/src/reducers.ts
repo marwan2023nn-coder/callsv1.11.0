@@ -618,6 +618,8 @@ export type callState = {
     channelID: string;
     threadID: string;
     ownerID: string;
+    screen_sharing_session_id?: string;
+    remote_control_session_id?: string;
 }
 
 type callStateAction = {

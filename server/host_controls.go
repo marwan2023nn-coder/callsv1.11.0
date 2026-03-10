@@ -267,6 +267,86 @@ func (p *Plugin) hostRemoveSession(requesterID, channelID, sessionID string) err
 	return nil
 }
 
+func (p *Plugin) remoteControlOn(requesterID, channelID, sessionID string) error {
+	state, err := p.lockCallReturnState(channelID)
+	if err != nil {
+		return fmt.Errorf("failed to lock call: %w", err)
+	}
+	defer p.unlockCall(channelID)
+
+	if state == nil {
+		return ErrNoCallOngoing
+	}
+
+	// Only the user currently sharing their screen can grant remote control.
+	if requesterID != state.sessions[state.Props.ScreenSharingSessionID].UserID {
+		return ErrNoPermissions
+	}
+
+	if state.Props.RemoteControlSessionID != "" {
+		return errors.Wrap(ErrNotAllowed, "remote control already granted")
+	}
+
+	ust, ok := state.sessions[sessionID]
+	if !ok {
+		return ErrNotInCall
+	}
+
+	state.Call.Props.RemoteControlSessionID = sessionID
+	if err := p.store.UpdateCall(&state.Call); err != nil {
+		return fmt.Errorf("failed to update call: %w", err)
+	}
+
+	p.publishWebSocketEvent(wsEventHostRemoteControlOn, map[string]interface{}{
+		"channel_id": channelID,
+		"session_id": sessionID,
+	}, &WebSocketBroadcast{
+		ChannelID:           channelID,
+		ReliableClusterSend: true,
+		UserIDs:             getUserIDsFromSessions(state.sessions),
+	})
+
+	return nil
+}
+
+func (p *Plugin) remoteControlOff(requesterID, channelID string) error {
+	state, err := p.lockCallReturnState(channelID)
+	if err != nil {
+		return fmt.Errorf("failed to lock call: %w", err)
+	}
+	defer p.unlockCall(channelID)
+
+	if state == nil {
+		return ErrNoCallOngoing
+	}
+
+	// Only the user sharing screen or the host can revoke remote control.
+	if requesterID != state.sessions[state.Props.ScreenSharingSessionID].UserID && requesterID != state.Call.GetHostID() {
+		if isAdmin := p.API.HasPermissionTo(requesterID, model.PermissionManageSystem); !isAdmin {
+			return ErrNoPermissions
+		}
+	}
+
+	if state.Call.Props.RemoteControlSessionID == "" {
+		return nil
+	}
+
+	state.Call.Props.RemoteControlSessionID = ""
+	if err := p.store.UpdateCall(&state.Call); err != nil {
+		return fmt.Errorf("failed to update call: %w", err)
+	}
+
+	p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{
+		"channel_id": channelID,
+	}, &WebSocketBroadcast{
+		ChannelID:           channelID,
+		ReliableClusterSend: true,
+		UserIDs:             getUserIDsFromSessions(state.sessions),
+	})
+
+	return nil
+}
+
 func (p *Plugin) hostEnd(requesterID, channelID string) error {
 	state, err := p.lockCallReturnState(channelID)
 	if err != nil {

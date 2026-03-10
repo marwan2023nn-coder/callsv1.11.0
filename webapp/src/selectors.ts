@@ -295,6 +295,26 @@ export const screenSharingSessionForCurrentCall: (state: GlobalState) => UserSes
         (ids, channelID, sessions) => sessions[channelID]?.[ids[channelID]],
     );
 
+const remoteControlIDsForCalls = (state: GlobalState): screenSharingIDsState => {
+    return pluginState(state).remoteControlIDs;
+};
+
+export const remoteControlSessionIDForCurrentCall: (state: GlobalState) => string =
+    createSelector(
+        'remoteControlSessionIDForCurrentCall',
+        remoteControlIDsForCalls,
+        channelIDForCurrentCall,
+        (ids, channelID) => ids[channelID] || '',
+    );
+
+export const screenSharingSessionIDForCurrentCall: (state: GlobalState) => string =
+    createSelector(
+        'screenSharingSessionIDForCurrentCall',
+        screenSharingIDsForCalls,
+        channelIDForCurrentCall,
+        (ids, channelID) => ids[channelID] || '',
+    );
+
 export const threadIDForCallInChannel = (state: GlobalState, channelID: string) => {
     return pluginState(state).calls[channelID]?.threadID || '';
 };

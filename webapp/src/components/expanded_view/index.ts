@@ -28,6 +28,7 @@ import {
     recordingForCurrentCall,
     recordingMaxDuration,
     recordingsEnabled,
+    remoteControlSessionIDForCurrentCall,
     screenSharingSessionForCurrentCall,
     sessionForCurrentCall,
     sessionsInCurrentCall,
@@ -92,6 +93,7 @@ const mapStateToProps = (state: GlobalState) => {
         transcriptionsEnabled: transcriptionsEnabled(state),
         isAdmin: isCurrentUserSystemAdmin(state),
         hostControlsAllowed: areHostControlsAllowed(state),
+        remoteControlSessionID: remoteControlSessionIDForCurrentCall(state),
     };
 };
 

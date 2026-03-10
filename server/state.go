@@ -96,6 +96,7 @@ type CallStateClient struct {
 	PostID   string `json:"post_id"`
 
 	ScreenSharingSessionID string          `json:"screen_sharing_session_id"`
+	RemoteControlSessionID string          `json:"remote_control_session_id"`
 	OwnerID                string          `json:"owner_id"`
 	HostID                 string          `json:"host_id"`
 	Recording              *JobStateClient `json:"recording,omitempty"`
@@ -227,6 +228,7 @@ func (cs *callState) getClientState(botID, userID string) *CallStateClient {
 		ThreadID:               cs.ThreadID,
 		PostID:                 cs.PostID,
 		ScreenSharingSessionID: cs.Props.ScreenSharingSessionID,
+		RemoteControlSessionID: cs.Props.RemoteControlSessionID,
 		OwnerID:                cs.OwnerID,
 		HostID:                 cs.GetHostID(),
 		Recording:              getClientStateFromCallJob(cs.Recording),

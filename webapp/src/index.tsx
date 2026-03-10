@@ -170,6 +170,7 @@ import {
 import {
     handleCallEnd,
     handleCallHostChanged,
+    handleInputEvent,
     handleCallJobState,
     handleCallStart,
     handleCallState,
@@ -191,6 +192,8 @@ import {
     handleUserUnraisedHand,
     handleUserVoiceOff,
     handleUserVoiceOn,
+    handleHostRemoteControlOn,
+    handleHostRemoteControlOff,
 } from './websocket_handlers';
 
 export default class Plugin {
@@ -312,6 +315,18 @@ export default class Plugin {
 
         registry.registerWebSocketEventHandler(`custom_${pluginId}_host_removed`, (ev) => {
             handleHostRemoved(store, ev);
+        });
+
+        registry.registerWebSocketEventHandler(`custom_${pluginId}_host_remote_control_on`, (ev) => {
+            handleHostRemoteControlOn(store, ev);
+        });
+
+        registry.registerWebSocketEventHandler(`custom_${pluginId}_host_remote_control_off`, (ev) => {
+            handleHostRemoteControlOff(store, ev);
+        });
+
+        registry.registerWebSocketEventHandler(`custom_${pluginId}_input_event`, (ev) => {
+            handleInputEvent(store, ev);
         });
     }
 

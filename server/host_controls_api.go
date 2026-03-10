@@ -152,6 +152,47 @@ func (p *Plugin) handleRemoveSession(w http.ResponseWriter, r *http.Request) {
 	res.Msg = "success"
 }
 
+func (p *Plugin) handleRemoteControlOn(w http.ResponseWriter, r *http.Request) {
+	var res httpResponse
+	defer p.httpAudit("handleRemoteControlOn", &res, w, r)
+
+	userID := r.Header.Get("Mattermost-User-Id")
+	callID := mux.Vars(r)["call_id"]
+
+	var payload struct {
+		SessionID string `json:"session_id"`
+	}
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, requestBodyMaxSizeBytes)).Decode(&payload); err != nil {
+		res.Err = err.Error()
+		res.Code = http.StatusBadRequest
+		return
+	}
+
+	if err := p.remoteControlOn(userID, callID, payload.SessionID); err != nil {
+		p.handleHostControlsError(err, &res, "handleRemoteControlOn")
+		return
+	}
+
+	res.Code = http.StatusOK
+	res.Msg = "success"
+}
+
+func (p *Plugin) handleRemoteControlOff(w http.ResponseWriter, r *http.Request) {
+	var res httpResponse
+	defer p.httpAudit("handleRemoteControlOff", &res, w, r)
+
+	userID := r.Header.Get("Mattermost-User-Id")
+	callID := mux.Vars(r)["call_id"]
+
+	if err := p.remoteControlOff(userID, callID); err != nil {
+		p.handleHostControlsError(err, &res, "handleRemoteControlOff")
+		return
+	}
+
+	res.Code = http.StatusOK
+	res.Msg = "success"
+}
+
 func (p *Plugin) handleEnd(w http.ResponseWriter, r *http.Request) {
 	var res httpResponse
 	defer p.httpAudit("handleEnd", &res, w, r)

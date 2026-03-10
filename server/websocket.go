@@ -51,6 +51,8 @@ const (
 	wsEventHostScreenOff             = "host_screen_off"
 	wsEventHostLowerHand             = "host_lower_hand"
 	wsEventHostRemoved               = "host_removed"
+	wsEventHostRemoteControlOn       = "host_remote_control_on"
+	wsEventHostRemoteControlOff      = "host_remote_control_off"
 
 	wsReconnectionTimeout = 10 * time.Second
 )
@@ -1350,6 +1352,41 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			p.LogError("handleCaptionMessage failed", "err", err.Error(), "userID", userID, "connID", connID)
 			return
 		}
+		return
+	case clientMessageTypeInputEvent:
+		msgData, ok := req.Data["data"].(string)
+		if !ok {
+			p.LogError("invalid or missing input_event data")
+			return
+		}
+
+		state, err := p.getCallState(us.channelID, false)
+		if err != nil {
+			p.LogError("failed to get call state", "err", err.Error())
+			return
+		}
+
+		if state == nil {
+			p.LogError("no call ongoing")
+			return
+		}
+
+		// Remote control session should be valid
+		if state.Props.RemoteControlSessionID != us.originalConnID {
+			p.LogError("unauthorized input event", "sessionID", us.originalConnID)
+			return
+		}
+
+		sharerSession, ok := state.sessions[state.Props.ScreenSharingSessionID]
+		if !ok {
+			p.LogError("sharer session not found")
+			return
+		}
+
+		// Relay to sharer
+		p.publishWebSocketEvent("input_event", map[string]interface{}{
+			"data": msgData,
+		}, &WebSocketBroadcast{UserID: sharerSession.UserID, ReliableClusterSend: true})
 		return
 	case clientMessageTypeMetric:
 		// Sent from the transcriber.
