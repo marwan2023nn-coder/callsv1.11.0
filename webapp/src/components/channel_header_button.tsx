@@ -148,7 +148,7 @@ const ChannelHeaderButton = () => {
                 overlay={
                     <Tooltip id='tooltip-limit-header'>
                         <Header>
-                            {formatMessage({defaultMessage: 'ميزة Mattermost Cloud Professional'})}
+                            {formatMessage({defaultMessage: 'Workspace Cloud Professional feature'})}
                         </Header>
                         <SubHeader>
                             {formatMessage({defaultMessage: 'هذه ميزة مدفوعة، متاحة مع تجربة مجانية لمدة 30 يومًا'})}

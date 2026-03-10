@@ -2,12 +2,12 @@
 
 ![calls_screen](https://user-images.githubusercontent.com/1832946/205749357-1f2d5af3-cfe7-4352-b1f2-953a31d91fca.png)
 
-Calls enables voice calling and screen sharing functionality in Mattermost channels.
+Calls enables voice calling and screen sharing functionality in Workspace channels.
 
 ## Installation
 
 1. Download the latest version from the [release page](https://github.com/mattermost/mattermost-plugin-calls/releases).
-2. Upload the file through **System Console > Plugins > Plugin Management**, or manually upload it to the Mattermost server under plugin directory.
+2. Upload the file through **System Console > Plugins > Plugin Management**, or manually upload it to the Workspace server under plugin directory.
 3. Configure and enable the plugin.
 
 ## Requirements

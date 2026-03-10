@@ -389,6 +389,13 @@ export default class CallsClient extends EventEmitter {
         ws.on('join', async () => {
             logDebug('join ack received, initializing connection');
 
+            const timeout = setTimeout(() => {
+                if (!this.connected && !this.closed) {
+                    logErr('timed out waiting for rtc connection');
+                    this.disconnect(rtcPeerTimeoutErr);
+                }
+            }, 15000);
+
             const peer = new RTCPeer({
                 iceServers: this.config.iceServers || [],
                 logger: {
@@ -452,6 +459,7 @@ export default class CallsClient extends EventEmitter {
             peer.on('error', (err) => {
                 logErr('peer error', err);
                 if (!this.closed) {
+                    clearTimeout(timeout);
                     this.disconnect(err === rtcPeerTimeoutErr.message ? rtcPeerTimeoutErr : rtcPeerErr);
                 }
             });
@@ -487,6 +495,7 @@ export default class CallsClient extends EventEmitter {
             peer.on('connect', () => {
                 logDebug('rtc connected');
 
+                clearTimeout(timeout);
                 this.emit('connect');
                 this.rtcMonitor?.start();
                 this.connected = true;
@@ -496,6 +505,7 @@ export default class CallsClient extends EventEmitter {
                 logDebug('rtc closed');
 
                 if (!this.closed) {
+                    clearTimeout(timeout);
                     this.disconnect(rtcPeerCloseErr);
                 }
             });

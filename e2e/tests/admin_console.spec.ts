@@ -51,45 +51,45 @@ test.describe('admin console', () => {
         await page.goto(`${baseURL}/admin_console/plugins/plugin_com.workspace.calls`);
 
         // Check radio input
-        await page.getByTestId('PluginSettings.PluginStates.com+mattermost+calls.Enablefalse').click();
+        await page.getByTestId('PluginSettings.PluginStates.com+workspace+calls.Enablefalse').click();
 
         // wait for any animation to complete
         await wait(1000);
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.PluginStates.com+mattermost+calls.Enable')).toMatchSnapshot('calls-system-console-enable-plugin-false.png', {maxDiffPixels: 0});
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.PluginStates.com+workspace+calls.Enable')).toMatchSnapshot('calls-system-console-enable-plugin-false.png', {maxDiffPixels: 0});
 
-        await page.getByTestId('PluginSettings.PluginStates.com+mattermost+calls.Enabletrue').click();
+        await page.getByTestId('PluginSettings.PluginStates.com+workspace+calls.Enabletrue').click();
 
         // wait for any animation to complete
         await wait(1000);
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.PluginStates.com+mattermost+calls.Enable')).toMatchSnapshot('calls-system-console-enable-plugin-true.png', {maxDiffPixels: 0});
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.PluginStates.com+workspace+calls.Enable')).toMatchSnapshot('calls-system-console-enable-plugin-true.png', {maxDiffPixels: 0});
 
         // Check number input
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.maxcallparticipants')).toMatchSnapshot('calls-system-console-max-call-participants-default.png', {maxDiffPixels: 0});
-        await page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.maxcallparticipantsnumber').fill('10');
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.maxcallparticipants')).toMatchSnapshot('calls-system-console-max-call-participants-modified.png', {maxDiffPixels: 0});
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.maxcallparticipants')).toMatchSnapshot('calls-system-console-max-call-participants-default.png', {maxDiffPixels: 0});
+        await page.getByTestId('PluginSettings.Plugins.com+workspace+calls.maxcallparticipantsnumber').fill('10');
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.maxcallparticipants')).toMatchSnapshot('calls-system-console-max-call-participants-modified.png', {maxDiffPixels: 0});
 
         // Check text input
-        await page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.rtcdserviceurlinput').fill('http://rtcd.local:8065');
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.rtcdserviceurl')).toMatchSnapshot('calls-system-console-rtcd-url-filled.png', {maxDiffPixels: 0});
-        await page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.rtcdserviceurlinput').clear();
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.rtcdserviceurl')).toMatchSnapshot('calls-system-console-rtcd-url-empty.png', {maxDiffPixels: 0});
+        await page.getByTestId('PluginSettings.Plugins.com+workspace+calls.rtcdserviceurlinput').fill('http://rtcd.local:8065');
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.rtcdserviceurl')).toMatchSnapshot('calls-system-console-rtcd-url-filled.png', {maxDiffPixels: 0});
+        await page.getByTestId('PluginSettings.Plugins.com+workspace+calls.rtcdserviceurlinput').clear();
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.rtcdserviceurl')).toMatchSnapshot('calls-system-console-rtcd-url-empty.png', {maxDiffPixels: 0});
 
         // Check textarea input
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.iceserversconfigs')).toMatchSnapshot('calls-system-console-ice-configs-empty.png', {maxDiffPixels: 0});
-        await page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.iceserversconfigsinput').fill('[]');
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.iceserversconfigs')).toMatchSnapshot('calls-system-console-ice-configs-filled.png', {maxDiffPixels: 0});
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.iceserversconfigs')).toMatchSnapshot('calls-system-console-ice-configs-empty.png', {maxDiffPixels: 0});
+        await page.getByTestId('PluginSettings.Plugins.com+workspace+calls.iceserversconfigsinput').fill('[]');
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.iceserversconfigs')).toMatchSnapshot('calls-system-console-ice-configs-filled.png', {maxDiffPixels: 0});
 
         // Check dropdown input
-        await page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.recordingqualitydropdown').selectOption('High');
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.recordingquality')).toMatchSnapshot('calls-system-console-recording-quality.png', {maxDiffPixels: 0});
+        await page.getByTestId('PluginSettings.Plugins.com+workspace+calls.recordingqualitydropdown').selectOption('High');
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.recordingquality')).toMatchSnapshot('calls-system-console-recording-quality.png', {maxDiffPixels: 0});
 
         // Ensure AllowScreenSharing defaults to true
-        await expect(page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.allowscreensharingtrue')).toBeChecked();
-        await expect(page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.allowscreensharingfalse')).not.toBeChecked();
+        await expect(page.getByTestId('PluginSettings.Plugins.com+workspace+calls.allowscreensharingtrue')).toBeChecked();
+        await expect(page.getByTestId('PluginSettings.Plugins.com+workspace+calls.allowscreensharingfalse')).not.toBeChecked();
 
         // Check TURNStaticAuthSecret setting (MM-62637)
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.turnstaticauthsecret')).toMatchSnapshot('calls-system-console-turn-static-auth-secret-empty.png', {maxDiffPixels: 0});
-        await page.getByTestId('PluginSettings.Plugins.com+mattermost+calls.turnstaticauthsecretinput').fill('secret');
-        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+mattermost+calls.turnstaticauthsecret')).toMatchSnapshot('calls-system-console-turn-static-auth-secret-filled.png', {maxDiffPixels: 0});
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.turnstaticauthsecret')).toMatchSnapshot('calls-system-console-turn-static-auth-secret-empty.png', {maxDiffPixels: 0});
+        await page.getByTestId('PluginSettings.Plugins.com+workspace+calls.turnstaticauthsecretinput').fill('secret');
+        await expect(await resizeAndScreenshot(page, 'PluginSettings.Plugins.com+workspace+calls.turnstaticauthsecret')).toMatchSnapshot('calls-system-console-turn-static-auth-secret-filled.png', {maxDiffPixels: 0});
     });
 });
