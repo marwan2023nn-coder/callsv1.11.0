@@ -45,7 +45,7 @@ export default function CallTranscriptionsSection(props: {settingsList: React.Re
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Call transcriptions'})}
-                            {<EnterprisePill>{untranslatable('نسخة المؤسسات')}</EnterprisePill>}
+                            {<EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
                         </SectionTitle>
                         {subtitle}
                     </div>

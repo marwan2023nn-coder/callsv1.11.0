@@ -42,14 +42,14 @@ export const OnPremTrialSuccess = (modalProps: Props) => {
             <VerticalSpacer $size={32}/>
             <ModalTitle>
                 <FormattedMessage
-                    defaultMessage={'Your trial has started!{br}Explore the benefits of نسخة المؤسسات'}
+                    defaultMessage={'Your trial has started!{br}Explore the benefits of Enterprise'}
                     values={{br: <br/>}}
                 />
             </ModalTitle>
             <VerticalSpacer $size={8}/>
             <ModalBody css={'text-align: start'}>
                 <FormattedMessage
-                    defaultMessage={'Welcome to your Workspace نسخة المؤسسات trial! It expires on {trialExpirationDate}. ' +
+                    defaultMessage={'Welcome to your Workspace Enterprise trial! It expires on {trialExpirationDate}. ' +
                         'You now have access to <rtcdDocsLink>RTCD services</rtcdDocsLink>, ' +
                         '<recordingsDocsLink>call recordings</recordingsDocsLink>, ' +
                         '<guestAccountsLink>guest accounts</guestAccountsLink>, ' +
@@ -132,7 +132,7 @@ export const OnPremTrialError = (modalProps: Props) => {
             <VerticalSpacer $size={8}/>
             <ModalBody css={'text-align: center'}>
                 <FormattedMessage
-                    defaultMessage={'It looks like something went wrong with your نسخة المؤسسات trial request. ' +
+                    defaultMessage={'It looks like something went wrong with your Enterprise trial request. ' +
                         'You can try again later or <supportLink>contact Support</supportLink> if the error persists.'}
                     values={{
                         supportLink: (text: string) => (
