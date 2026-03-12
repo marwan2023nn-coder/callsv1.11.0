@@ -56,7 +56,7 @@ export const HostControlsMenu = ({
                 fill='var(--center-channel-color-56)'
                 style={{width: '16px', height: '16px'}}
             />
-            {formatMessage({defaultMessage: 'Mute participant'})}
+            {formatMessage({id: '8isok9', defaultMessage: 'Mute participant'})}
         </DropdownMenuItem>
     );
 
@@ -71,7 +71,7 @@ export const HostControlsMenu = ({
                         fill='var(--center-channel-color-56)'
                         style={{width: '16px', height: '16px'}}
                     />
-                    {formatMessage({defaultMessage: 'Stop screen share'})}
+                    {formatMessage({id: 'eC6XJY', defaultMessage: 'Stop screen share'})}
                 </DropdownMenuItem>
             }
             {isHandRaised &&
@@ -80,7 +80,7 @@ export const HostControlsMenu = ({
                         fill='var(--center-channel-color-56)'
                         style={{width: '16px', height: '16px'}}
                     />
-                    {formatMessage({defaultMessage: 'Lower hand'})}
+                    {formatMessage({id: 'Cbb/An', defaultMessage: 'Lower hand'})}
                 </DropdownMenuItem>
             }
             {canGrantRemoteControl &&
@@ -89,7 +89,7 @@ export const HostControlsMenu = ({
                         fill='var(--center-channel-color-56)'
                         style={{width: '16px', height: '16px'}}
                     />
-                    {formatMessage({defaultMessage: 'Grant remote control'})}
+                    {formatMessage({id: 'Ld/051', defaultMessage: 'Grant remote control'})}
                 </DropdownMenuItem>
             }
             {canRevokeRemoteControl &&
@@ -98,7 +98,7 @@ export const HostControlsMenu = ({
                         fill='var(--center-channel-color-56)'
                         style={{width: '16px', height: '16px'}}
                     />
-                    {formatMessage({defaultMessage: 'Revoke remote control'})}
+                    {formatMessage({id: 'dxd4Xp', defaultMessage: 'Revoke remote control'})}
                 </DropdownMenuItem>
             }
             {!isHost &&
@@ -107,7 +107,7 @@ export const HostControlsMenu = ({
                         fill='var(--center-channel-color-56)'
                         style={{width: '16px', height: '16px'}}
                     />
-                    {formatMessage({defaultMessage: 'Make host'})}
+                    {formatMessage({id: 'HBa/E5', defaultMessage: 'Make host'})}
                 </DropdownMenuItem>
             }
             {showingAtLeastOne &&
@@ -118,7 +118,7 @@ export const HostControlsMenu = ({
                     fill='var(--dnd-indicator)'
                     style={{width: '16px', height: '16px'}}
                 />
-                <RedText>{formatMessage({defaultMessage: 'Remove from call'})}</RedText>
+                <RedText>{formatMessage({id: 'BI2zH5', defaultMessage: 'Remove from call'})}</RedText>
             </DropdownMenuItem>
         </>
     );
