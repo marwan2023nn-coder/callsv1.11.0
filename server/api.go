@@ -349,7 +349,7 @@ func (p *Plugin) handleServeStandalone(w http.ResponseWriter, r *http.Request) {
 	userAgent := r.UserAgent()
 
 	// Allow desktop or recorder (which uses our custom recorder header), or E2E
-	isDesktopApp := (strings.Contains(userAgent, "workspace") || strings.Contains(userAgent, "Workspace")) && strings.Contains(userAgent, "Electron")
+	isDesktopApp := (strings.Contains(userAgent, "workspace") || strings.Contains(userAgent, "Workspace") || strings.Contains(userAgent, "Mattermost")) && strings.Contains(userAgent, "Electron")
 	hasRecorderHeader := r.Header.Get("X-Calls-Recorder") == "true"
 	hasE2EHeader := r.Header.Get("X-Calls-E2E") == "true"
 	needsReferrerCheck := !(isDesktopApp || hasRecorderHeader || hasE2EHeader)
