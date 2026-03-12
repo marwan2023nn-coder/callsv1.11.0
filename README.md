@@ -7,7 +7,7 @@ Calls enables voice calling and screen sharing functionality in Workspace channe
 ## Installation
 
 1. Download the latest version from the [release page](https://github.com/mattermost/mattermost-plugin-calls/releases).
-2. Upload the file through **System Console > Plugins > Plugin Management**, or manually upload it to the Workspace server under plugin directory.
+2. Upload the file through **System Console > Plugins > Plugin Management**, or manually upload it to the workspace server under plugin directory.
 3. Configure and enable the plugin.
 
 ## Requirements

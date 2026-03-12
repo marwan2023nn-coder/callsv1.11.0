@@ -406,7 +406,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         };
 
         if (ev instanceof MouseEvent) {
-            let contentWidth, contentHeight, offsetX, offsetY;
+            let contentWidth;
+            let contentHeight;
+            let offsetX;
+            let offsetY;
 
             if (elementRatio > videoRatio) {
                 contentHeight = rect.height;

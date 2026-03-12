@@ -79,7 +79,7 @@ export const idForCurrentCall: (state: GlobalState) => string | undefined =
         'idForCurrentCall',
         calls,
         channelIDForCurrentCall,
-        (callsStates, channelID) => (callsStates ? callsStates[channelID]?.ID : undefined),
+        (callsStates, channelID) => (callsStates ? (callsStates[channelID]?.ID || '') : ''),
     );
 
 export const threadIDForCurrentCall: (state: GlobalState) => string | undefined =
@@ -87,7 +87,7 @@ export const threadIDForCurrentCall: (state: GlobalState) => string | undefined 
         'threadIDForCurrentCall',
         calls,
         channelIDForCurrentCall,
-        (callsStates, channelID) => (callsStates ? callsStates[channelID]?.threadID : undefined),
+        (callsStates, channelID) => (callsStates ? (callsStates[channelID]?.threadID || '') : ''),
     );
 
 export const teamForCurrentCall: (state: GlobalState) => Team | null =
@@ -243,7 +243,7 @@ export const callInCurrentChannel: (state: GlobalState) => callState | undefined
         'callInCurrentChannel',
         calls,
         getCurrentChannelId,
-        (callsStates, currChannelId) => (callsStates ? callsStates[currChannelId] : undefined),
+        (callsStates, currChannelId) => (callsStates ? callsStates[currChannelId] : {} as callState),
     );
 
 export const idForCallInChannel = (state: GlobalState, channelID: string): string | undefined => {
@@ -328,7 +328,7 @@ export const recordingForCurrentCall: (state: GlobalState) => CallJobReduxState 
         'recordingForCurrentCall',
         recordingsForCalls,
         channelIDForCurrentCall,
-        (recordings, channelID) => (recordings ? recordings[channelID] : {}) || {},
+        (recordings, channelID) => (recordings ? (recordings[channelID] || {} as CallJobReduxState) : {} as CallJobReduxState),
     );
 
 export const hostControlNoticesForCalls = (state: GlobalState): hostControlNoticeState => {
@@ -352,7 +352,7 @@ export const liveCaptionsStateForCurrentCall: (state: GlobalState) => CallJobRed
         'liveCaptionsStateForCurrentCall',
         liveCaptionsStateForCalls,
         channelIDForCurrentCall,
-        (liveCaptions, channelID) => (liveCaptions ? liveCaptions[channelID] : {}) || {},
+        (liveCaptions, channelID) => (liveCaptions ? (liveCaptions[channelID] || {} as CallJobReduxState) : {} as CallJobReduxState),
     );
 
 export const areLiveCaptionsAvailableInCurrentCall: (state: GlobalState) => boolean =

@@ -679,7 +679,7 @@ export function userAgent(): string {
 }
 
 export function isDesktopApp(): boolean {
-    return userAgent().indexOf('Mattermost') !== -1 && userAgent().indexOf('Electron') !== -1;
+    return (userAgent().indexOf('Mattermost') !== -1 || userAgent().indexOf('Workspace') !== -1) && userAgent().indexOf('Electron') !== -1;
 }
 
 export function sleep(ms: number) {

@@ -12,7 +12,7 @@ import MutedIcon from 'src/components/icons/muted_icon';
 import ScreenIcon from 'src/components/icons/screen_icon';
 import UnraisedHandIcon from 'src/components/icons/unraised_hand';
 import UnshareScreenIcon from 'src/components/icons/unshare_screen';
-import {idForCurrentCall, remoteControlSessionIDForCurrentCall, screenSharingSessionIDForCurrentCall} from 'src/selectors';
+import {remoteControlSessionIDForCurrentCall, screenSharingSessionIDForCurrentCall} from 'src/selectors';
 import styled from 'styled-components';
 
 type Props = {
@@ -37,7 +37,6 @@ export const HostControlsMenu = ({
     onRemove,
 }: Props) => {
     const {formatMessage} = useIntl();
-    const currentCallID = useSelector(idForCurrentCall);
     const screenSharingSessionID = useSelector(screenSharingSessionIDForCurrentCall);
     const remoteControlSessionID = useSelector(remoteControlSessionIDForCurrentCall);
 

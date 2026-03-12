@@ -47,6 +47,7 @@ import {
     LIVE_CAPTION_TIMEOUT,
     REACTION_TIMEOUT_IN_REACTION_STREAM,
 } from 'src/constants';
+import {logDebug} from 'src/log';
 import {
     HostControlNotice,
     HostControlNoticeType,
@@ -87,8 +88,6 @@ import {
     shouldPlayJoinUserSound,
 } from './selectors';
 import {Store} from './types/mattermost-webapp';
-import {logDebug} from 'src/log';
-
 import {
     followThread,
     getCallsClient,
