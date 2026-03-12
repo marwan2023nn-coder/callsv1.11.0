@@ -19,7 +19,7 @@ import InCallPrompt from './in_call_prompt';
 type Props = {
     isHost: boolean;
     hostChangeAt: number;
-    recording?: CallJobReduxState;
+    recording?: CallJobReduxState | null;
     recordingMaxDuration: number;
     onDecline: () => void;
     promptDismissed: () => void;

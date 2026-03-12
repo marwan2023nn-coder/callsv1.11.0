@@ -20,7 +20,7 @@ type Props = {
     callHostID: string;
     onRemove: (sessionID: string, userID: string) => void;
     currentSession?: UserSessionState;
-    screenSharingSession?: UserSessionState;
+    screenSharingSession?: UserSessionState | null;
     callID?: string;
 };
 

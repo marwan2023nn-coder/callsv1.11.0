@@ -98,7 +98,7 @@ interface Props extends RouteComponentProps {
     callStartAt: number,
     callHostID: string,
     callHostChangeAt: number,
-    callRecording?: CallJobReduxState,
+    callRecording?: CallJobReduxState | null,
     isRecording: boolean,
     hideExpandedView: () => void,
     showScreenSourceModal: () => void,
@@ -106,8 +106,8 @@ interface Props extends RouteComponentProps {
     prefetchThread: (postId: string) => void,
     closeRhs?: () => void,
     isRhsOpen?: boolean,
-    screenSharingSession?: UserSessionState,
-    channel?: Channel,
+    screenSharingSession?: UserSessionState | null,
+    channel?: Channel | null,
     channelTeam?: Team,
     channelDisplayName: string;
     connectedDMUser: UserProfile | undefined,
@@ -406,7 +406,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         };
 
         if (ev instanceof MouseEvent) {
-            let contentWidth, contentHeight, offsetX, offsetY;
+            let contentWidth;
+            let contentHeight;
+            let offsetX;
+            let offsetY;
 
             if (elementRatio > videoRatio) {
                 contentHeight = rect.height;

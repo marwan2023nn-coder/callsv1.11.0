@@ -170,15 +170,17 @@ import {
 import {
     handleCallEnd,
     handleCallHostChanged,
-    handleInputEvent,
     handleCallJobState,
     handleCallStart,
     handleCallState,
     handleCaption,
     handleHostLowerHand,
     handleHostMute,
+    handleHostRemoteControlOff,
+    handleHostRemoteControlOn,
     handleHostRemoved,
     handleHostScreenOff,
+    handleInputEvent,
     handleUserDismissedNotification,
     handleUserJoined,
     handleUserLeft,
@@ -192,8 +194,6 @@ import {
     handleUserUnraisedHand,
     handleUserVoiceOff,
     handleUserVoiceOn,
-    handleHostRemoteControlOn,
-    handleHostRemoteControlOff,
 } from './websocket_handlers';
 
 export default class Plugin {

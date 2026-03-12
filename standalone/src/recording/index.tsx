@@ -10,8 +10,8 @@ import {pluginId} from 'plugin/manifest';
 import {Store} from 'plugin/types/mattermost-webapp';
 import {
     fetchTranslationsFile,
-    getTranslations,
     getPluginPath,
+    getTranslations,
     getUserIDsForSessions,
     notificationsStopRinging,
     runWithRetry,

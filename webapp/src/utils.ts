@@ -598,7 +598,7 @@ export function getTranslations(locale: string) {
         locale = locale.replace('_', '-');
 
         // Remapping some language codes to their actual file.
-        // This is needed as Mattermost product uses different codes for
+        // This is needed as workspace product uses different codes for
         // certain languages such as simplified and traditional Chinese.
         switch (locale) {
         case 'zh-CN':
@@ -679,7 +679,7 @@ export function userAgent(): string {
 }
 
 export function isDesktopApp(): boolean {
-    return userAgent().indexOf('Mattermost') !== -1 && userAgent().indexOf('Electron') !== -1;
+    return (userAgent().indexOf('workspace') !== -1 || userAgent().indexOf('Workspace') !== -1) && userAgent().indexOf('Electron') !== -1;
 }
 
 export function sleep(ms: number) {

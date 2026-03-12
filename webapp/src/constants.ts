@@ -39,9 +39,9 @@ export const CallAlertConfigs: { [key: string]: CallAlertConfig } = {
     missingAudioInputPermissions: {
         type: CallAlertType.Error,
         icon: 'microphone-off',
-        bannerText: defineMessage({defaultMessage: 'Allow microphone access to Mattermost.'}),
+        bannerText: defineMessage({defaultMessage: 'Allow microphone access to workspace.'}),
         tooltipText: defineMessage({defaultMessage: 'No audio input permissions'}),
-        tooltipSubtext: defineMessage({defaultMessage: 'Allow microphone access to Mattermost.'}),
+        tooltipSubtext: defineMessage({defaultMessage: 'Allow microphone access to workspace.'}),
         dismissable: true,
     },
     missingScreenPermissions: {
@@ -49,7 +49,7 @@ export const CallAlertConfigs: { [key: string]: CallAlertConfig } = {
         icon: 'monitor-off',
         bannerText: defineMessage({defaultMessage: 'Screen recording access is not currently allowed or was canceled.'}),
         tooltipText: defineMessage({defaultMessage: 'No screen sharing permissions'}),
-        tooltipSubtext: defineMessage({defaultMessage: 'Allow screen recording access to Mattermost.'}),
+        tooltipSubtext: defineMessage({defaultMessage: 'Allow screen recording access to workspace.'}),
         dismissable: true,
     },
     degradedCallQuality: {
