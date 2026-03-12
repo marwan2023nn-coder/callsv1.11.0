@@ -12,8 +12,8 @@ import {getCallsWindow, getUserDisplayName, isDMChannel, isGMChannel, notificati
 
 interface Props {
     intl: IntlShape,
-    currentChannel?: Channel,
-    connectedChannel?: Channel,
+    currentChannel?: Channel | null,
+    connectedChannel?: Channel | null,
     currentDMUser: UserProfile | undefined,
     connectedDMUser: UserProfile | undefined,
     show: boolean,
@@ -151,13 +151,13 @@ export default class SwitchCallModal extends React.PureComponent<Props> {
         }
 
         let message2;
-        if (isDMChannel(this.props.currentChannel)) {
+        if (this.props.currentChannel && isDMChannel(this.props.currentChannel)) {
             message2 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'Do you want to leave and join a call with {user}?'}, {
                     user: (<span style={{fontWeight: 600}}>{getUserDisplayName(this.props.currentDMUser)}</span>),
                 })}
             </React.Fragment>);
-        } else if (isGMChannel(this.props.currentChannel)) {
+        } else if (this.props.currentChannel && isGMChannel(this.props.currentChannel)) {
             message2 = (<React.Fragment>
                 {formatMessage({defaultMessage: 'Do you want to leave and join a call with {users}?'}, {
                     users: (<span style={{fontWeight: 600}}>{this.props.currentChannel?.display_name}</span>),
