@@ -23,9 +23,21 @@ func (r httpResponse) isEmpty() bool {
 
 func (p *Plugin) httpResponseHandler(res *httpResponse, w http.ResponseWriter) {
 	if res.Err != "" && res.Msg == "" {
-		res.Msg = res.Err
+		if res.Code >= 500 {
+			res.Msg = "An internal server error occurred"
+		} else {
+			res.Msg = res.Err
+		}
+	}
+
+	// For 5xx errors, we want to ensure that we don't leak the detailed error
+	// in the response body.
+	if res.Code >= 500 {
+		res.Err = ""
+	} else if res.Msg == res.Err {
 		res.Err = ""
 	}
+
 	if !res.isEmpty() {
 		if res.Code != 0 {
 			w.WriteHeader(res.Code)

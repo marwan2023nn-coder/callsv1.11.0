@@ -58,8 +58,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 
 	channel, err := p.store.GetCallsChannel(channelID, db.GetCallsChannelOpts{})
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
-		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, err)
 		return
 	}
 
@@ -73,8 +72,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 
 	call, err := p.store.GetActiveCallByChannelID(channelID, db.GetCallOpts{})
 	if err != nil && !errors.Is(err, db.ErrNotFound) {
-		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, err)
 		return
 	}
 
@@ -89,8 +87,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 
 	cs, err := p.getCallStateFromCall(call, false)
 	if err != nil {
-		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, err)
 		return
 	}
 
@@ -120,8 +117,7 @@ func (p *Plugin) handleGetCallActive(w http.ResponseWriter, r *http.Request) {
 
 	active, err := p.store.GetCallActive(channelID, db.GetCallOpts{FromWriter: true})
 	if err != nil {
-		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, err)
 		return
 	}
 
@@ -159,8 +155,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 	for {
 		cms, appErr := p.API.GetChannelMembersForUser("", userID, page, perPage)
 		if appErr != nil {
-			p.LogError(appErr.Error())
-			http.Error(w, appErr.Error(), http.StatusInternalServerError)
+			p.handleError(w, appErr)
 			return
 		}
 		for i := range cms {
@@ -174,15 +169,13 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 
 	channels, err := p.store.GetAllCallsChannels(db.GetCallsChannelOpts{})
 	if err != nil {
-		p.LogError("failed to get all calls channels", "err", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, fmt.Errorf("failed to get all calls channels: %w", err))
 		return
 	}
 
 	calls, err := p.store.GetAllActiveCalls(db.GetCallOpts{})
 	if err != nil {
-		p.LogError("failed to get all active calls", "err", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, fmt.Errorf("failed to get all active calls: %w", err))
 		return
 	}
 
@@ -208,8 +201,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 		if call := callsMap[ch.ChannelID]; call != nil {
 			cs, err := p.getCallStateFromCall(call, false)
 			if err != nil {
-				p.LogError(err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				p.handleError(w, err)
 				return
 			}
 			channelData["call"] = cs.getClientState(p.getBotID(), userID)
@@ -226,8 +218,7 @@ func (p *Plugin) handleGetAllCallChannelStates(w http.ResponseWriter, r *http.Re
 	for _, call := range callsMap {
 		cs, err := p.getCallStateFromCall(call, false)
 		if err != nil {
-			p.LogError(err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			p.handleError(w, err)
 			return
 		}
 
@@ -377,8 +368,7 @@ func (p *Plugin) handleServeStandalone(w http.ResponseWriter, r *http.Request) {
 
 	bundlePath, err := p.API.GetBundlePath()
 	if err != nil {
-		p.LogError(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p.handleError(w, err)
 		return
 	}
 
