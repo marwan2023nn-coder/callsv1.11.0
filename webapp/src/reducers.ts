@@ -62,6 +62,8 @@ import {
     USER_RAISE_HAND,
     USER_REACTED,
     USER_REACTED_TIMEOUT,
+    USER_REMOTE_CONTROL_OFF,
+    USER_REMOTE_CONTROL_ON,
     USER_SCREEN_OFF,
     USER_SCREEN_ON,
     USER_UNMUTED,
@@ -706,19 +708,44 @@ const screenSharingIDs = (state: screenSharingIDsState = {}, action: screenShari
             ...state,
             [action.data.channelID]: action.data.session_id,
         };
-    case USER_LEFT: {
-        // If the user who disconnected matches the one sharing we
-        // want to fallthrough and clear the state.
-        if (action.data.session_id !== state[action.data.channelID]) {
-            return state;
-        }
-    }
-    // eslint-disable-next-line no-fallthrough
-    case CALL_END:
+    case USER_LEFT:
     case USER_SCREEN_OFF:
         if (action.data.session_id !== state[action.data.channelID]) {
             return state;
         }
+        return {
+            ...state,
+            [action.data.channelID]: '',
+        };
+    case CALL_END:
+        return {
+            ...state,
+            [action.data.channelID]: '',
+        };
+    default:
+        return state;
+    }
+};
+
+const remoteControlIDs = (state: screenSharingIDsState = {}, action: screenSharingIDAction) => {
+    switch (action.type) {
+    case UNINIT:
+        return {};
+    case USER_REMOTE_CONTROL_ON:
+        return {
+            ...state,
+            [action.data.channelID]: action.data.session_id,
+        };
+    case USER_LEFT:
+        if (action.data.session_id !== state[action.data.channelID]) {
+            return state;
+        }
+        return {
+            ...state,
+            [action.data.channelID]: '',
+        };
+    case CALL_END:
+    case USER_REMOTE_CONTROL_OFF:
         return {
             ...state,
             [action.data.channelID]: '',
@@ -1022,6 +1049,7 @@ export default combineReducers({
     calls,
     hosts,
     screenSharingIDs,
+    remoteControlIDs,
     expandedView,
     switchCallModal,
     screenSourceModal,
