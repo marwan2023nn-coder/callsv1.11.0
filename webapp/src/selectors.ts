@@ -424,14 +424,21 @@ export const dismissedCallForCurrentChannel: (state: GlobalState) => boolean =
 export const ringingForCall = (state: GlobalState, callID: string): boolean =>
     pluginState(state).ringingForCalls[callID] || false;
 
-export const currentlyRinging = (state: GlobalState): boolean => {
-    for (const val of Object.values(pluginState(state).ringingForCalls)) {
-        if (val) {
-            return true;
-        }
-    }
-    return false;
-};
+const ringingForCalls = (state: GlobalState) => pluginState(state).ringingForCalls;
+
+export const currentlyRinging: (state: GlobalState) => boolean =
+    createSelector(
+        'currentlyRinging',
+        ringingForCalls,
+        (ringing) => {
+            for (const val of Object.values(ringing || {})) {
+                if (val) {
+                    return true;
+                }
+            }
+            return false;
+        },
+    );
 
 export const didRingForCall = (state: GlobalState, callID: string): boolean =>
     pluginState(state).didRingForCalls[callID] || false;
@@ -464,11 +471,17 @@ export const maxParticipants = (state: GlobalState) =>
 export const needsTURNCredentials = (state: GlobalState) =>
     callsConfig(state).NeedsTURNCredentials;
 
-export const isLimitRestricted = (state: GlobalState): boolean => {
-    const numCurrentUsers = profilesInCallInCurrentChannel(state).length;
-    const max = maxParticipants(state);
-    return max > 0 && numCurrentUsers >= max;
-};
+export const isLimitRestricted: (state: GlobalState) => boolean =
+    createSelector(
+        'isLimitRestricted',
+        sessionsInCalls,
+        getCurrentChannelId,
+        maxParticipants,
+        (sessions, channelID, max) => {
+            const numCurrentUsers = Object.keys(sessions[channelID] || {}).length;
+            return max > 0 && numCurrentUsers >= max;
+        },
+    );
 
 export const allowScreenSharing = (state: GlobalState) =>
     callsConfig(state).AllowScreenSharing;
