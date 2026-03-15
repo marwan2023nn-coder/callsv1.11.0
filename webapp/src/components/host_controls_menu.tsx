@@ -10,6 +10,7 @@ import MinusCircleOutlineIcon from 'src/components/icons/minus_circle_outline';
 import MonitorAccount from 'src/components/icons/monitor_account';
 import MutedIcon from 'src/components/icons/muted_icon';
 import ScreenIcon from 'src/components/icons/screen_icon';
+import TickIcon from 'src/components/icons/tick';
 import UnraisedHandIcon from 'src/components/icons/unraised_hand';
 import UnshareScreenIcon from 'src/components/icons/unshare_screen';
 import {remoteControlSessionIDForCurrentCall, screenSharingSessionIDForCurrentCall} from 'src/selectors';
@@ -93,8 +94,8 @@ export const HostControlsMenu = ({
             }
             {canRevokeRemoteControl &&
                 <DropdownMenuItem onClick={() => hostRemoteControlOff(callID)}>
-                    <ScreenIcon
-                        fill='var(--center-channel-color-56)'
+                    <TickIcon
+                        fill='var(--online-indicator, #00987e)'
                         style={{width: '16px', height: '16px'}}
                     />
                     {formatMessage({id: 'dxd4Xp', defaultMessage: 'Revoke remote control'})}
