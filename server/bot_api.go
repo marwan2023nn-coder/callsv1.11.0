@@ -40,7 +40,8 @@ func (p *Plugin) handleBotGetChannel(w http.ResponseWriter, r *http.Request) {
 
 	channel, appErr := p.API.GetChannel(channelID)
 	if appErr != nil {
-		p.LogError(appErr.Error())
+		p.handleError(w, appErr)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
