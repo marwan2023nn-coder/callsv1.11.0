@@ -46,7 +46,14 @@ import {
     IncomingCallNotification,
     LiveCaptions,
 } from 'src/types/types';
-import {getCallsClientChannelID, getCallsClientInitTime, getCallsClientSessionID, getChannelURL} from 'src/utils';
+import {
+    alphaSortSessions,
+    getCallsClientChannelID,
+    getCallsClientInitTime,
+    getCallsClientSessionID,
+    getChannelURL,
+    stateSortSessions,
+} from 'src/utils';
 
 import {pluginId} from './manifest';
 
@@ -329,6 +336,19 @@ export const recordingForCurrentCall: (state: GlobalState) => CallJobReduxState 
         recordingsForCalls,
         channelIDForCurrentCall,
         (recordings, channelID) => (recordings ? (recordings[channelID] || null) : null),
+    );
+
+export const sortedSessionsInCurrentCall: (state: GlobalState) => UserSessionState[] =
+    createSelector(
+        'sortedSessionsInCurrentCall',
+        sessionsInCurrentCall,
+        profilesInCurrentCallMap,
+        screenSharingSessionIDForCurrentCall,
+        (sessions, profiles, screenSharingSessionID) => {
+            return [...sessions].
+                sort(alphaSortSessions(profiles)).
+                sort(stateSortSessions(screenSharingSessionID, true));
+        },
     );
 
 export const hostControlNoticesForCalls = (state: GlobalState): hostControlNoticeState => {
