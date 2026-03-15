@@ -18,7 +18,7 @@ BEGIN DECLARE
 		FROM
 			PluginKeyValueStore
 		WHERE
-			(PluginId = 'com.workspace.calls' OR PluginId = 'com.mattermost.calls')
+			PluginId = 'com.workspace.calls'
 		AND
 			LENGTH(PKey) = 26
 		AND
