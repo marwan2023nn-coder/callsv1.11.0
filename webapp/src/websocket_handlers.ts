@@ -498,7 +498,7 @@ export function handleUserRemovedFromChannel(store: Store, ev: WebSocketMessage<
 }
 
 export function handleCaption(store: Store, ev: WebSocketMessage<LiveCaptionData>) {
-    const channel_id = ev.data.channel_id;
+    const channel_id = ev.data.channel_id || ev.broadcast.channel_id;
 
     if (channelIDForCurrentCall(store.getState()) !== channel_id) {
         return;
@@ -529,7 +529,7 @@ export function handleCaption(store: Store, ev: WebSocketMessage<LiveCaptionData
 }
 
 export function handleHostMute(store: Store, ev: WebSocketMessage<HostControlMsg>) {
-    const channelID = ev.data.channel_id;
+    const channelID = ev.data.channel_id || ev.broadcast.channel_id;
     const client = getCallsClient();
     if (!client || client?.channelID !== channelID) {
         return;
@@ -544,7 +544,7 @@ export function handleHostMute(store: Store, ev: WebSocketMessage<HostControlMsg
 }
 
 export function handleHostScreenOff(store: Store, ev: WebSocketMessage<HostControlMsg>) {
-    const channelID = ev.data.channel_id;
+    const channelID = ev.data.channel_id || ev.broadcast.channel_id;
     const client = getCallsClient();
     if (!client || client?.channelID !== channelID) {
         return;
@@ -559,7 +559,7 @@ export function handleHostScreenOff(store: Store, ev: WebSocketMessage<HostContr
 }
 
 export function handleHostRemoteControlOn(store: Store, ev: WebSocketMessage<HostControlMsg>) {
-    const channelID = ev.data.channel_id;
+    const channelID = ev.data.channel_id || ev.broadcast.channel_id;
     store.dispatch({
         type: USER_REMOTE_CONTROL_ON,
         data: {
@@ -570,7 +570,7 @@ export function handleHostRemoteControlOn(store: Store, ev: WebSocketMessage<Hos
 }
 
 export function handleHostRemoteControlOff(store: Store, ev: WebSocketMessage<HostControlMsg>) {
-    const channelID = ev.data.channel_id;
+    const channelID = ev.data.channel_id || ev.broadcast.channel_id;
     store.dispatch({
         type: USER_REMOTE_CONTROL_OFF,
         data: {
@@ -580,7 +580,7 @@ export function handleHostRemoteControlOff(store: Store, ev: WebSocketMessage<Ho
 }
 
 export function handleHostLowerHand(store: Store, ev: WebSocketMessage<HostControlLowerHand>) {
-    const channelID = ev.data.channel_id;
+    const channelID = ev.data.channel_id || ev.broadcast.channel_id;
     const client = getCallsClient();
     if (!client || client?.channelID !== channelID) {
         return;

@@ -11,6 +11,7 @@ import {bindClientFunc} from 'mattermost-redux/actions/helpers';
 import {getThread as fetchThread} from 'mattermost-redux/actions/threads';
 import {getProfilesByIds as getProfilesByIdsAction} from 'mattermost-redux/actions/users';
 import {getChannel} from 'mattermost-redux/selectors/entities/channels';
+import {getConfig} from 'mattermost-redux/selectors/entities/general';
 import {getCurrentTeamId} from 'mattermost-redux/selectors/entities/teams';
 import {getThread} from 'mattermost-redux/selectors/entities/threads';
 import {getCurrentUserId, getUser, isCurrentUserSystemAdmin} from 'mattermost-redux/selectors/entities/users';
@@ -23,7 +24,7 @@ import {CallErrorModal, CallErrorModalID} from 'src/components/call_error_modal'
 import {GenericErrorModal, IDGenericErrorModal} from 'src/components/generic_error_modal';
 import {CallsInTestModeModal, IDTestModeUser} from 'src/components/modals';
 import {RING_LENGTH} from 'src/constants';
-import {logErr} from 'src/log';
+import {logDebug, logErr} from 'src/log';
 import RestClient from 'src/rest_client';
 import {
     callDismissedNotification,
@@ -277,12 +278,32 @@ export const displayCallErrorModal = (err: Error, channelID?: string) => (dispat
 export function prefetchThread(postId: string) {
     return async (dispatch: DispatchFunc, getState: GetStateFunc) => {
         const state = getState();
+
+        // Skip if CRT is not enabled on the server to avoid 404 console errors.
+        const config = getConfig(state) as any;
+        if (config.CollapsedThreads !== 'true') {
+            return {data: null};
+        }
+
+        // Return early if thread is already cached to avoid an unnecessary network call.
+        const cachedThread = getThread(state, postId);
+        if (cachedThread) {
+            return {data: cachedThread};
+        }
+
         const teamId = getCurrentTeamId(state);
         const currentUserId = getCurrentUserId(state);
 
-        const thread = getThread(state, postId) ?? (await dispatch(fetchThread(currentUserId, teamId, postId, true))).data;
-
-        return {data: thread};
+        try {
+            const result = await dispatch(fetchThread(currentUserId, teamId, postId, true));
+            return {data: result.data};
+        } catch (e) {
+            // Silently handle 404 - this happens when Collapsed Reply Threads (CRT)
+            // is disabled on the server. Thread unread badges won't be shown,
+            // but all other call functionality (including remote control) is unaffected.
+            logDebug('prefetchThread: failed to fetch thread, CRT may be disabled on the server', e);
+            return {data: null};
+        }
     };
 }
 
@@ -470,7 +491,7 @@ export const ringForCall = (callID: string, sound: string) => {
     return (dispatch: DispatchFunc) => {
         try {
             const maybePromise = notificationSounds?.ring(sound) as unknown;
-            if (maybePromise && typeof (maybePromise as {catch?: unknown}).catch === 'function') {
+            if (maybePromise && typeof (maybePromise as { catch?: unknown }).catch === 'function') {
                 (maybePromise as Promise<unknown>).catch(() => {
                     // Autoplay might be blocked by the browser.
                 });
@@ -527,7 +548,7 @@ export const loadProfilesByIdsIfMissing = (ids: string[]) => {
     };
 };
 
-export const loadCallState = (channelID: string, call: CallState & {remote_control_session_id?: string}) => (dispatch: DispatchFunc, getState: GetStateFunc) => {
+export const loadCallState = (channelID: string, call: CallState & { remote_control_session_id?: string }) => (dispatch: DispatchFunc, getState: GetStateFunc) => {
     const actions: AnyAction[] = [];
 
     actions.push({
