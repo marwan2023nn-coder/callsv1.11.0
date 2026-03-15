@@ -5,19 +5,19 @@
     },
     {
         "id": "app.admin.concurrent_sessions_warning.enterprise",
-        "translation": "نوصي بشدة [بنشر خدمة RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم workspace الرئيسي وقابلية التوسع والموثوقية."
+        "translation": "نوصي بشدة [بنشر خدمة RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم وورك سبيس الرئيسي وقابلية التوسع والموثوقية."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.pro_or_e0",
-        "translation": "نوصي بشدة بالترقية إلى [نسخة المؤسسات](https://mattermost.com/pricing/) و [نشر خدمة RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم workspace الرئيسي وقابلية التوسع والموثوقية الخاصة بك."
+        "translation": "نوصي بشدة بالترقية إلى [نسخة المؤسسات](https://mattermost.com/pricing/) و [نشر خدمة RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم وورك سبيس الرئيسي وقابلية التوسع والموثوقية الخاصة بك."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.intro",
-        "translation": "يواجه التثبيت الخاص بك استخدامًا كثيفًا من مكالمات workspace المكالمات التي يمكن أن تؤثر سلبًا على أداء النظام واستجابته."
+        "translation": "يواجه التثبيت الخاص بك استخدامًا كثيفًا من مكالمات وورك سبيس التي يمكن أن تؤثر سلبًا على أداء النظام واستجابته."
     },
     {
         "id": "app.admin.concurrent_sessions_warning.team",
-        "translation": "نوصي بشدة بالتبديل إلى [إصدار Workspace إنتربرايز](https://mattermost.com/pl/install-enterprise-install-upgrade) و[نشر خدمة RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم Workspace الرئيسي وقابلية تطويره وموثوقيته."
+        "translation": "نوصي بشدة بالتبديل إلى [إصدار وورك سبيس إنتربرايز](https://mattermost.com/pl/install-enterprise-install-upgrade) و[نشر خدمة RTCD](https://mattermost.com/pl/calls-deployment-the-rtcd-service) لإلغاء تحميل معالجة المكالمات إلى مثيل منفصل من أجل الحفاظ على أداء خادم وورك سبيس الرئيسي وقابلية تطويره وموثوقيته."
     },
     {
         "id": "app.call.new_recording_message",
