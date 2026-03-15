@@ -1,0 +1,3 @@
+## 2025-05-15 - [Selector Optimization: Decoupling from Global Profiles]
+**Learning:** Selectors that depend on global state entities like `userProfiles` (all known users in the app) trigger frequent re-computations because this state changes whenever ANY user's status or profile is updated. When only a count of participants is needed, it's significantly faster to use the plugin-specific `sessions` state instead of derived `profiles` arrays.
+**Action:** Always prefer using specific state (like `sessions` or IDs) over global entity maps when the full entity data isn't required for the computation.
