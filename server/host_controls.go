@@ -9,8 +9,15 @@ import (
 
 	"github.com/mattermost/mattermost-plugin-calls/server/db"
 
+	"github.com/mattermost/rtcd/service/rtc"
+
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/pkg/errors"
+)
+
+const (
+	rtcRemoteControlOnMessage  rtc.MessageType = 9
+	rtcRemoteControlOffMessage rtc.MessageType = 10
 )
 
 var (
@@ -280,7 +287,12 @@ func (p *Plugin) remoteControlOn(requesterID, channelID, sessionID string) error
 
 	// Only the user currently sharing their screen can grant remote control.
 	sharerSession, ok := state.sessions[state.Props.ScreenSharingSessionID]
-	if !ok || requesterID != sharerSession.UserID {
+	if !ok {
+		p.LogDebug("remoteControlOn: sharer session not found", "ScreenSharingSessionID", state.Props.ScreenSharingSessionID)
+		return ErrNoPermissions
+	}
+	if requesterID != sharerSession.UserID {
+		p.LogDebug("remoteControlOn: requester is not the sharer", "requesterID", requesterID, "sharerUserID", sharerSession.UserID)
 		return ErrNoPermissions
 	}
 
@@ -288,16 +300,28 @@ func (p *Plugin) remoteControlOn(requesterID, channelID, sessionID string) error
 		if state.Props.RemoteControlSessionID == sessionID {
 			return nil
 		}
+		p.LogDebug("remoteControlOn: remote control already granted", "RemoteControlSessionID", state.Props.RemoteControlSessionID)
 		return errors.Wrap(ErrNotAllowed, "remote control already granted")
 	}
 
 	if _, ok := state.sessions[sessionID]; !ok {
+		p.LogDebug("remoteControlOn: target session not in call", "sessionID", sessionID)
 		return ErrNotInCall
 	}
 
 	state.Call.Props.RemoteControlSessionID = sessionID
 	if err := p.store.UpdateCall(&state.Call); err != nil {
 		return fmt.Errorf("failed to update call: %w", err)
+	}
+
+	rtcMsg := rtc.Message{
+		SessionID: state.Props.ScreenSharingSessionID,
+		Type:      rtcRemoteControlOnMessage,
+		Data:      []byte(sessionID),
+	}
+
+	if err := p.sendRTCMessage(rtcMsg, state.Call.ID); err != nil {
+		p.LogError("failed to send RTC message", "error", err)
 	}
 
 	p.publishWebSocketEvent(wsEventHostRemoteControlOn, map[string]interface{}{
@@ -338,6 +362,15 @@ func (p *Plugin) remoteControlOff(requesterID, channelID string) error {
 	state.Call.Props.RemoteControlSessionID = ""
 	if err := p.store.UpdateCall(&state.Call); err != nil {
 		return fmt.Errorf("failed to update call: %w", err)
+	}
+
+	rtcMsg := rtc.Message{
+		SessionID: state.Props.ScreenSharingSessionID,
+		Type:      rtcRemoteControlOffMessage,
+	}
+
+	if err := p.sendRTCMessage(rtcMsg, state.Call.ID); err != nil {
+		p.LogError("failed to send RTC message", "error", err)
 	}
 
 	p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{

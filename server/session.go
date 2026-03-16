@@ -311,6 +311,31 @@ func (p *Plugin) removeUserSession(state *callState, userID, originalConnID, con
 			ReliableClusterSend: true,
 			UserIDs:             getUserIDsFromSessions(state.sessions),
 		})
+
+		// If the sharer leaves, we also must clear any active remote control.
+		if state.Call.Props.RemoteControlSessionID != "" {
+			state.Call.Props.RemoteControlSessionID = ""
+			p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{
+				"channel_id": channelID,
+			}, &WebSocketBroadcast{
+				ChannelID:           channelID,
+				ReliableClusterSend: true,
+				UserIDs:             getUserIDsFromSessions(state.sessions),
+			})
+		}
+	}
+
+	// Check if leaving session was being remote controlled.
+	if state.Call.Props.RemoteControlSessionID == originalConnID {
+		state.Call.Props.RemoteControlSessionID = ""
+		p.LogDebug("removed session was being remote controlled, sending remote control off event", "userID", userID, "connID", connID, "originalConnID", originalConnID)
+		p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{
+			"channel_id": channelID,
+		}, &WebSocketBroadcast{
+			ChannelID:           channelID,
+			ReliableClusterSend: true,
+			UserIDs:             getUserIDsFromSessions(state.sessions),
+		})
 	}
 
 	// If the bot is the only user left in the call we automatically stop any
