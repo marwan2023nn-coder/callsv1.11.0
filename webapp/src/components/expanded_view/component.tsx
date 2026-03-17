@@ -450,6 +450,10 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 y,
                 button: ev.button,
                 buttons: ev.buttons,
+                ctrlKey: ev.ctrlKey,
+                shiftKey: ev.shiftKey,
+                altKey: ev.altKey,
+                metaKey: ev.metaKey,
             };
         } else if (ev instanceof KeyboardEvent) {
             data = {
