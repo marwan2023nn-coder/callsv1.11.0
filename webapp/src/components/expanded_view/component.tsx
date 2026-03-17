@@ -401,8 +401,22 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         const videoRatio = video.videoWidth / video.videoHeight;
         const elementRatio = rect.width / rect.height;
 
+        let action = ev.type;
+        if (ev.type === 'mousemove') {
+            action = 'move';
+        } else if (ev.type === 'mousedown') {
+            action = 'mousedown';
+        } else if (ev.type === 'mouseup') {
+            action = 'mouseup';
+        } else if (ev.type === 'keydown') {
+            action = 'keydown';
+        } else if (ev.type === 'keyup') {
+            action = 'keyup';
+        }
+
         let data: any = {
-            type: ev.type,
+            type: 'input_event',
+            action,
         };
 
         if (ev instanceof MouseEvent) {
@@ -679,7 +693,8 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         }
 
         const data = {
-            type: 'wheel',
+            type: 'input_event',
+            action: 'scroll',
             deltaX: ev.deltaX,
             deltaY: ev.deltaY,
         };

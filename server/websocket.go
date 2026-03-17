@@ -592,6 +592,7 @@ func (p *Plugin) wsWriter() {
 			p.publishWebSocketEvent(wsEventSignal, map[string]interface{}{
 				"data":   string(msg.Data),
 				"connID": msg.SessionID,
+				"type":   int(msg.Type),
 			}, &WebSocketBroadcast{ConnectionID: us.connID, ReliableClusterSend: true})
 		case <-p.stopCh:
 			return
@@ -1371,22 +1372,35 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			return
 		}
 
-		// Remote control session should be valid
-		if state.Props.RemoteControlSessionID != us.originalConnID {
-			p.LogError("unauthorized input event", "sessionID", us.originalConnID)
+		// Remote control session should be valid and authorized
+		if state.Call.Props.RemoteControlSessionID == "" || state.Call.Props.RemoteControlSessionID != us.originalConnID {
+			p.LogError("unauthorized input event", "sessionID", us.originalConnID, "RemoteControlSessionID", state.Call.Props.RemoteControlSessionID)
 			return
 		}
 
-		sharerSession, ok := state.sessions[state.Props.ScreenSharingSessionID]
+		// We unmarshal to ensure the event is well formed.
+		var ev public.RemoteControlEvent
+		if err := json.Unmarshal([]byte(msgData), &ev); err != nil {
+			p.LogError("failed to unmarshal input event", "err", err.Error())
+			return
+		}
+
+		_, ok = state.sessions[state.Props.ScreenSharingSessionID]
 		if !ok {
 			p.LogError("sharer session not found")
 			return
 		}
 
-		// Relay to sharer
-		p.publishWebSocketEvent("input_event", map[string]interface{}{
-			"data": msgData,
-		}, &WebSocketBroadcast{UserID: sharerSession.UserID, ReliableClusterSend: true})
+		// Relay to sharer via RTC signaling for lower latency.
+		rtcMsg := rtc.Message{
+			SessionID: state.Props.ScreenSharingSessionID,
+			Type:      rtcRemoteControlEventMessage,
+			Data:      []byte(msgData),
+		}
+
+		if err := p.sendRTCMessage(rtcMsg, us.callID); err != nil {
+			p.LogError("failed to send RTC message", "error", err)
+		}
 		return
 	case clientMessageTypeMetric:
 		// Sent from the transcriber.
