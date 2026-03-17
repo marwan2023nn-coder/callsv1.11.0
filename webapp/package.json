@@ -85,6 +85,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "27.1.0",
     "jest-canvas-mock": "2.4.0",
+    "jest-environment-jsdom": "27.5.1",
     "jest-junit": "12.2.0",
     "luxon": "3.3.0",
     "mattermost-webapp": "file:mattermost-webapp/webapp/channels",
