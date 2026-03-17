@@ -94,3 +94,19 @@ type RemoteControlEvent struct {
 	DeltaX   float64  `json:"deltaX"` // wheel delta
 	DeltaY   float64  `json:"deltaY"`
 }
+
+func (ev RemoteControlEvent) Validate() error {
+	switch ev.Action {
+	case "move", "mousedown", "mouseup", "scroll", "keydown", "keyup":
+	default:
+		return fmt.Errorf("invalid action %q", ev.Action)
+	}
+
+	if ev.Action == "move" || ev.Action == "mousedown" || ev.Action == "mouseup" {
+		if ev.X < 0 || ev.X > 1 || ev.Y < 0 || ev.Y > 1 {
+			return fmt.Errorf("invalid coordinates (%.2f, %.2f)", ev.X, ev.Y)
+		}
+	}
+
+	return nil
+}

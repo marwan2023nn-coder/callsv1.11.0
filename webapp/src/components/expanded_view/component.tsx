@@ -378,7 +378,8 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     };
 
     handleInputEvent = (ev: MouseEvent | KeyboardEvent) => {
-        if (!window.callsClient || !this.props.remoteControlSessionID || this.props.remoteControlSessionID !== this.props.currentSession?.session_id) {
+        const callsClient = getCallsClient();
+        if (!callsClient || !this.props.remoteControlSessionID || this.props.remoteControlSessionID !== this.props.currentSession?.session_id) {
             return false;
         }
 
@@ -467,7 +468,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             };
         }
 
-        window.callsClient.sendInputEvent(data);
+        callsClient.sendInputEvent(data);
         ev.preventDefault();
         ev.stopPropagation();
         return true;
@@ -687,7 +688,8 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
     };
 
     onWheelPlayer = (ev: React.WheelEvent) => {
-        if (!window.callsClient || !this.props.remoteControlSessionID || this.props.remoteControlSessionID !== this.props.currentSession?.session_id) {
+        const callsClient = getCallsClient();
+        if (!callsClient || !this.props.remoteControlSessionID || this.props.remoteControlSessionID !== this.props.currentSession?.session_id) {
             return;
         }
 
@@ -703,7 +705,7 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             deltaY: ev.deltaY,
         };
 
-        window.callsClient.sendInputEvent(data);
+        callsClient.sendInputEvent(data);
         ev.preventDefault();
         ev.stopPropagation();
     };
