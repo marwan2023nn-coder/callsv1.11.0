@@ -1361,20 +1361,32 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			return
 		}
 
-		state, err := p.getCallState(us.channelID, false)
+		// We use lockCallReturnState to ensure we have a consistent view of the call state.
+		state, err := p.lockCallReturnState(us.channelID)
 		if err != nil {
-			p.LogError("failed to get call state", "err", err.Error())
+			p.LogError("failed to lock call state", "err", err.Error())
 			return
 		}
-
 		if state == nil {
+			p.unlockCall(us.channelID)
 			p.LogError("no call ongoing")
 			return
 		}
 
-		// Remote control session should be valid and authorized
-		if state.Call.Props.RemoteControlSessionID == "" || state.Call.Props.RemoteControlSessionID != us.originalConnID {
-			p.LogError("unauthorized input event", "sessionID", us.originalConnID, "RemoteControlSessionID", state.Call.Props.RemoteControlSessionID)
+		// Authorize the sender and get the sharer's session ID.
+		authorized := state.Call.Props.RemoteControlSessionID != "" && state.Call.Props.RemoteControlSessionID == us.originalConnID
+		remoteControlSessionID := state.Call.Props.RemoteControlSessionID
+		screenSharingSessionID := state.Props.ScreenSharingSessionID
+		_, sharerInCall := state.sessions[screenSharingSessionID]
+		p.unlockCall(us.channelID)
+
+		if !authorized {
+			p.LogError("unauthorized input event", "sessionID", us.originalConnID, "RemoteControlSessionID", remoteControlSessionID)
+			return
+		}
+
+		if !sharerInCall {
+			p.LogError("sharer session not found", "ScreenSharingSessionID", screenSharingSessionID)
 			return
 		}
 
@@ -1385,15 +1397,14 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			return
 		}
 
-		_, ok = state.sessions[state.Props.ScreenSharingSessionID]
-		if !ok {
-			p.LogError("sharer session not found")
+		if err := ev.Validate(); err != nil {
+			p.LogError("invalid input event", "err", err.Error())
 			return
 		}
 
 		// Relay to sharer via RTC signaling for lower latency.
 		rtcMsg := rtc.Message{
-			SessionID: state.Props.ScreenSharingSessionID,
+			SessionID: screenSharingSessionID,
 			Type:      rtcRemoteControlEventMessage,
 			Data:      []byte(msgData),
 		}

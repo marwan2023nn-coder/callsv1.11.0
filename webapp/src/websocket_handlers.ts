@@ -574,11 +574,24 @@ export function handleHostRemoteControlOn(store: Store, ev: WebSocketMessage<Hos
         },
     });
 
+    const state = store.getState();
+    const isSharer = getCallsClient()?.getSessionID() === screenSharingSessionIDForCurrentCall(state);
+    if (!isSharer) {
+        return;
+    }
+
+    const payload = {
+        type: 'remote-control-on',
+        session_id: ev.data.session_id,
+    };
+
     if (window.desktopAPI && (window.desktopAPI as any).sendRemoteControlEvent) {
-        (window.desktopAPI as any).sendRemoteControlEvent({
-            type: 'remote-control-on',
-            session_id: ev.data.session_id,
-        });
+        (window.desktopAPI as any).sendRemoteControlEvent(payload);
+    } else {
+        window.postMessage({
+            type: 'remote-control-event',
+            data: payload,
+        }, window.location.origin);
     }
 }
 
@@ -591,10 +604,23 @@ export function handleHostRemoteControlOff(store: Store, ev: WebSocketMessage<Ho
         },
     });
 
+    const state = store.getState();
+    const isSharer = getCallsClient()?.getSessionID() === screenSharingSessionIDForCurrentCall(state);
+    if (!isSharer) {
+        return;
+    }
+
+    const payload = {
+        type: 'remote-control-off',
+    };
+
     if (window.desktopAPI && (window.desktopAPI as any).sendRemoteControlEvent) {
-        (window.desktopAPI as any).sendRemoteControlEvent({
-            type: 'remote-control-off',
-        });
+        (window.desktopAPI as any).sendRemoteControlEvent(payload);
+    } else {
+        window.postMessage({
+            type: 'remote-control-event',
+            data: payload,
+        }, window.location.origin);
     }
 }
 
