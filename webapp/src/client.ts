@@ -511,7 +511,13 @@ export default class CallsClient extends EventEmitter {
             });
         });
 
-        ws.on('message', async ({data}) => {
+        ws.on('message', async (outerMsg: any) => {
+            const {data, type} = outerMsg;
+            if (type === 11) {
+                this.emit('inputEvent', JSON.parse(data));
+                return;
+            }
+
             const msg = JSON.parse(data);
             if (!msg) {
                 return;
@@ -520,8 +526,6 @@ export default class CallsClient extends EventEmitter {
                 if (this.peer) {
                     await this.peer.signal(data);
                 }
-            } else if (msg.type === 11) {
-                this.emit('inputEvent', JSON.parse(msg.data));
             }
         });
     }
