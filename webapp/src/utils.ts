@@ -402,7 +402,9 @@ export function playSound(name: string) {
     }
 
     const audio = new Audio(src);
-    audio.play();
+    audio.play().catch((err) => {
+        logErr(`failed to play sound ${name}`, err);
+    });
     audio.onended = () => {
         audio.src = '';
         audio.remove();
@@ -410,6 +412,7 @@ export function playSound(name: string) {
 }
 
 let outgoingRingAudio: HTMLAudioElement | null = null;
+let outgoingRingbackPlayPromise: Promise<void> | null = null;
 let outgoingRingbackUnlockCleanup: (() => void) | null = null;
 
 function scheduleOutgoingRingbackUnlock(audio: HTMLAudioElement) {
@@ -425,7 +428,8 @@ function scheduleOutgoingRingbackUnlock(audio: HTMLAudioElement) {
             return;
         }
 
-        audio.play().catch(() => {
+        outgoingRingbackPlayPromise = audio.play();
+        outgoingRingbackPlayPromise.catch(() => {
             // Autoplay might be blocked.
         });
     };
@@ -460,7 +464,8 @@ export function startOutgoingRingback(defaultRingbackSound?: string) {
     const audio = new Audio(src);
     audio.loop = true;
     outgoingRingAudio = audio;
-    audio.play().catch(() => {
+    outgoingRingbackPlayPromise = audio.play();
+    outgoingRingbackPlayPromise.catch(() => {
         // Autoplay might be blocked.
         scheduleOutgoingRingbackUnlock(audio);
     });
@@ -474,15 +479,26 @@ export function stopOutgoingRingback() {
     outgoingRingbackUnlockCleanup?.();
     outgoingRingbackUnlockCleanup = null;
 
-    try {
-        outgoingRingAudio.pause();
-        outgoingRingAudio.src = '';
-        outgoingRingAudio.remove();
-    } catch (err) {
-        // ignore
-    }
-
+    const audio = outgoingRingAudio;
+    const playPromise = outgoingRingbackPlayPromise;
     outgoingRingAudio = null;
+    outgoingRingbackPlayPromise = null;
+
+    const stop = () => {
+        try {
+            audio.pause();
+            audio.src = '';
+            audio.remove();
+        } catch (err) {
+            // ignore
+        }
+    };
+
+    if (playPromise) {
+        playPromise.then(stop).catch(stop);
+    } else {
+        stop();
+    }
 }
 
 export async function followThread(store: Store, channelID: string, teamID?: string) {

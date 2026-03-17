@@ -60,7 +60,7 @@ const mapStateToProps = (state: GlobalState) => {
         connectedDMUser = getUser(state, otherID);
     }
 
-    const {channelDisplayName} = getChannelUrlAndDisplayName(state, channel || null);
+    const {channelDisplayName} = getChannelUrlAndDisplayName(state, channel || undefined);
 
     const thread = getThread(state, threadID);
 

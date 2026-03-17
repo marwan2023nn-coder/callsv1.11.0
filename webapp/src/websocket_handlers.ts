@@ -85,6 +85,7 @@ import {
     defaultOutgoingRingbackSound,
     profilesInCurrentCallMap,
     ringingEnabled,
+    screenSharingSessionIDForCurrentCall,
     shouldPlayJoinUserSound,
 } from './selectors';
 import {Store} from './types/mattermost-webapp';
