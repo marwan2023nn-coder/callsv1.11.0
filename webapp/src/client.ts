@@ -520,6 +520,8 @@ export default class CallsClient extends EventEmitter {
                 if (this.peer) {
                     await this.peer.signal(data);
                 }
+            } else if (msg.type === 11) {
+                this.emit('inputEvent', JSON.parse(msg.data));
             }
         });
     }

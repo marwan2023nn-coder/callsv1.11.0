@@ -428,17 +428,23 @@ export function handleCallHostChanged(store: Store, ev: WebSocketMessage<CallHos
     }, HOST_CONTROL_NOTICE_TIMEOUT);
 }
 
-export function handleInputEvent(_: Store, ev: WebSocketMessage<{ data: string }>) {
+export function handleInputEvent(_: Store, ev: WebSocketMessage<{ data: any }>) {
     const client = getCallsClient();
     if (!client) {
         return;
     }
 
     try {
-        const inputData = JSON.parse(ev.data.data);
+        const inputData = typeof ev.data.data === 'string' ? JSON.parse(ev.data.data) : ev.data.data;
         if (window.desktopAPI && (window.desktopAPI as any).sendRemoteControlEvent) {
             logDebug('desktopAPI.sendRemoteControlEvent', inputData);
             (window.desktopAPI as any).sendRemoteControlEvent(inputData);
+        } else {
+            // Fallback for when desktopAPI is not available or doesn't have the method.
+            window.postMessage({
+                type: 'remote-control-event',
+                data: inputData,
+            }, window.location.origin);
         }
     } catch (err) {
         logErr('failed to parse input event', err);
@@ -567,6 +573,13 @@ export function handleHostRemoteControlOn(store: Store, ev: WebSocketMessage<Hos
             session_id: ev.data.session_id,
         },
     });
+
+    if (window.desktopAPI && (window.desktopAPI as any).sendRemoteControlEvent) {
+        (window.desktopAPI as any).sendRemoteControlEvent({
+            type: 'remote-control-on',
+            session_id: ev.data.session_id,
+        });
+    }
 }
 
 export function handleHostRemoteControlOff(store: Store, ev: WebSocketMessage<HostControlMsg>) {
@@ -577,6 +590,12 @@ export function handleHostRemoteControlOff(store: Store, ev: WebSocketMessage<Ho
             channelID,
         },
     });
+
+    if (window.desktopAPI && (window.desktopAPI as any).sendRemoteControlEvent) {
+        (window.desktopAPI as any).sendRemoteControlEvent({
+            type: 'remote-control-off',
+        });
+    }
 }
 
 export function handleHostLowerHand(store: Store, ev: WebSocketMessage<HostControlLowerHand>) {

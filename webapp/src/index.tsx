@@ -324,10 +324,6 @@ export default class Plugin {
         registry.registerWebSocketEventHandler(`custom_${pluginId}_host_remote_control_off`, (ev) => {
             handleHostRemoteControlOff(store, ev);
         });
-
-        registry.registerWebSocketEventHandler(`custom_${pluginId}_input_event`, (ev) => {
-            handleInputEvent(store, ev);
-        });
     }
 
     private initialize(registry: PluginRegistry, store: Store) {
@@ -757,6 +753,18 @@ export default class Plugin {
                 }
 
                 window.callsClient.on('connect', () => store.dispatch(setClientConnecting(false)));
+
+                window.callsClient.on('inputEvent', (ev: any) => {
+                    handleInputEvent(store, {
+                        event: `custom_${pluginId}_input_event`,
+                        data: {
+                            data: ev,
+                        },
+                        broadcast: {
+                            channel_id: window.callsClient?.channelID || '',
+                        },
+                    } as any);
+                });
 
                 window.callsClient.on('close', (err?: Error) => {
                     store.dispatch(setClientConnecting(false));

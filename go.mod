@@ -33,6 +33,7 @@ require (
 )
 
 replace github.com/pion/interceptor v0.1.40 => github.com/streamer45/interceptor v0.0.0-20250701195358-9e4ca8111c7a
+replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20241202173237-19429a94021a
 
 require (
 	dario.cat/mergo v1.0.1 // indirect

@@ -78,3 +78,19 @@ type CallProps struct {
 type CallStats struct {
 	ScreenDuration int64 `json:"screen_duration,omitempty"`
 }
+
+type RemoteControlEvent struct {
+	Action   string   `json:"action"` // move, mousedown, mouseup, scroll, keydown, keyup
+	X        float64  `json:"x"`      // Percentage 0.0 to 1.0
+	Y        float64  `json:"y"`
+	Button   int      `json:"button"`  // mouse button
+	Buttons  int      `json:"buttons"` // mouse buttons
+	Key      string   `json:"key"`     // keyboard key
+	Code     string   `json:"code"`    // keyboard code
+	CtrlKey  bool     `json:"ctrlKey"`
+	ShiftKey bool     `json:"shiftKey"`
+	AltKey   bool     `json:"altKey"`
+	MetaKey  bool     `json:"metaKey"`
+	DeltaX   float64  `json:"deltaX"` // wheel delta
+	DeltaY   float64  `json:"deltaY"`
+}
