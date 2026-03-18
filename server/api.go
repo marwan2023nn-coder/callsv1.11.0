@@ -581,10 +581,13 @@ func (p *Plugin) checkAPIRateLimits(userID string) error {
 	limiter := p.apiLimiters[userID]
 	p.apiLimitersMut.RUnlock()
 	if limiter == nil {
-		limiter = rate.NewLimiter(5, 50)
 		p.apiLimitersMut.Lock()
-		p.apiLimiters[userID] = limiter
-		p.apiLimitersMut.Unlock()
+		defer p.apiLimitersMut.Unlock()
+		limiter = p.apiLimiters[userID]
+		if limiter == nil {
+			limiter = rate.NewLimiter(5, 50)
+			p.apiLimiters[userID] = limiter
+		}
 	}
 
 	if !limiter.Allow() {
