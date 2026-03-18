@@ -574,19 +574,24 @@ func (p *Plugin) handleEnv(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+// checkAPIRateLimits ensures that a single user cannot overwhelm the plugin
+// with too many API requests, which helps prevent Denial of Service (DoS) attacks.
 func (p *Plugin) checkAPIRateLimits(userID string) error {
 	p.apiLimitersMut.RLock()
 	limiter := p.apiLimiters[userID]
 	p.apiLimitersMut.RUnlock()
 	if limiter == nil {
-		limiter = rate.NewLimiter(5, 50)
 		p.apiLimitersMut.Lock()
-		p.apiLimiters[userID] = limiter
-		p.apiLimitersMut.Unlock()
+		defer p.apiLimitersMut.Unlock()
+		limiter = p.apiLimiters[userID]
+		if limiter == nil {
+			limiter = rate.NewLimiter(5, 50)
+			p.apiLimiters[userID] = limiter
+		}
 	}
 
 	if !limiter.Allow() {
-		return fmt.Errorf(`{"message": "too many requests", "status_code": %d}`, http.StatusTooManyRequests)
+		return errors.New("too many requests")
 	}
 
 	return nil
