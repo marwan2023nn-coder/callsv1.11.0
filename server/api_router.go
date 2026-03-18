@@ -47,12 +47,13 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 				return
 			}
 
+			// Ensure only authenticated users can access internal plugin APIs.
 			if userID := r.Header.Get("Mattermost-User-Id"); userID != "" {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			p.handleErrorWithCode(w, http.StatusUnauthorized, "Unauthorized", nil)
 		})
 	})
 
@@ -63,6 +64,8 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 			var res httpResponse
 			defer p.httpAudit("handleDebug", &res, w, r)
 
+			// Only system admins are allowed to access debug endpoints to prevent
+			// sensitive system information leakage (e.g. pprof, traces).
 			if userID := r.Header.Get("Mattermost-User-Id"); !p.API.HasPermissionTo(userID, model.PermissionManageSystem) {
 				res.Err = "Forbidden"
 				res.Code = http.StatusForbidden
@@ -163,8 +166,9 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 
 	// Stats
 	router.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
+		// Only system admins should have access to plugin-wide statistics.
 		if userID := r.Header.Get("Mattermost-User-Id"); !p.API.HasPermissionTo(userID, model.PermissionManageSystem) {
-			http.Error(w, "Forbidden", http.StatusForbidden)
+			p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
 			return
 		}
 
@@ -173,7 +177,8 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 		}
 	}).Methods("GET")
 
-	// Rate limiting middleware
+	// Rate limiting middleware to prevent DoS by limiting authenticated users
+	// to a specific number of requests per second.
 	router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if botRouter.Match(r, &mux.RouteMatch{}) {
@@ -183,7 +188,7 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 
 			if userID := r.Header.Get("Mattermost-User-Id"); userID != "" {
 				if err := p.checkAPIRateLimits(userID); err != nil {
-					http.Error(w, err.Error(), http.StatusTooManyRequests)
+					p.handleErrorWithCode(w, http.StatusTooManyRequests, "Too many requests", err)
 					return
 				}
 			}

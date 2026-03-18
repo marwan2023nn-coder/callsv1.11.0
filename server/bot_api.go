@@ -57,6 +57,9 @@ func (p *Plugin) handleBotGetUserImage(w http.ResponseWriter, r *http.Request) {
 	if appErr != nil {
 		p.LogError(appErr.Error())
 		http.NotFound(w, r)
+		// We return here to prevent further execution (e.g. serving empty content)
+		// and avoid multiple response headers being sent.
+		return
 	}
 
 	http.ServeContent(w, r, userID, time.Now(), bytes.NewReader(data))
