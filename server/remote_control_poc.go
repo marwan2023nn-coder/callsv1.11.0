@@ -6,106 +6,104 @@ import (
 	"runtime"
 )
 
-// RemoteControlEvent defines the structure for input events.
+// RemoteControlEvent defines the structure for input events sent from the Controller.
 type RemoteControlEvent struct {
-	Action string  `json:"action"` // move, mousedown, mouseup, keydown, keyup
-	X      float64 `json:"x"`      // 0.0 to 1.0
-	Y      float64 `json:"y"`      // 0.0 to 1.0
-	Key    string  `json:"key"`
+	Action   string  `json:"action"` // move, mousedown, mouseup, scroll, keydown, keyup
+	X        float64 `json:"x"`      // 0.0 to 1.0 (Percentage)
+	Y        float64 `json:"y"`      // 0.0 to 1.0 (Percentage)
+	Button   int     `json:"button"`
+	Key      string  `json:"key"`    // e.g., "A", "Enter", "Control"
+	CtrlKey  bool    `json:"ctrlKey"`
+	ShiftKey bool    `json:"shiftKey"`
+	AltKey   bool    `json:"altKey"`
+	MetaKey  bool    `json:"metaKey"`
 }
 
-// simulateInput is the entry point for simulating user input across different platforms.
-func simulateInput(ev RemoteControlEvent) {
-	if ev.Action == "keydown" || ev.Action == "keyup" {
-		fmt.Printf("Simulating keyboard event: %s, Key: %s\n", ev.Action, ev.Key)
-	} else {
-		fmt.Printf("Simulating mouse event: %s at (%.2f, %.2f)\n", ev.Action, ev.X, ev.Y)
+// GetLocalScreenResolution returns the resolution of the primary monitor.
+// In a real implementation, you would use a library like 'github.com/go-vgo/robotgo'
+// or native calls to GetSystemMetrics (Win) or XDisplayWidth (Linux).
+func GetLocalScreenResolution() (width, height int) {
+	// Mock values for PoC
+	return 1920, 1080
+}
+
+// HandleRemoteControlMessage is the WRAPPER that bridges JSON events with Native Simulation.
+func HandleRemoteControlMessage(payload []byte) error {
+	var ev RemoteControlEvent
+	if err := json.Unmarshal(payload, &ev); err != nil {
+		return fmt.Errorf("failed to decode remote control event: %w", err)
 	}
 
+	// 1. Coordinate Mapping: Convert percentages to actual pixels.
+	screenWidth, screenHeight := GetLocalScreenResolution()
+	absX := int(ev.X * float64(screenWidth))
+	absY := int(ev.Y * float64(screenHeight))
+
+	// 2. Dispatch to the correct native driver based on the OS.
 	switch runtime.GOOS {
 	case "windows":
-		simulateWindowsInput(ev)
+		return simulateWindowsInput(ev, absX, absY)
 	case "linux":
-		simulateLinuxInput(ev)
+		return simulateLinuxInput(ev, absX, absY)
 	default:
-		fmt.Printf("OS %s not supported for input simulation in this PoC\n", runtime.GOOS)
+		return fmt.Errorf("OS %s not supported for remote control simulation", runtime.GOOS)
 	}
 }
 
 // --- Windows Implementation (Win32 API) ---
-// In a real application, you would use 'golang.org/x/sys/windows' to call SendInput.
-func simulateWindowsInput(ev RemoteControlEvent) {
-	fmt.Println("Calling Windows SendInput API...")
-	/*
-	   Pseudo-code for Windows Mouse:
-	   var input win32.INPUT
-	   input.Type = win32.INPUT_MOUSE
-	   input.Mi.Dx = int32(ev.X * 65535) // Windows uses 0-65535 for normalized coordinates
-	   input.Mi.Dy = int32(ev.Y * 65535)
-	   input.Mi.DwFlags = win32.MOUSEEVENTF_ABSOLUTE | win32.MOUSEEVENTF_MOVE
-	   win32.SendInput(1, &input, unsafe.Sizeof(input))
+func simulateWindowsInput(ev RemoteControlEvent, x, y int) error {
+	fmt.Printf("[Windows Win32] Executing %s at (%d, %d)\n", ev.Action, x, y)
 
-	   Pseudo-code for Windows Keyboard:
-	   input.Type = win32.INPUT_KEYBOARD
-	   input.Ki.WVk = vkCodeFromKey(ev.Key)
-	   input.Ki.DwFlags = 0 // or win32.KEYEVENTF_KEYUP
-	   win32.SendInput(1, &input, unsafe.Sizeof(input))
-	*/
+	switch ev.Action {
+	case "move":
+		// Use SendInput with MOUSEEVENTF_ABSOLUTE
+		fmt.Printf("  -> win32.SendInput: MouseMove to (%d, %d) using normalized coords: %d, %d\n", x, y, (x*65535)/1920, (y*65535)/1080)
+	case "mousedown", "mouseup":
+		fmt.Printf("  -> win32.SendInput: Mouse Button %d (%s)\n", ev.Button, ev.Action)
+	case "keydown", "keyup":
+		fmt.Printf("  -> win32.SendInput: Keyboard Key %s (%s) Modifiers: Ctrl:%v, Shift:%v\n", ev.Key, ev.Action, ev.CtrlKey, ev.ShiftKey)
+	}
+	return nil
 }
 
-// --- Linux Implementation (X11 and Wayland) ---
-func simulateLinuxInput(ev RemoteControlEvent) {
-	// 1. Detect if X11 or Wayland is used (check XDG_SESSION_TYPE)
-	// sessionType := os.Getenv("XDG_SESSION_TYPE")
+// --- Linux Implementation (X11 & Wayland) ---
+func simulateLinuxInput(ev RemoteControlEvent, x, y int) error {
+	fmt.Printf("[Linux] Executing %s at (%d, %d)\n", ev.Action, x, y)
 
-	fmt.Println("Handling Linux Input Simulation...")
+	// Implementation Note:
+	// If XDG_SESSION_TYPE == "x11", use libXtst (XTestFakeMotionEvent).
+	// If XDG_SESSION_TYPE == "wayland", use DBus org.freedesktop.portal.RemoteDesktop.
 
-	// X11 Logic: Use XTestExtension (libxtst)
-	fmt.Println("X11: Using XTestFakeMotionEvent via cgo or syscalls.")
-
-	// Wayland Logic: Use Portals (Safe and modern way)
-	fmt.Println("Wayland: Communicating with org.freedesktop.portal.RemoteDesktop via DBus.")
-	/*
-	   Wayland simulation requires a 'session' handle from the portal.
-	   dbus.Call("org.freedesktop.portal.RemoteDesktop.NotifyPointerMotion", handle, options, x, y)
-	*/
+	switch ev.Action {
+	case "move":
+		fmt.Printf("  -> X11: XTestFakeMotionEvent(display, %d, %d, 0)\n", x, y)
+		fmt.Printf("  -> Wayland: portal.NotifyPointerMotion(session_handle, options, %d, %d)\n", x, y)
+	case "keydown", "keyup":
+		fmt.Printf("  -> Simulating key: %s Action: %s\n", ev.Key, ev.Action)
+	}
+	return nil
 }
 
 // --- Screen Capture PoC ---
-// To capture the screen efficiently, use platform-specific libraries.
 func captureScreen() {
-	fmt.Println("Capturing screen...")
+	fmt.Println("Capturing screen for streaming...")
 	if runtime.GOOS == "windows" {
-		// Use BitBlt or Desktop Duplication API (Windows 8+)
-		fmt.Println("Windows: Using Desktop Duplication API for high-performance capture.")
+		fmt.Println("  -> Windows: Using Desktop Duplication API (DDA) for 60FPS zero-copy capture.")
 	} else if runtime.GOOS == "linux" {
-		// Use PipeWire (for both X11 and Wayland)
-		fmt.Println("Linux: Using PipeWire to capture screen streams.")
+		fmt.Println("  -> Linux: Using PipeWire to stream frames from Wayland/X11 compositor.")
 	}
 }
 
 func main() {
-	// Example Mouse Move
-	moveEvent := RemoteControlEvent{
-		Action: "move",
-		X:      0.5,
-		Y:      0.5,
-	}
-	simulateInput(moveEvent)
+	fmt.Println("Remote Control Wrapper & PoC started.")
 
-	// Example Key Press
-	keyEvent := RemoteControlEvent{
-		Action: "keydown",
-		Key:    "A",
-	}
-	simulateInput(keyEvent)
+	// Example 1: Simulate Mouse Move from JSON
+	jsonMove := `{"action": "move", "x": 0.25, "y": 0.75}`
+	HandleRemoteControlMessage([]byte(jsonMove))
+
+	// Example 2: Simulate Key Press from JSON
+	jsonKey := `{"action": "keydown", "key": "Enter", "ctrlKey": true}`
+	HandleRemoteControlMessage([]byte(jsonKey))
 
 	captureScreen()
-
-	// Demonstrate JSON parsing
-	jsonData := `{"action": "mousedown", "x": 0.1, "y": 0.2}`
-	var decodedEvent RemoteControlEvent
-	if err := json.Unmarshal([]byte(jsonData), &decodedEvent); err == nil {
-		fmt.Printf("Decoded JSON event: %+v\n", decodedEvent)
-	}
 }

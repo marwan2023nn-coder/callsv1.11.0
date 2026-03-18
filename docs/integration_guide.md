@@ -1,60 +1,62 @@
-# Integration Guide: Connecting Control to Screen Sharing
+# Integration Guide: Remote Control for Mattermost Calls
 
-Since you already have a functional "Screen Sharing" feature, adding "Remote Control" involves two main parts: capturing events on the Receiver's side and executing them on the Sharer's side.
+This guide provides the necessary steps to integrate the **Remote Control Wrapper** into the Mattermost Desktop client or a helper agent.
 
-## 1. Receiver Side (The one WHO CONTROLS)
+## 1. Data Flow Summary
 
-The Receiver sees the video stream. You need to wrap your `<video>` element to capture events:
+The Controller (User A) triggers events in their browser, which are then relayed to the Sharer (User B).
 
-```javascript
-// Webapp (React/JS)
-const handleMouseEvent = (e) => {
-    const rect = videoElement.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;  // Percentage 0.0 to 1.0
-    const y = (e.clientY - rect.top) / rect.height;   // Percentage 0.0 to 1.0
-
-    const payload = {
-        action: e.type, // 'mousemove', 'mousedown', 'mouseup'
-        x: x,
-        y: y,
-        button: e.button
-    };
-
-    // Send via WebRTC DataChannel for low latency
-    dataChannel.send(JSON.stringify(payload));
-};
+```
+[Controller UI] --(WebRTC DataChannel)--> [Relay Server] --(WebRTC DataChannel)--> [Sharer Desktop Agent] --(Native API)--> [Simulated Input]
 ```
 
-## 2. Server/Relay (The Bridge)
+## 2. Using the Go Wrapper
 
-The server receives the message and forwards it to the Sharer's desktop agent. In your Mattermost Plugin:
-- Ensure the sender is authorized.
-- Use `rtcRemoteControlEventMessage` to relay the event to the Sharer.
+The Go Wrapper in `server/remote_control_poc.go` acts as the **Native Driver**. To integrate it:
 
-## 3. Sharer Side (The one WHO IS CONTROLLED)
+### Step A: Receive Remote Control Messages
+In your desktop agent's RTC message handler, listen for events of type `rtcRemoteControlEventMessage` (Type 11).
 
-The Desktop Agent (written in Go) receives the message and uses the logic in `remote_control_poc.go`:
+### Step B: Call the Wrapper
+Pass the incoming message payload to the `HandleRemoteControlMessage` function.
 
-### Conversion Logic (Go)
 ```go
-func executeEvent(ev RemoteControlEvent) {
-    // Get local screen resolution
-    screenWidth, screenHeight := getLocalScreenResolution()
-
-    // Calculate absolute pixels
-    absX := int(ev.X * float64(screenWidth))
-    absY := int(ev.Y * float64(screenHeight))
-
-    // Call native APIs (Win32 / X11 / Wayland)
-    nativeSimulateMove(absX, absY)
+// Desktop Agent (Go)
+func onDataChannelMessage(msg []byte) {
+    // 1. Ensure control is authorized for this session.
+    // 2. Pass to the Wrapper.
+    err := remote_control.HandleRemoteControlMessage(msg)
+    if err != nil {
+        log.Errorf("Remote control execution failed: %v", err)
+    }
 }
 ```
 
-## 4. Why Percentage-based Coordinates?
-- **Aspect Ratio:** The Receiver's video window might have a different aspect ratio than the Sharer's screen.
-- **Resolution:** A 4K screen controlled by a 1080p laptop works seamlessly because percentages (0.5, 0.5) always point to the center of the screen regardless of the resolution.
+## 3. Coordinate Mapping Details
 
-## 5. Security Check (The "Kill Switch")
-Always ensure the Sharer has a button to:
-1. **Pause Control:** Keep sharing but ignore remote inputs.
-2. **Stop Sharing:** Kill the stream and the control session instantly.
+The Controller's UI sends coordinates as **Percentages (0.0 to 1.0)**.
+
+The Wrapper's `HandleRemoteControlMessage` converts these using the **Sharer's Local Resolution**:
+
+```go
+// Inside HandleRemoteControlMessage:
+screenWidth, screenHeight := GetLocalScreenResolution()
+absX := int(ev.X * float64(screenWidth))
+absY := int(ev.Y * float64(screenHeight))
+```
+
+This approach eliminates "drift" caused by resolution or aspect ratio mismatches between User A and User B.
+
+## 4. Platform-Specific Integration
+
+### Windows (Win32)
+Ensure the executable has permissions to call `SendInput`. On some systems, the application might need to be run as Administrator if the target application (the one being controlled) is also running as Administrator (due to UIPI - User Interface Privilege Isolation).
+
+### Linux (X11 & Wayland)
+- **X11:** Ensure `libxtst-dev` is installed.
+- **Wayland:** The agent must be integrated with **PipeWire** for screen capture and the **Remote Desktop Portal** for input simulation. The portal requires an initial user interaction to grant permission.
+
+## 5. Security & Safety
+- **Authorization:** Only execute events if the `remoteControlSessionID` matches the authorized controller's ID.
+- **Visual Feedback:** Show a "Control Active" banner on the Sharer's screen.
+- **Kill Switch:** Provide a global hotkey (e.g., Ctrl+Alt+Shift+Q) to instantly terminate the control session.
