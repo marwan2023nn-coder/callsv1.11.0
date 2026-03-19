@@ -94,7 +94,7 @@ func captureScreen() {
 	}
 }
 
-func main() {
+func mainPOC() {
 	fmt.Println("Remote Control Wrapper & PoC started.")
 
 	// Example 1: Simulate Mouse Move from JSON
