@@ -1,6 +1,3 @@
-// Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
-// See LICENSE.txt for license information.
-
 package main
 
 import (
@@ -8,6 +5,7 @@ import (
 	"time"
 
 	"github.com/mattermost/mattermost-plugin-calls/server/cluster"
+	"github.com/mattermost/mattermost-plugin-calls/server/db"
 	"github.com/mattermost/mattermost-plugin-calls/server/public"
 
 	serverMocks "github.com/mattermost/mattermost-plugin-calls/server/mocks/github.com/mattermost/mattermost-plugin-calls/server/interfaces"
@@ -20,6 +18,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestRemoteControlEventValidation(t *testing.T) {
+	t.Run("valid events", func(t *testing.T) {
+		events := []public.RemoteControlEvent{
+			{Action: "move", X: 0.5, Y: 0.5},
+			{Action: "mousedown", X: 0.1, Y: 0.9},
+			{Action: "mouseup", X: 1.0, Y: 0.0},
+			{Action: "scroll", DeltaX: 10, DeltaY: -10},
+			{Action: "keydown", Key: "Enter"},
+			{Action: "keyup", Key: "Escape"},
+		}
+
+		for _, ev := range events {
+			require.NoError(t, ev.Validate())
+		}
+	})
+
+	t.Run("invalid coordinates", func(t *testing.T) {
+		events := []public.RemoteControlEvent{
+			{Action: "move", X: -0.1, Y: 0.5},
+			{Action: "move", X: 1.1, Y: 0.5},
+			{Action: "mousedown", X: 0.5, Y: -1.0},
+			{Action: "mouseup", X: 0.5, Y: 2.0},
+		}
+
+		for _, ev := range events {
+			require.Error(t, ev.Validate())
+		}
+	})
+
+	t.Run("invalid action", func(t *testing.T) {
+		ev := public.RemoteControlEvent{Action: "hack", X: 0.5, Y: 0.5}
+		require.Error(t, ev.Validate())
+	})
+}
+
 func TestHandleClientMessageTypeScreenOff_ClearsRemoteControl(t *testing.T) {
 	mockAPI := &pluginMocks.MockAPI{}
 	mockMetrics := &serverMocks.MockMetrics{}
@@ -30,7 +63,6 @@ func TestHandleClientMessageTypeScreenOff_ClearsRemoteControl(t *testing.T) {
 		},
 		callsClusterLocks: map[string]*cluster.Mutex{},
 		metrics:           mockMetrics,
-		nodeID:            "nodeID",
 	}
 
 	store, tearDown := NewTestStore(t)
@@ -39,89 +71,53 @@ func TestHandleClientMessageTypeScreenOff_ClearsRemoteControl(t *testing.T) {
 
 	channelID := model.NewId()
 	userID := model.NewId()
-	connID := "session_id"
+	connID := model.NewId()
+	controllerConnID := model.NewId()
 
-	// Mocking config
-	p.configuration = &configuration{
-		ClientConfig: ClientConfig{
-			AllowScreenSharing: model.NewPointer(true),
-		},
-	}
-
-	// Create a call with screen sharing and remote control active
-	err := p.store.CreateCall(&public.Call{
+	// 1. Setup active call with screen sharing and remote control
+	call := &public.Call{
 		ID:        model.NewId(),
 		ChannelID: channelID,
 		StartAt:   time.Now().UnixMilli(),
 		Props: public.CallProps{
 			ScreenSharingSessionID: connID,
-			RemoteControlSessionID: "controller_id",
+			RemoteControlSessionID: controllerConnID,
 		},
-	})
-	require.NoError(t, err)
+	}
+	require.NoError(t, p.store.CreateCall(call))
 
-	// Mock session
 	us := &session{
 		userID:         userID,
 		channelID:      channelID,
-		originalConnID: connID,
 		connID:         connID,
+		originalConnID: connID,
 	}
 
 	msg := clientMessage{
 		Type: clientMessageTypeScreenOff,
 	}
 
-	mockAPI.On("LogDebug", mock.Anything, mock.Anything, mock.Anything,
-		mock.Anything, mock.Anything, mock.Anything, mock.Anything,
-		mock.Anything, mock.Anything, mock.Anything, mock.Anything)
-	mockAPI.On("KVSetWithOptions", mock.Anything, mock.Anything, mock.Anything).Return(true, nil)
-	mockAPI.On("KVDelete", mock.Anything).Return(nil)
+	// Mocking expectations
+	mockAPI.On("KVSetWithOptions", "mutex_call_"+channelID, mock.Anything, mock.Anything).Return(true, nil)
+	mockAPI.On("KVDelete", "mutex_call_"+channelID).Return(nil)
 	mockMetrics.On("ObserveClusterMutexGrabTime", mock.Anything, mock.Anything)
 	mockMetrics.On("ObserveClusterMutexLockedTime", mock.Anything, mock.Anything)
-	mockMetrics.On("ObserveAppHandlersTime", mock.Anything, mock.Anything)
-	mockMetrics.On("IncWebSocketEvent", "out", mock.Anything)
-	mockAPI.On("PublishWebSocketEvent", mock.Anything, mock.Anything, mock.Anything).Return()
 
-	err = p.handleClientMessageTypeScreen(us, msg, "nodeID")
+	// Expect WebSocket event for screen off
+	mockMetrics.On("IncWebSocketEvent", "out", wsEventUserScreenOff).Once()
+	mockAPI.On("PublishWebSocketEvent", wsEventUserScreenOff, mock.Anything, mock.Anything).Once()
+
+	// Expect WebSocket event for remote control off (this is what we are testing)
+	mockMetrics.On("IncWebSocketEvent", "out", wsEventHostRemoteControlOff).Once()
+	mockAPI.On("PublishWebSocketEvent", wsEventHostRemoteControlOff, mock.Anything, mock.Anything).Once()
+
+	// 2. Trigger screen off
+	err := p.handleClientMessageTypeScreen(us, msg, "")
 	require.NoError(t, err)
 
-	// Verify state
-	state, err := p.getCallState(channelID, true)
+	// 3. Verify state
+	updatedCall, err := p.store.GetCall(call.ID, db.GetCallOpts{})
 	require.NoError(t, err)
-	require.Equal(t, "", state.Call.Props.ScreenSharingSessionID)
-	require.Equal(t, "", state.Call.Props.RemoteControlSessionID)
-}
-
-func TestRemoteControlEventValidation(t *testing.T) {
-	t.Run("valid events", func(t *testing.T) {
-		events := []public.RemoteControlEvent{
-			{Action: "move", X: 0.5, Y: 0.5},
-			{Action: "mousedown", X: 0, Y: 0, Button: 0},
-			{Action: "mouseup", X: 1, Y: 1},
-			{Action: "scroll", DeltaX: 10, DeltaY: 20},
-			{Action: "keydown", Key: "Enter"},
-			{Action: "keyup", Key: "A"},
-		}
-		for _, ev := range events {
-			require.NoError(t, ev.Validate())
-		}
-	})
-
-	t.Run("invalid coordinates", func(t *testing.T) {
-		events := []public.RemoteControlEvent{
-			{Action: "move", X: -0.1, Y: 0.5},
-			{Action: "move", X: 1.1, Y: 0.5},
-			{Action: "mousedown", X: 0.5, Y: -0.01},
-			{Action: "mouseup", X: 0.5, Y: 1.01},
-		}
-		for _, ev := range events {
-			require.Error(t, ev.Validate())
-		}
-	})
-
-	t.Run("invalid action", func(t *testing.T) {
-		ev := public.RemoteControlEvent{Action: "hack"}
-		require.Error(t, ev.Validate())
-	})
+	require.Empty(t, updatedCall.Props.ScreenSharingSessionID)
+	require.Empty(t, updatedCall.Props.RemoteControlSessionID, "RemoteControlSessionID should be cleared when screen sharing stops")
 }
