@@ -200,6 +200,18 @@ func (p *Plugin) handleClientMessageTypeScreen(us *session, msg clientMessage, h
 			state.Call.Stats.ScreenDuration = secondsSinceTimestamp(state.Call.Props.ScreenStartAt)
 			state.Call.Props.ScreenStartAt = 0
 		}
+
+		// When screen sharing is stopped, we must also clear any active remote control session.
+		if state.Call.Props.RemoteControlSessionID != "" {
+			state.Call.Props.RemoteControlSessionID = ""
+			p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{
+				"channel_id": us.channelID,
+			}, &WebSocketBroadcast{
+				ChannelID:           us.channelID,
+				ReliableClusterSend: true,
+				UserIDs:             getUserIDsFromSessions(state.sessions),
+			})
+		}
 	}
 
 	if err := p.store.UpdateCall(&state.Call); err != nil {

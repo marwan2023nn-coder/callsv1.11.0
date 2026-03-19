@@ -405,4 +405,5 @@ func setCallEnded(call *public.Call) {
 	call.Props.NodeID = ""
 	call.Props.Hosts = nil
 	call.Props.Participants = nil
+	call.Props.RemoteControlSessionID = ""
 }

@@ -4,42 +4,44 @@ import (
 	"encoding/json"
 	"fmt"
 	"runtime"
+
+	"github.com/mattermost/mattermost-plugin-calls/server/public"
 )
 
-// RemoteControlEvent defines the structure for input events sent from the Controller.
-type RemoteControlEvent struct {
-	Action   string  `json:"action"` // move, mousedown, mouseup, scroll, keydown, keyup
-	X        float64 `json:"x"`      // 0.0 to 1.0 (Percentage)
-	Y        float64 `json:"y"`      // 0.0 to 1.0 (Percentage)
-	Button   int     `json:"button"`
-	Key      string  `json:"key"`    // e.g., "A", "Enter", "Control"
-	CtrlKey  bool    `json:"ctrlKey"`
-	ShiftKey bool    `json:"shiftKey"`
-	AltKey   bool    `json:"altKey"`
-	MetaKey  bool    `json:"metaKey"`
-}
+/*
+   Remote Control Native Driver Implementation Guide (PoC)
+   This file demonstrates how to simulate input at the OS level.
+   In a production desktop agent, you would link against native libraries (CGo)
+   or use platform-specific system calls (Syscalls).
+*/
 
 // GetLocalScreenResolution returns the resolution of the primary monitor.
-// In a real implementation, you would use a library like 'github.com/go-vgo/robotgo'
-// or native calls to GetSystemMetrics (Win) or XDisplayWidth (Linux).
+// In production:
+// - Windows: GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)
+// - Linux (X11): XDisplayWidth, XDisplayHeight
 func GetLocalScreenResolution() (width, height int) {
-	// Mock values for PoC
+	// Mock resolution
 	return 1920, 1080
 }
 
-// HandleRemoteControlMessage is the WRAPPER that bridges JSON events with Native Simulation.
+// HandleRemoteControlMessage processes incoming JSON events from the Controller.
 func HandleRemoteControlMessage(payload []byte) error {
-	var ev RemoteControlEvent
+	var ev public.RemoteControlEvent
 	if err := json.Unmarshal(payload, &ev); err != nil {
 		return fmt.Errorf("failed to decode remote control event: %w", err)
 	}
 
-	// 1. Coordinate Mapping: Convert percentages to actual pixels.
+	// 1. Validate the event using the built-in validator in the 'public' package.
+	if err := ev.Validate(); err != nil {
+		return fmt.Errorf("invalid remote control event: %w", err)
+	}
+
+	// 2. Coordinate Mapping: Convert percentages (0.0 - 1.0) to actual pixels.
 	screenWidth, screenHeight := GetLocalScreenResolution()
 	absX := int(ev.X * float64(screenWidth))
 	absY := int(ev.Y * float64(screenHeight))
 
-	// 2. Dispatch to the correct native driver based on the OS.
+	// 3. Dispatch to the native OS driver.
 	switch runtime.GOOS {
 	case "windows":
 		return simulateWindowsInput(ev, absX, absY)
@@ -51,59 +53,46 @@ func HandleRemoteControlMessage(payload []byte) error {
 }
 
 // --- Windows Implementation (Win32 API) ---
-func simulateWindowsInput(ev RemoteControlEvent, x, y int) error {
+func simulateWindowsInput(ev public.RemoteControlEvent, x, y int) error {
 	fmt.Printf("[Windows Win32] Executing %s at (%d, %d)\n", ev.Action, x, y)
-
-	switch ev.Action {
-	case "move":
-		// Use SendInput with MOUSEEVENTF_ABSOLUTE
-		fmt.Printf("  -> win32.SendInput: MouseMove to (%d, %d) using normalized coords: %d, %d\n", x, y, (x*65535)/1920, (y*65535)/1080)
-	case "mousedown", "mouseup":
-		fmt.Printf("  -> win32.SendInput: Mouse Button %d (%s)\n", ev.Button, ev.Action)
-	case "keydown", "keyup":
-		fmt.Printf("  -> win32.SendInput: Keyboard Key %s (%s) Modifiers: Ctrl:%v, Shift:%v\n", ev.Key, ev.Action, ev.CtrlKey, ev.ShiftKey)
-	}
+	/*
+	   Implementation Logic:
+	   - Use 'golang.org/x/sys/windows' to load 'user32.dll'.
+	   - Call 'SendInput' with 'MOUSEINPUT' or 'KEYBDINPUT'.
+	   - For Mouse Move: Set dx = (x * 65535) / screenWidth, dy = (y * 65535) / screenHeight.
+	   - Use flags: MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_MOVE.
+	*/
 	return nil
 }
 
 // --- Linux Implementation (X11 & Wayland) ---
-func simulateLinuxInput(ev RemoteControlEvent, x, y int) error {
+func simulateLinuxInput(ev public.RemoteControlEvent, x, y int) error {
 	fmt.Printf("[Linux] Executing %s at (%d, %d)\n", ev.Action, x, y)
-
-	// Implementation Note:
-	// If XDG_SESSION_TYPE == "x11", use libXtst (XTestFakeMotionEvent).
-	// If XDG_SESSION_TYPE == "wayland", use DBus org.freedesktop.portal.RemoteDesktop.
-
-	switch ev.Action {
-	case "move":
-		fmt.Printf("  -> X11: XTestFakeMotionEvent(display, %d, %d, 0)\n", x, y)
-		fmt.Printf("  -> Wayland: portal.NotifyPointerMotion(session_handle, options, %d, %d)\n", x, y)
-	case "keydown", "keyup":
-		fmt.Printf("  -> Simulating key: %s Action: %s\n", ev.Key, ev.Action)
-	}
+	/*
+	   Implementation Logic:
+	   - X11: Use 'libXtst' (XTestFakeMotionEvent) via CGo.
+	   - Wayland: Use 'org.freedesktop.portal.RemoteDesktop' DBus interface.
+	   - For Wayland capture: Use PipeWire to receive screen frames.
+	*/
 	return nil
 }
 
-// --- Screen Capture PoC ---
-func captureScreen() {
-	fmt.Println("Capturing screen for streaming...")
-	if runtime.GOOS == "windows" {
-		fmt.Println("  -> Windows: Using Desktop Duplication API (DDA) for 60FPS zero-copy capture.")
-	} else if runtime.GOOS == "linux" {
-		fmt.Println("  -> Linux: Using PipeWire to stream frames from Wayland/X11 compositor.")
+// RunRemoteControlPoC is the entry point for testing the PoC logic.
+// Renamed from 'main' to avoid conflict with the plugin's main entry point.
+func RunRemoteControlPoC() {
+	fmt.Println("Remote Control Native Driver PoC")
+
+	// Example: Receiver sends a move event.
+	moveEventJSON := `{"action": "move", "x": 0.5, "y": 0.5}`
+	err := HandleRemoteControlMessage([]byte(moveEventJSON))
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
 	}
-}
 
-func main() {
-	fmt.Println("Remote Control Wrapper & PoC started.")
-
-	// Example 1: Simulate Mouse Move from JSON
-	jsonMove := `{"action": "move", "x": 0.25, "y": 0.75}`
-	HandleRemoteControlMessage([]byte(jsonMove))
-
-	// Example 2: Simulate Key Press from JSON
-	jsonKey := `{"action": "keydown", "key": "Enter", "ctrlKey": true}`
-	HandleRemoteControlMessage([]byte(jsonKey))
-
-	captureScreen()
+	// Example: Receiver sends a key press event.
+	keyEventJSON := `{"action": "keydown", "key": "Enter"}`
+	err = HandleRemoteControlMessage([]byte(keyEventJSON))
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
 }
