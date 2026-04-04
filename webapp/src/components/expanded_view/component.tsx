@@ -38,6 +38,8 @@ import ScreenIcon from 'src/components/icons/screen_icon';
 import ShareScreenIcon from 'src/components/icons/share_screen';
 import UnmutedIcon from 'src/components/icons/unmuted_icon';
 import UnshareScreenIcon from 'src/components/icons/unshare_screen';
+import VideoOffIcon from 'src/components/icons/video_off';
+import VideoOnIcon from 'src/components/icons/video_on';
 import {ExpandedIncomingCallContainer} from 'src/components/incoming_calls/expanded_incoming_call_container';
 import {LeaveCallMenu} from 'src/components/leave_call_menu';
 import {ReactionStream} from 'src/components/reaction_stream/reaction_stream';
@@ -125,10 +127,14 @@ interface Props extends RouteComponentProps {
     hostControlsAllowed: boolean,
     remoteControlSessionID?: string,
     openModal: <P>(modalData: ModalData<P>) => void;
+    enableVideo: boolean,
 }
 
 interface State {
     screenStream: MediaStream | null,
+    selfVideoStream: MediaStream | null,
+    otherVideoStream: MediaStream | null,
+    initializingSelfVideo: boolean,
     showParticipantsList: boolean,
     showLiveCaptions: boolean,
     alerts: CallAlertStates,
@@ -283,6 +289,9 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
             showLiveCaptions: false,
             alerts: CallAlertStatesDefault,
             removeConfirmation: null,
+            selfVideoStream: null,
+            otherVideoStream: null,
+            initializingSelfVideo: false,
         };
 
         if (window.opener) {
@@ -566,6 +575,30 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
         return this.props.currentSession ? this.props.currentSession.raised_hand > 0 : false;
     }
 
+    onVideoToggle = async () => {
+        if (this.isVideoOn()) {
+            logDebug('ExpandedView.onVideoToggle: stopping video (user toggled off)');
+            getCallsClient()?.stopVideo();
+            this.setState({
+                selfVideoStream: null,
+            });
+        } else {
+            logDebug('ExpandedView.onVideoToggle: starting video (user toggled on)');
+            this.setState({
+                initializingSelfVideo: true,
+            });
+            const selfVideoStream = await getCallsClient()?.startVideo();
+            this.setState({
+                selfVideoStream,
+                initializingSelfVideo: false,
+            });
+        }
+    };
+
+    isVideoOn() {
+        return this.props.currentSession ? Boolean(this.props.currentSession.video) : false;
+    }
+
     onRecordToggle = async () => {
         if (!this.props.channel) {
             logErr('channel should be defined');
@@ -758,7 +791,44 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                 screenStream: stream,
             });
         });
-        callsClient.on('devicechange', this.setAudioDevices);
+
+        callsClient.on('localVideoStream', (stream: MediaStream) => {
+            this.setState({
+                selfVideoStream: stream,
+            });
+        });
+
+        callsClient.on('remoteVideoStream', (stream: MediaStream) => {
+            this.setState({
+                otherVideoStream: stream,
+            });
+        });
+
+        callsClient.on('initvideo', () => {
+            this.setState({
+                alerts: {
+                    ...this.state.alerts,
+                    missingVideoInputPermissions: {
+                        active: false,
+                        show: false,
+                    },
+                },
+            });
+        });
+
+        callsClient.on('devicechange', (devices: AudioDevices, videoDevices: MediaDeviceInfo[]) => {
+            this.setAudioDevices(devices);
+            this.setState({
+                alerts: {
+                    ...this.state.alerts,
+                    missingVideoInput: {
+                        ...this.state.alerts.missingVideoInput,
+                        active: this.props.enableVideo && videoDevices.length === 0,
+                        show: this.props.enableVideo && videoDevices.length === 0,
+                    },
+                },
+            });
+        });
 
         callsClient.on('devicefallback', (device: MediaDeviceInfo) => {
             if (device.kind === 'audioinput') {
@@ -1247,6 +1317,12 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                         profiles={this.props.profiles}
                         sessions={this.props.sessions}
                         onParticipantRemove={this.onRemove}
+                        enableVideo={this.props.enableVideo}
+                        selfVideoStream={this.state.selfVideoStream}
+                        otherVideoStream={this.state.otherVideoStream}
+                        initializingSelfVideo={this.state.initializingSelfVideo}
+                        currentSession={this.props.currentSession}
+                        otherSessions={this.props.sessions.filter((s) => s.session_id !== this.props.currentSession?.session_id)}
                     />
                     }
                     {this.props.screenSharingSession && this.renderScreenSharingPlayer()}
@@ -1355,6 +1431,36 @@ export default class ExpandedView extends React.PureComponent<Props, State> {
                                     iconFill={isRecording ? 'rgba(var(--dnd-indicator-rgb), 0.80)' : ''}
                                     iconFillHover={isRecording ? 'var(--dnd-indicator)' : ''}
                                     icon={<RecordIcon style={{width: '20px', height: '20px'}}/>}
+                                />
+                            }
+
+                            {this.props.enableVideo &&
+                                <ControlsButton
+                                    id='calls-popout-video-button'
+                                    ariaLabel={this.isVideoOn() ? formatMessage({defaultMessage: 'Turn camera off'}) : formatMessage({defaultMessage: 'Turn camera on'})}
+                                    onToggle={() => this.onVideoToggle()}
+                                    tooltipText={this.isVideoOn() ? formatMessage({defaultMessage: 'Turn camera off'}) : formatMessage({defaultMessage: 'Turn camera on'})}
+                                    bgColor={this.isVideoOn() ? 'rgba(61, 184, 135, 0.16)' : ''}
+                                    bgColorHover={this.isVideoOn() ? 'rgba(61, 184, 135, 0.20)' : ''}
+                                    iconFill={this.isVideoOn() ? 'rgba(61, 184, 135, 0.80)' : ''}
+                                    iconFillHover={this.isVideoOn() ? 'rgba(61, 184, 135, 0.80)' : ''}
+                                    icon={
+                                        this.isVideoOn() ? (
+                                            <VideoOnIcon
+                                                style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                }}
+                                            />
+                                        ) : (
+                                            <VideoOffIcon
+                                                style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                }}
+                                            />
+                                        )
+                                    }
                                 />
                             }
 

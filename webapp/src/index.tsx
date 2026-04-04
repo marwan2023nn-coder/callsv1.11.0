@@ -717,6 +717,7 @@ export default class Plugin {
                     enableAV1: callsConfig(state).EnableAV1,
                     dcSignaling: dcSignalingEnabled,
                     dcLocking: dcSignalingEnabled,
+                    enableVideo: callsConfig(state).EnableVideo,
                 });
                 window.currentCallData = CurrentCallDataDefault;
 

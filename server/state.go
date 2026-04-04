@@ -84,6 +84,7 @@ type UserStateClient struct {
 	UserID     string `json:"user_id"`
 	Unmuted    bool   `json:"unmuted"`
 	RaisedHand int64  `json:"raised_hand"`
+	Video      bool   `json:"video"`
 }
 
 type CallStateClient struct {
@@ -250,6 +251,7 @@ func (cs *callState) getStates(botID string) []UserStateClient {
 			UserID:     session.UserID,
 			Unmuted:    session.Unmuted,
 			RaisedHand: session.RaisedHand,
+			Video:      session.Video,
 		})
 	}
 	return states

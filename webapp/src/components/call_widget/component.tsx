@@ -47,6 +47,8 @@ import TickIcon from 'src/components/icons/tick';
 import UnmutedIcon from 'src/components/icons/unmuted_icon';
 import UnraisedHandIcon from 'src/components/icons/unraised_hand';
 import UnshareScreenIcon from 'src/components/icons/unshare_screen';
+import VideoOffIcon from 'src/components/icons/video_off';
+import VideoOnIcon from 'src/components/icons/video_on';
 import {CallIncomingCondensed} from 'src/components/incoming_calls/call_incoming_condensed';
 import {LeaveCallMenu} from 'src/components/leave_call_menu';
 import {
@@ -137,6 +139,8 @@ interface Props {
     recordingsEnabled: boolean,
     openModal: <P>(modalData: ModalData<P>) => void;
     openCallsUserSettings: () => void;
+    enableVideo: boolean,
+    otherSessions: UserSessionState[],
 }
 
 interface DraggingState {
@@ -158,6 +162,12 @@ interface State {
     devices?: AudioDevices,
     showAudioInputDevicesMenu?: boolean,
     showAudioOutputDevicesMenu?: boolean,
+    currentVideoInputDevice?: MediaDeviceInfo | null,
+    videoDevices?: MediaDeviceInfo[],
+    showVideoInputDevicesMenu?: boolean,
+    selfVideoStream: MediaStream | null,
+    otherVideoStream: MediaStream | null,
+    initializingSelfVideo: boolean,
     dragging: DraggingState,
     expandedViewWindow: Window | null,
     audioEls: HTMLAudioElement[],
@@ -297,6 +307,9 @@ export default class CallWidget extends React.PureComponent<Props, State> {
             screenStream: null,
             removeConfirmation: null,
             leaveMenuOpen: false,
+            selfVideoStream: null,
+            otherVideoStream: null,
+            initializingSelfVideo: false,
         };
         this.node = React.createRef();
         this.menuNode = React.createRef();
@@ -492,7 +505,19 @@ export default class CallWidget extends React.PureComponent<Props, State> {
             });
         });
 
-        window.callsClient.on('devicechange', (devices: AudioDevices) => {
+        window.callsClient.on('localVideoStream', (stream: MediaStream) => {
+            this.setState({
+                selfVideoStream: stream,
+            });
+        });
+
+        window.callsClient.on('remoteVideoStream', (stream: MediaStream) => {
+            this.setState({
+                otherVideoStream: stream,
+            });
+        });
+
+        window.callsClient.on('devicechange', (devices: AudioDevices, videoDevices: MediaDeviceInfo[]) => {
             const state = {} as State;
 
             if (window.callsClient) {
@@ -503,17 +528,27 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                 if (window.callsClient.currentAudioOutputDevice !== this.state.currentAudioOutputDevice) {
                     state.currentAudioOutputDevice = window.callsClient.currentAudioOutputDevice;
                 }
+
+                if (window.callsClient.currentVideoInputDevice !== this.state.currentVideoInputDevice) {
+                    state.currentVideoInputDevice = window.callsClient.currentVideoInputDevice;
+                }
             }
 
             this.setState({
                 ...state,
                 devices,
+                videoDevices,
                 alerts: {
                     ...this.state.alerts,
                     missingAudioInput: {
                         ...this.state.alerts.missingAudioInput,
                         active: devices.inputs.length === 0,
                         show: devices.inputs.length === 0,
+                    },
+                    missingVideoInput: {
+                        ...this.state.alerts.missingVideoInput,
+                        active: this.props.enableVideo && videoDevices.length === 0,
+                        show: this.props.enableVideo && videoDevices.length === 0,
                     },
                 },
             });
@@ -573,6 +608,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
 
             this.setState({currentAudioInputDevice: callsClient?.currentAudioInputDevice});
             this.setState({currentAudioOutputDevice: callsClient?.currentAudioOutputDevice});
+            this.setState({currentVideoInputDevice: callsClient?.currentVideoInputDevice});
         });
 
         window.callsClient.on('error', (err: Error) => {
@@ -594,6 +630,18 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                 alerts: {
                     ...this.state.alerts,
                     missingAudioInputPermissions: {
+                        active: false,
+                        show: false,
+                    },
+                },
+            });
+        });
+
+        window.callsClient.on('initvideo', () => {
+            this.setState({
+                alerts: {
+                    ...this.state.alerts,
+                    missingVideoInputPermissions: {
                         active: false,
                         show: false,
                     },
@@ -941,6 +989,28 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         });
     };
 
+    renderVideoContainer = () => {
+        const otherSession = this.props.otherSessions.find((s) => s.video);
+        return (
+            <div
+                className='calls-widget-video-container'
+            >
+                <div style={{display: 'flex', gap: '4px'}}>
+                    <CallsDMVideoPlayer
+                        stream={this.state.selfVideoStream}
+                        hasVideo={Boolean(this.props.currentSession?.video) || this.state.initializingSelfVideo}
+                        selfView={true}
+                    />
+                    <CallsDMVideoPlayer
+                        stream={this.state.otherVideoStream}
+                        hasVideo={Boolean(otherSession?.video)}
+                        selfView={false}
+                    />
+                </div>
+            </div>
+        );
+    };
+
     renderScreenSharingPanel = () => {
         if (!this.props.screenSharingSession) {
             return null;
@@ -1215,44 +1285,169 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         );
     };
 
-    renderAudioDevices = (deviceType: string) => {
+    onVideoInputDeviceClick = (device: MediaDeviceInfo) => {
+        if (device.deviceId !== this.state.currentVideoInputDevice?.deviceId) {
+            logDebug('CallWidget.onVideoInputDeviceClick: changing video input device', device.label, device.deviceId);
+            window.callsClient?.setVideoInputDevice(device);
+        }
+        this.setState({showVideoInputDevicesMenu: false, currentVideoInputDevice: device});
+    };
+
+    renderDevicesList = (deviceType: string, devices: MediaDeviceInfo[]) => {
+        const {formatMessage} = this.props.intl;
+
+        if (deviceType === 'audioinput' && !this.state.showAudioInputDevicesMenu) {
+            return null;
+        }
+
+        if (deviceType === 'audiooutput' && !this.state.showAudioOutputDevicesMenu) {
+            return null;
+        }
+
+        if (deviceType === 'videoinput' && !this.state.showVideoInputDevicesMenu) {
+            return null;
+        }
+
+        let currentDevice = deviceType === 'audioinput' ? this.state.currentAudioInputDevice : this.state.currentAudioOutputDevice;
+        if (deviceType === 'videoinput') {
+            currentDevice = this.state.currentVideoInputDevice;
+        }
+
+        // Note: this is system default, not the concept of default that we save in local storage in client.ts
+        const makeDeviceLabel = (device: MediaDeviceInfo) => {
+            if (device.deviceId.startsWith('default') && !device.label.startsWith('Default')) {
+                return formatMessage({defaultMessage: 'Default - {deviceLabel}'}, {deviceLabel: device.label});
+            }
+            return device.label;
+        };
+
+        let onClickHandler = (device: MediaDeviceInfo) => (deviceType === 'audioinput' ? this.onAudioInputDeviceClick(device) : this.onAudioOutputDeviceClick(device));
+        if (deviceType === 'videoinput') {
+            onClickHandler = this.onVideoInputDeviceClick;
+        }
+
+        const deviceList = devices.map((device) => {
+            return (
+                <li
+                    className='MenuItem'
+                    key={`${deviceType}-device-${device.deviceId}`}
+                    role='menuitem'
+                    aria-label={makeDeviceLabel(device)}
+                >
+                    <button
+                        className='style--none'
+                        style={{
+                            background: device.deviceId === currentDevice?.deviceId || device.label === currentDevice?.label ? 'rgba(28, 88, 217, 0.08)' : '',
+                            lineHeight: '20px',
+                            padding: '8px 20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                        }}
+                        onClick={() => onClickHandler(device)}
+                    >
+                        <span
+                            style={{
+                                color: 'var(--center-channel-color)',
+                                fontSize: '14px',
+                                width: '100%',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            {makeDeviceLabel(device)}
+                        </span>
+
+                        {device.deviceId === currentDevice?.deviceId &&
+                            <TickIcon
+                                style={{
+                                    width: '16px',
+                                    height: '16px',
+                                    fill: '#00987e',
+                                }}
+                            />
+                        }
+                    </button>
+                </li>
+            );
+        });
+
+        return (
+            <div className='Menu'>
+                <ul
+                    id={`calls-widget-${deviceType}s-menu`}
+                    className='Menu__content dropdown-menu'
+                    style={this.style.audioDevicesMenu}
+                    // eslint-disable-next-line no-undefined
+                    ref={this.props.global ? this.audioDevicesMenuRefCb : undefined}
+                    role='menu'
+                >
+                    {deviceList}
+                </ul>
+            </div>
+        );
+    };
+
+    renderDevices = (deviceType: string) => {
         if (!window.callsClient || !this.state.devices) {
             return null;
         }
-        if (deviceType === 'output' && this.state.devices.outputs.length === 0) {
+        if (deviceType === 'audiooutput' && this.state.devices.outputs.length === 0) {
+            return null;
+        }
+
+        if (deviceType === 'videoinput' && (!this.state.videoDevices || this.state.videoDevices.length === 0)) {
             return null;
         }
 
         const {formatMessage} = this.props.intl;
 
-        const currentDevice = deviceType === 'input' ? this.state.currentAudioInputDevice : this.state.currentAudioOutputDevice;
-        const DeviceIcon = deviceType === 'input' ? UnmutedIcon : SpeakerIcon;
+        let currentDevice = deviceType === 'audioinput' ? this.state.currentAudioInputDevice : this.state.currentAudioOutputDevice;
+        if (deviceType === 'videoinput') {
+            currentDevice = this.state.currentVideoInputDevice;
+        }
+        let DeviceIcon = deviceType === 'audiooutput' ? SpeakerIcon : UnmutedIcon;
+        if (deviceType === 'videoinput') {
+            DeviceIcon = VideoOnIcon;
+        }
 
-        const noInputDevices = deviceType === 'input' && this.state.devices.inputs?.length === 0;
-        const noAudioPermissions = deviceType === 'input' && this.state.alerts.missingAudioInputPermissions.active;
+        const noInputDevices = (deviceType === 'audioinput' && this.state.devices.inputs?.length === 0) || (deviceType === 'videoinput' && this.state.videoDevices?.length === 0);
+        const noPermissions = (deviceType === 'audioinput' && this.state.alerts.missingAudioInputPermissions.active) ||
+            (deviceType === 'videoinput' && this.state.alerts.missingVideoInputPermissions.active);
 
         let label = currentDevice?.label || formatMessage({defaultMessage: 'Default'});
-        if (noAudioPermissions) {
-            label = formatMessage(CallAlertConfigs.missingAudioInputPermissions.tooltipText!);
+        if (noPermissions) {
+            label = deviceType === 'audioinput' ? formatMessage(CallAlertConfigs.missingAudioInputPermissions.tooltipText!) : formatMessage(CallAlertConfigs.missingVideoInputPermissions.tooltipText!);
         } else if (noInputDevices) {
-            label = formatMessage(CallAlertConfigs.missingAudioInput.tooltipText!);
+            label = deviceType === 'audioinput' ? formatMessage(CallAlertConfigs.missingAudioInput.tooltipText!) : formatMessage(CallAlertConfigs.missingVideoInput.tooltipText!);
         }
 
         const onClickHandler = () => {
-            if (deviceType === 'input') {
+            if (deviceType === 'audioinput') {
                 this.setState({
                     showAudioInputDevicesMenu: !this.state.showAudioInputDevicesMenu,
                     showAudioOutputDevicesMenu: false,
+                    showVideoInputDevicesMenu: false,
                 });
-            } else {
+            } else if (deviceType === 'audiooutput') {
                 this.setState({
                     showAudioOutputDevicesMenu: !this.state.showAudioOutputDevicesMenu,
                     showAudioInputDevicesMenu: false,
+                    showVideoInputDevicesMenu: false,
+                });
+            } else if (deviceType === 'videoinput') {
+                this.setState({
+                    showVideoInputDevicesMenu: !this.state.showVideoInputDevicesMenu,
+                    showAudioInputDevicesMenu: false,
+                    showAudioOutputDevicesMenu: false,
                 });
             }
         };
 
-        const devices = deviceType === 'input' ? this.state.devices.inputs?.filter((device) => device.deviceId && device.label) : this.state.devices.outputs?.filter((device) => device.deviceId && device.label);
+        let devices = deviceType === 'audioinput' ? this.state.devices.inputs?.filter((device) => device.deviceId && device.label) : this.state.devices.outputs?.filter((device) => device.deviceId && device.label);
+        if (deviceType === 'videoinput' && this.state.videoDevices) {
+            devices = this.state.videoDevices.filter((device) => device.deviceId && device.label);
+        }
         const isDisabled = devices.length === 0;
 
         const buttonStyle: CSSProperties = {
@@ -1263,13 +1458,18 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         };
 
         let showSubMenu = false;
-        if ((deviceType === 'input' && this.state.showAudioInputDevicesMenu) || (deviceType === 'output' && this.state.showAudioOutputDevicesMenu)) {
+        if ((deviceType === 'audioinput' && this.state.showAudioInputDevicesMenu) ||
+            (deviceType === 'audiooutput' && this.state.showAudioOutputDevicesMenu) ||
+            (deviceType === 'videoinput' && this.state.showVideoInputDevicesMenu)) {
             buttonStyle.background = 'rgba(var(--center-channel-color-rgb), 0.08)';
             showSubMenu = devices.length > 0;
         }
 
-        const deviceTypeLabel = deviceType === 'input' ?
+        let deviceTypeLabel = deviceType === 'audioinput' ?
             formatMessage({defaultMessage: 'Microphone'}) : formatMessage({defaultMessage: 'Audio output'});
+        if (deviceType === 'videoinput') {
+            deviceTypeLabel = formatMessage({defaultMessage: 'Camera'});
+        }
 
         return (
             <React.Fragment>
@@ -1591,8 +1791,9 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                     style={this.style.settingsMenu}
                     role='menu'
                 >
-                    {this.renderAudioDevices('output')}
-                    {this.renderAudioDevices('input')}
+                    {this.renderDevices('audiooutput')}
+                    {this.renderDevices('audioinput')}
+                    {this.props.enableVideo && this.renderDevices('videoinput')}
                     { divider }
                     {showScreenShareItem && this.renderScreenSharingMenuItem()}
                     {showScreenShareItem && divider}
@@ -2047,6 +2248,30 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         }
     };
 
+    onVideoToggle = async () => {
+        if (this.isVideoOn()) {
+            logDebug('CallWidget.onVideoToggle: stopping video (user toggled off)');
+            window.callsClient?.stopVideo();
+            this.setState({
+                selfVideoStream: null,
+            });
+        } else {
+            logDebug('CallWidget.onVideoToggle: starting video (user toggled on)');
+            this.setState({
+                initializingSelfVideo: true,
+            });
+            const selfVideoStream = await window.callsClient?.startVideo();
+            this.setState({
+                selfVideoStream,
+                initializingSelfVideo: false,
+            });
+        }
+    };
+
+    isVideoOn() {
+        return this.props.currentSession ? Boolean(this.props.currentSession.video) : false;
+    }
+
     onChannelLinkClick = (ev: React.MouseEvent<HTMLElement>) => {
         ev.preventDefault();
         const message = {pathName: this.props.channelURL};
@@ -2103,6 +2328,8 @@ export default class CallWidget extends React.PureComponent<Props, State> {
 
         const noInputDevices = this.state.alerts.missingAudioInput.active;
         const noAudioPermissions = this.state.alerts.missingAudioInputPermissions.active;
+        const noVideoPermissions = this.state.alerts.missingVideoInputPermissions.active;
+        const noVideoInputDevices = this.state.alerts.missingVideoInput.active;
 
         const MuteIcon = this.isMuted() && !noInputDevices && !noAudioPermissions ? MutedIcon : UnmutedIcon;
 
@@ -2131,6 +2358,18 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         const MenuIcon = HorizontalDotsIcon;
 
         const handTooltipText = this.isHandRaised() ? formatMessage({defaultMessage: 'Lower hand'}) : formatMessage({defaultMessage: 'Raise hand'});
+
+        const VideoIcon = this.isVideoOn() || noVideoInputDevices || noVideoPermissions ? VideoOnIcon : VideoOffIcon;
+        let videoTooltipText = this.isVideoOn() ? formatMessage({defaultMessage: 'Turn camera off'}) : formatMessage({defaultMessage: 'Turn camera on'});
+        let videoTooltipSubtext = '';
+        if (noVideoInputDevices) {
+            videoTooltipText = formatMessage(CallAlertConfigs.missingVideoInput.tooltipText!);
+            videoTooltipSubtext = formatMessage(CallAlertConfigs.missingVideoInput.tooltipSubtext!);
+        }
+        if (noVideoPermissions) {
+            videoTooltipText = formatMessage(CallAlertConfigs.missingVideoInputPermissions.tooltipText!);
+            videoTooltipSubtext = formatMessage(CallAlertConfigs.missingVideoInputPermissions.tooltipSubtext!);
+        }
 
         const isHost = this.props.callHostID === this.props.currentUserID;
         const showLeaveMenuShim = !(this.state.showMenu || this.state.showParticipantsList || this.props.screenSharingSession) && this.state.leaveMenuOpen;
@@ -2172,6 +2411,7 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                         />
                     }
                     {this.props.allowScreenSharing && this.renderScreenSharingPanel()}
+                    {this.props.enableVideo && this.renderVideoContainer()}
                     {this.state.showParticipantsList &&
                         <ParticipantsList
                             sessions={this.props.sessions}
@@ -2287,6 +2527,25 @@ export default class CallWidget extends React.PureComponent<Props, State> {
                             />
                         }
 
+                        {this.props.enableVideo &&
+                            <WidgetButton
+                                id='video-start-stop'
+                                onToggle={noVideoInputDevices ? undefined : this.onVideoToggle}
+                                ariaLabel={videoTooltipText}
+                                tooltipText={videoTooltipText}
+                                tooltipSubtext={videoTooltipSubtext}
+                                bgColor={this.isVideoOn() ? 'rgba(61, 184, 135, 0.16)' : ''}
+                                icon={
+                                    <VideoIcon
+                                        style={{
+                                            fill: this.isVideoOn() ? 'rgba(61, 184, 135, 1)' : '',
+                                        }}
+                                    />
+                                }
+                                unavailable={noVideoInputDevices || noVideoPermissions}
+                            />
+                        }
+
                         {this.props.allowScreenSharing && (this.props.wider || isDMChannel(this.props.channel)) && this.renderScreenShareButton()}
 
                         <WidgetButton
@@ -2328,6 +2587,62 @@ export default class CallWidget extends React.PureComponent<Props, State> {
         );
     }
 }
+
+const VideoPlayerContainer = styled.div<{$selfView: boolean, $hasVideo: boolean}>`
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+  background: black;
+  border-radius: 4px;
+
+  ${({$hasVideo}) => !$hasVideo && css`
+    display: none;
+  `}
+`;
+
+const VideoPlayer = styled.video<{$selfView: boolean, $mirror?: boolean}>`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: ${({$mirror}) => ($mirror ? 'scaleX(-1)' : 'none')};
+`;
+
+type CallsDMVideoPlayerProps = {
+    hasVideo: boolean;
+    stream: MediaStream | null;
+    selfView: boolean;
+}
+
+const CallsDMVideoPlayer = (props: CallsDMVideoPlayerProps) => {
+    const videoElRef = React.useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+        if (videoElRef.current && props.stream) {
+            videoElRef.current.srcObject = props.stream;
+        }
+    }, [props.stream]);
+
+    if (props.hasVideo) {
+        return (
+            <VideoPlayerContainer
+                $hasVideo={props.hasVideo}
+                $selfView={props.selfView}
+            >
+                <VideoPlayer
+                    ref={videoElRef}
+                    autoPlay={true}
+                    muted={true}
+                    $selfView={props.selfView}
+                    $mirror={props.selfView && localStorage.getItem('calls_mirror_video') === 'true'}
+                />
+            </VideoPlayerContainer>
+        );
+    }
+
+    return null;
+};
 
 const LeaveCallButton = styled(DotMenuButton)<{ $isActive: boolean }>`
     display: inline-flex;

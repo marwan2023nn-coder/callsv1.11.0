@@ -503,6 +503,14 @@ export const isLimitRestricted: (state: GlobalState) => boolean =
         },
     );
 
+export const sessionsForOtherUsersInCall: (state: GlobalState) => UserSessionState[] =
+    createSelector(
+        'sessionsForOtherUsersInCall',
+        getCurrentUserId,
+        sessionsInCurrentCall,
+        (currentUserID, sessions) => sessions.filter((session) => session.user_id !== currentUserID),
+    );
+
 export const allowScreenSharing = (state: GlobalState) =>
     callsConfig(state).AllowScreenSharing;
 
