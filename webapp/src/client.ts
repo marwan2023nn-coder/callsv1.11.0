@@ -394,7 +394,7 @@ export default class CallsClient extends EventEmitter {
                     logErr('timed out waiting for rtc connection');
                     this.disconnect(rtcPeerTimeoutErr);
                 }
-            }, 15000);
+            }, 30000);
 
             const peer = new RTCPeer({
                 iceServers: this.config.iceServers || [],

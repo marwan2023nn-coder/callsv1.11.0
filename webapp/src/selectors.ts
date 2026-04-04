@@ -337,7 +337,6 @@ export const recordingForCurrentCall: (state: GlobalState) => CallJobReduxState 
         channelIDForCurrentCall,
         (recordings, channelID) => (recordings ? (recordings[channelID] || null) : null),
     );
-
 export const sortedSessionsInCurrentCall: (state: GlobalState) => UserSessionState[] =
     createSelector(
         'sortedSessionsInCurrentCall',

@@ -402,12 +402,27 @@ export function playSound(name: string) {
     }
 
     const audio = new Audio(src);
-    audio.play().catch((err) => {
-        logErr(`failed to play sound ${name}`, err);
-    });
+    const playPromise = audio.play();
+    if (playPromise) {
+        playPromise.catch((err) => {
+            logErr(`failed to play sound ${name}`, err);
+        });
+    }
     audio.onended = () => {
-        audio.src = '';
-        audio.remove();
+        const stop = () => {
+            try {
+                audio.src = '';
+                audio.remove();
+            } catch (err) {
+                // ignore
+            }
+        };
+
+        if (playPromise) {
+            playPromise.then(stop).catch(stop);
+        } else {
+            stop();
+        }
     };
 }
 
