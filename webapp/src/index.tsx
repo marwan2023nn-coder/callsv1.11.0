@@ -39,7 +39,6 @@ import {
 } from 'src/actions';
 import {navigateToURL} from 'src/browser_routing';
 import AllowScreenSharing from 'src/components/admin_console_settings/allow_screen_sharing';
-import DefaultOutgoingRingbackSound from 'src/components/admin_console_settings/default_outgoing_ringback_sound';
 import EnableAV1 from 'src/components/admin_console_settings/enable_av1';
 import EnableDCSignaling from 'src/components/admin_console_settings/enable_dc_signaling';
 import EnableIPv6 from 'src/components/admin_console_settings/enable_ipv6';
@@ -95,7 +94,6 @@ import {
 import {IncomingCallContainer} from 'src/components/incoming_calls/call_container';
 import RecordingsFilePreview from 'src/components/recordings_file_preview';
 import AudioDevicesSettingsSection from 'src/components/user_settings/audio_devices_settings_section';
-import RingbackSoundSettingsSection from 'src/components/user_settings/ringback_sound_settings_section';
 import ScreenSharingSettingsSection from 'src/components/user_settings/screen_sharing_settings_section';
 import {CALL_RECORDING_POST_TYPE, CALL_START_POST_TYPE, CALL_TRANSCRIPTION_POST_TYPE, DisabledCallsErr} from 'src/constants';
 import {desktopNotificationHandler} from 'src/desktop_notifications';
@@ -540,7 +538,6 @@ export default class Plugin {
         registry.registerAdminConsoleCustomSetting('EnableAV1', EnableAV1);
         registry.registerAdminConsoleCustomSetting('EnableRinging', EnableRinging);
         registry.registerAdminConsoleCustomSetting('EnableDCSignaling', EnableDCSignaling);
-        registry.registerAdminConsoleCustomSetting('DefaultOutgoingRingbackSound', DefaultOutgoingRingbackSound);
 
         // RTCD Service
         if (registry.registerAdminConsoleCustomSection) {

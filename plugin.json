@@ -79,7 +79,6 @@
             "help_text": "عند تفعيل هذا الخيار، ستستخدم التطبيقات قنوات بيانات WebRTC لإشارة مسارات الوسائط الجديدة. قد ينتج عن ذلك عملية أكثر كفاءة وأقل عرضة لحدوث تعارضات، خصوصاً عند تكرار انقطاع WebSocket."
           },
           {
-            "key": "DefaultOutgoingRingbackSound",
             "display_name": "النغمة الافتراضية أثناء إجراء اتصال (Ringback)",
             "type": "dropdown",
             "default": "default",
@@ -755,7 +754,6 @@
         "help_text": "عند تفعيل هذا الخيار، ستستخدم التطبيقات قنوات بيانات WebRTC لإشارة مسارات الوسائط الجديدة. قد ينتج عن ذلك عملية أكثر كفاءة وأقل عرضة لحدوث تعارضات، خصوصاً عند تكرار انقطاع WebSocket."
       },
       {
-        "key": "DefaultOutgoingRingbackSound",
         "display_name": "النغمة الافتراضية أثناء إجراء اتصال (Ringback)",
         "type": "dropdown",
         "default": "default",

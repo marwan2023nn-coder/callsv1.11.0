@@ -1389,7 +1389,7 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			return
 		}
 		msg.Data = data
-	case clientMessageTypeICE, clientMessageTypeScreenOn, clientMessageTypeVideoOn:
+	case clientMessageTypeICE, clientMessageTypeScreenOn, clientMessageTypeVideoOn, clientMessageTypeVideoOff:
 		msgData, ok := req.Data["data"].(string)
 		if !ok {
 			p.LogError("invalid or missing data")
