@@ -53,7 +53,7 @@ export const StyledGenericModal = styled(GenericModal)`
     }
 `;
 
-export const Header = styled(ModalHeader)`
+export const Header = styled(ModalHeader).attrs({dir: 'auto'})`
     display: flex;
     justify-content: center;
 `;
@@ -64,7 +64,7 @@ export const FooterContainer = styled.div`
     gap: 8px;
 `;
 
-export const ColumnContainer = styled.div`
+export const ColumnContainer = styled.div.attrs({dir: 'auto'})`
     display: flex;
     flex-direction: column;
 

@@ -86,14 +86,14 @@ export const CallErrorModal = (props: Props) => {
     );
 
     const genericMsg = (
-        <span>
+        <span dir='auto'>
             {formatMessage({defaultMessage: 'Looks like something went wrong with calls. You can restart the app and try again.'})}
             {untranslatable(' ')}
             {troubleShootingMsg}
         </span>
     );
     const genericHeaderMsg = (
-        <span>
+        <span dir='auto'>
             {formatMessage({defaultMessage: 'Something went wrong with calls'})}
         </span>
     );
@@ -105,10 +105,10 @@ export const CallErrorModal = (props: Props) => {
     switch (props.err.message) {
     case rtcPeerTimeoutErr.message:
         headerMsg = (
-            <span>{formatMessage({defaultMessage: 'Call connection failed'})}</span>
+            <span dir='auto'>{formatMessage({defaultMessage: 'Call connection failed'})}</span>
         );
         msg = (
-            <span>
+            <span dir='auto'>
                 {/*@ts-ignore*/}
                 {formatMessage({defaultMessage: 'We couldn\'t join the call because the connection timed out. Please check your network connection and try again.'}, {
                     joinLink: (text: string) => (
@@ -126,10 +126,10 @@ export const CallErrorModal = (props: Props) => {
     case rtcPeerErr.message:
     case rtcPeerCloseErr.message:
         headerMsg = (
-            <span>{formatMessage({defaultMessage: 'Call connection failed'})}</span>
+            <span dir='auto'>{formatMessage({defaultMessage: 'Call connection failed'})}</span>
         );
         msg = (
-            <span>
+            <span dir='auto'>
                 {/*@ts-ignore*/}
                 {formatMessage({defaultMessage: 'There was an error with the connection to the call. Try to <joinLink>re-join</joinLink> the call.'}, {
                     joinLink: (text: string) => (
@@ -153,11 +153,11 @@ export const CallErrorModal = (props: Props) => {
                         height={150}
                     />
                 </LaptopAlertSVGContainer>
-                <span>{formatMessage({defaultMessage: 'Calls can\'t be initiated in an insecure context'})}</span>
+                <span dir='auto'>{formatMessage({defaultMessage: 'Calls can\'t be initiated in an insecure context'})}</span>
             </ColumnContainer>
         );
         msg = (
-            <span>
+            <span dir='auto'>
                 {formatMessage({defaultMessage: 'You need to be using an HTTPS connection to make calls. Visit the documentation for more information.'})}
             </span>
         );
@@ -167,20 +167,20 @@ export const CallErrorModal = (props: Props) => {
         break;
     case userRemovedFromChannelErr.message:
         headerMsg = (
-            <span>{formatMessage({defaultMessage: 'You were removed from the channel'})}</span>
+            <span dir='auto'>{formatMessage({defaultMessage: 'You were removed from the channel'})}</span>
         );
         msg = (
-            <span>
+            <span dir='auto'>
                 {formatMessage({defaultMessage: 'You have been removed from the channel, and have been disconnected from the call.'})}
             </span>
         );
         break;
     case userLeftChannelErr.message:
         headerMsg = (
-            <span>{formatMessage({defaultMessage: 'You left the channel'})}</span>
+            <span dir='auto'>{formatMessage({defaultMessage: 'You left the channel'})}</span>
         );
         msg = (
-            <span>
+            <span dir='auto'>
                 {formatMessage({defaultMessage: 'You have left the channel, and have been disconnected from the call.'})}
             </span>
         );
