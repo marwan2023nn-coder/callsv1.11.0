@@ -14,7 +14,7 @@ const PLUGIN_ID = require('../plugin.json').id;
 const NPM_TARGET = process.env.npm_lifecycle_event; //eslint-disable-line no-process-env
 let mode = 'production';
 let devtool = false;
-let contentSecurity = 'default-src \'self\'; script-src \'self\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\' wss: ws:; object-src \'none\'';
+const contentSecurity = 'default-src \'self\'; script-src \'self\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\' wss: ws:; object-src \'none\'';
 if (NPM_TARGET === 'debug' || NPM_TARGET === 'debug:watch') {
     mode = 'development';
     devtool = 'source-map';

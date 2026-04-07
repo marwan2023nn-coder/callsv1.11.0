@@ -33,7 +33,6 @@ import {
     recordingsEnabled,
     screenSharingSessionForCurrentCall,
     sessionForCurrentCall,
-    sessionsInCurrentCall,
     sessionsInCurrentCallMap,
     sortedIncomingCalls,
     sortedSessionsInCurrentCall,

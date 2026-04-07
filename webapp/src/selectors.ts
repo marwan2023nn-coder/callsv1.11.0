@@ -345,9 +345,9 @@ export const sortedSessionsInCurrentCall: (state: GlobalState) => UserSessionSta
         profilesInCurrentCallMap,
         screenSharingSessionIDForCurrentCall,
         (sessions, profiles, screenSharingSessionID) => {
-            return [...sessions].
-                sort(alphaSortSessions(profiles)).
-                sort(stateSortSessions(screenSharingSessionID, true));
+            return [...sessions]
+                .sort(alphaSortSessions(profiles))
+                .sort(stateSortSessions(screenSharingSessionID, true));
         },
     );
 
