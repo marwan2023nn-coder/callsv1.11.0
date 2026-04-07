@@ -680,8 +680,11 @@ export default class Plugin {
             if (window.desktopAPI?.joinCall) {
                 logDebug('desktopAPI.joinCall');
                 store.dispatch(setClientConnecting(true));
-                handleDesktopJoinedCall(store, await window.desktopAPI.joinCall(payload));
-                store.dispatch(setClientConnecting(false));
+                try {
+                    handleDesktopJoinedCall(store, await window.desktopAPI.joinCall(payload));
+                } finally {
+                    store.dispatch(setClientConnecting(false));
+                }
                 return;
             } else if (shouldRenderDesktopWidget()) {
                 logDebug('sending join call message to desktop app');
