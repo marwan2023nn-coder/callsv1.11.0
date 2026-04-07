@@ -121,6 +121,7 @@ export default class GenericModal extends React.PureComponent<Props, State> {
 
         return (
             <StyledModal
+                dir='auto'
                 dialogClassName={classNames('a11y__modal', this.props.className)}
                 show={this.props.show ?? this.state.show}
                 onHide={this.onHide}
