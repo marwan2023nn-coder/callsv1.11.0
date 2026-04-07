@@ -37,14 +37,18 @@ export default class CallsClient extends EventEmitter {
     private peer: RTCPeer | null;
     public ws: WebSocketClient | null;
     private localScreenTrack: MediaStreamTrack | null = null;
+    private localVideoTrack: MediaStreamTrack | null = null;
     private remoteScreenTrack: MediaStreamTrack | null = null;
+    private remoteVideoTrack: MediaStreamTrack | null = null;
     private remoteVoiceTracks: MediaStreamTrack[];
     public currentAudioInputDevice: MediaDeviceInfo | null = null;
     public currentAudioOutputDevice: MediaDeviceInfo | null = null;
+    public currentVideoInputDevice: MediaDeviceInfo | null = null;
     private voiceTrackAdded: boolean;
     private streams: MediaStream[];
     private stream: MediaStream | null;
     private audioDevices: AudioDevices;
+    private videoDevices: MediaDeviceInfo[];
     public audioTrack: MediaStreamTrack | null;
     private readonly onDeviceChange: () => void;
     private readonly onBeforeUnload: () => void;
@@ -67,6 +71,7 @@ export default class CallsClient extends EventEmitter {
         this.remoteVoiceTracks = [];
         this.stream = null;
         this.audioDevices = {inputs: [], outputs: []};
+        this.videoDevices = [];
         this.channelID = '';
         this.config = config;
         this.onDeviceChange = async () => {
@@ -95,6 +100,8 @@ export default class CallsClient extends EventEmitter {
                 outputs,
             };
 
+            this.videoDevices = devices.filter((device) => device.kind === 'videoinput');
+
             if (this.currentAudioInputDevice) {
                 await this.handleAudioDeviceFallback('input');
             }
@@ -103,10 +110,78 @@ export default class CallsClient extends EventEmitter {
                 await this.handleAudioDeviceFallback('output');
             }
 
-            this.emit('devicechange', this.audioDevices);
+            if (this.currentVideoInputDevice) {
+                await this.handleVideoDeviceFallback();
+            }
+
+            this.emit('devicechange', this.audioDevices, this.videoDevices);
         } catch (err) {
             logErr(err);
         }
+    }
+
+    private async handleVideoDeviceFallback() {
+        const currentDevice = this.currentVideoInputDevice;
+        const devices = this.videoDevices;
+        const missingCurrentDevice = !devices.some((device) => currentDevice?.deviceId === device.deviceId);
+
+        // Fallback to the system default device if the current one is not available.
+        if (missingCurrentDevice && devices.length > 0) {
+            logDebug('selected video device not available, falling back to system default', currentDevice, devices[0]);
+
+            await this.setVideoInputDevice(devices[0], false);
+            this.emit('devicefallback', devices[0]);
+
+            return;
+        }
+
+        // If the user selected (i.g. stored) device comes back, we want to switch to it.
+        const selectedDevice = this.getSelectedVideoDevice();
+        if (selectedDevice && selectedDevice.label !== currentDevice?.label) {
+            logDebug('selected video device is back, switching', selectedDevice, currentDevice);
+
+            await this.setVideoInputDevice(selectedDevice, false);
+            this.emit('devicefallback', selectedDevice);
+        }
+    }
+
+    private getSelectedVideoDevice() {
+        let selectedDevice: {deviceId: string; label?: string} = {
+            deviceId: '',
+        };
+
+        const data = window.localStorage.getItem(STORAGE_CALLS_DEFAULT_VIDEO_INPUT_KEY);
+
+        if (data) {
+            try {
+                selectedDevice = JSON.parse(data);
+            } catch {
+                selectedDevice = {
+                    deviceId: data,
+                };
+            }
+        }
+
+        if (!selectedDevice.deviceId) {
+            return null;
+        }
+
+        const devices = this.videoDevices.filter((dev) => {
+            return dev.deviceId === selectedDevice.deviceId || dev.label === selectedDevice.label;
+        });
+
+        if (devices.length > 1) {
+            // If there are multiple devices with the same label, we select the selected device by ID.
+            logInfo('getSelectedVideoDevice: multiple video devices found with the same label, checking by id', devices);
+            return devices.find((dev) => dev.deviceId === selectedDevice.deviceId) || null;
+        } else if (devices.length === 1) {
+            logDebug('getSelectedVideoDevice: found selected video device to use', devices[0]);
+            return devices[0];
+        }
+
+        logDebug('getSelectedVideoDevice: video device not found', selectedDevice);
+
+        return null;
     }
 
     private async handleAudioDeviceFallback(deviceType: string) {
@@ -486,9 +561,17 @@ export default class CallsClient extends EventEmitter {
                     this.emit('remoteVoiceStream', remoteStream);
                     this.remoteVoiceTracks.push(...remoteStream.getAudioTracks());
                 } else if (remoteStream.getVideoTracks().length > 0) {
-                    logDebug('remote screen stream identified', remoteStream.id);
-                    this.emit('remoteScreenStream', remoteStream);
-                    this.remoteScreenTrack = remoteStream.getVideoTracks()[0];
+                    const isScreen = remoteStream.getVideoTracks()[0].label.toLowerCase().indexOf('screen') !== -1 ||
+                        remoteStream.getVideoTracks()[0].label.toLowerCase().indexOf('window') !== -1;
+                    if (isScreen) {
+                        logDebug('remote screen stream identified', remoteStream.id);
+                        this.emit('remoteScreenStream', remoteStream);
+                        this.remoteScreenTrack = remoteStream.getVideoTracks()[0];
+                    } else {
+                        logDebug('remote video stream identified', remoteStream.id);
+                        this.emit('remoteVideoStream', remoteStream);
+                        this.remoteVideoTrack = remoteStream.getVideoTracks()[0];
+                    }
                 }
             });
 
@@ -614,7 +697,38 @@ export default class CallsClient extends EventEmitter {
         this.currentAudioOutputDevice = device;
 
         // We emit this event so it's easier to keep state in sync between widget and pop out.
-        this.emit('devicechange', this.audioDevices);
+        this.emit('devicechange', this.audioDevices, this.videoDevices);
+    }
+
+    public async setVideoInputDevice(device: MediaDeviceInfo, store: boolean = true) {
+        if (!this.peer) {
+            return;
+        }
+
+        if (store) {
+            window.localStorage.setItem(STORAGE_CALLS_DEFAULT_VIDEO_INPUT_KEY, JSON.stringify(device));
+        }
+        this.currentVideoInputDevice = device;
+
+        this.emit('devicechange', this.audioDevices, this.videoDevices);
+
+        if (!this.localVideoTrack) {
+            return;
+        }
+
+        const newStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                deviceId: {
+                    exact: device.deviceId,
+                },
+            },
+            audio: false,
+        });
+        const newTrack = newStream.getVideoTracks()[0];
+        this.peer.replaceTrack(this.localVideoTrack.id, newTrack);
+        this.localVideoTrack.stop();
+        this.localVideoTrack = newTrack;
+        this.emit('localVideoStream', new MediaStream([newTrack]));
     }
 
     public disconnect(err?: Error) {
@@ -730,6 +844,51 @@ export default class CallsClient extends EventEmitter {
             return null;
         }
         return new MediaStream([this.remoteScreenTrack]);
+    }
+
+    public async startVideo() {
+        if (!this.peer || !this.ws) {
+            return null;
+        }
+
+        const videoOptions: MediaTrackConstraints = {};
+        if (this.currentVideoInputDevice) {
+            videoOptions.deviceId = {
+                exact: this.currentVideoInputDevice.deviceId,
+            };
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: videoOptions,
+                audio: false,
+            });
+            this.localVideoTrack = stream.getVideoTracks()[0];
+            this.streams.push(stream);
+
+            this.localVideoTrack.onended = () => {
+                this.stopVideo();
+            };
+
+            await this.peer.addTrack(this.localVideoTrack, stream);
+            this.ws.send('video_on');
+            this.emit('initvideo');
+            return stream;
+        } catch (err) {
+            logErr(err);
+            throw err;
+        }
+    }
+
+    public stopVideo() {
+        if (!this.localVideoTrack || !this.peer || !this.ws) {
+            return;
+        }
+
+        this.peer.removeTrack(this.localVideoTrack.id);
+        this.localVideoTrack.stop();
+        this.localVideoTrack = null;
+        this.ws.send('video_off');
     }
 
     public getRemoteVoiceTracks(): MediaStreamTrack[] {
@@ -901,6 +1060,10 @@ export default class CallsClient extends EventEmitter {
 
     public getAudioDevices() {
         return this.audioDevices;
+    }
+
+    public getVideoDevices() {
+        return this.videoDevices;
     }
 
     public getSessionID() {

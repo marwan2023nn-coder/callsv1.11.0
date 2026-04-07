@@ -82,7 +82,6 @@ import {logErr} from './log';
 import {
     calls,
     channelIDForCurrentCall,
-    defaultOutgoingRingbackSound,
     profilesInCurrentCallMap,
     ringingEnabled,
     screenSharingSessionIDForCurrentCall,
@@ -163,7 +162,6 @@ export function handleCallStart(store: Store, ev: WebSocketMessage<CallStartData
     if (getCallsClient()?.channelID === channelID) {
         const currentUserID = getCurrentUserId(store.getState());
         if (ev.data.owner_id === currentUserID) {
-            startOutgoingRingback(defaultOutgoingRingbackSound(store.getState()));
         }
         const channel = getChannel(store.getState(), channelID);
         if (channel) {

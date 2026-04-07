@@ -40,6 +40,10 @@ export type Props = {
     sessionID: string,
     onRemove: () => void,
     isSharingScreen?: boolean,
+    videoStream?: MediaStream | null,
+    hasVideo?: boolean,
+    videoView?: boolean,
+    mirrorVideo?: boolean,
 }
 
 const tileSizePropsMap = {
@@ -101,6 +105,10 @@ export default function CallParticipant({
     sessionID,
     onRemove,
     isSharingScreen = false,
+    videoStream = null,
+    hasVideo = false,
+    videoView = false,
+    mirrorVideo = false,
 }: Props) {
     const {formatMessage} = useIntl();
     const {hoverOn, hoverOff, onOpenChange, hostControlsAvailable, showHostControls} = useHostControls(isYou, isHost, iAmHost);
@@ -112,8 +120,11 @@ export default function CallParticipant({
     }
 
     const innerParticipant = (
-        <>
-            <div style={{position: 'relative'}}>
+        <WidgetProfileContainer
+            $videoView={videoView}
+        >
+            <div style={{position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                {!hasVideo &&
                 <Avatar
                     size={tileSizePropsMap[size].avatarSize}
                     fontSize={tileSizePropsMap[size].fontSize}
@@ -121,6 +132,14 @@ export default function CallParticipant({
                     borderGlowWidth={isSpeaking ? 3 : 0}
                     url={pictureURL}
                 />
+                }
+                {hasVideo &&
+                <WidgetProfileVideoPlayer
+                    videoStream={videoStream}
+                    mirrorVideo={mirrorVideo}
+                    borderGlowWidth={isSpeaking ? 3 : 0}
+                />
+                }
 
                 <MuteIconWrapper
                     $isMuted={isMuted}
@@ -165,7 +184,7 @@ export default function CallParticipant({
             </StyledName>
 
             {isHost && <HostBadge data-testid={'host-badge'}/>}
-        </>
+        </WidgetProfileContainer>
     );
 
     if (hostControlsAvailable) {
@@ -308,3 +327,47 @@ const StyledDotMenu = styled(DotMenu)<{$pos: number}>`
     top: ${({$pos}) => $pos}px;
     inset-inline-end: ${({$pos}) => $pos}px;
 `;
+
+const WidgetProfileContainer = styled.div<{$videoView: boolean}>`
+  ${({$videoView}) => $videoView && css`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  `}
+
+  ${({$videoView}) => !$videoView && css`
+    display: contents;
+  `}
+`;
+
+const StyledWidgetProfileVideoPlayer = styled.video<{$mirror: boolean, $borderGlowWidth: number}>`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transform: ${({$mirror}) => ($mirror ? 'scaleX(-1)' : 'none')};
+  box-shadow: ${({$borderGlowWidth}) => ($borderGlowWidth > 0 ? `0 0 0 ${$borderGlowWidth}px #3DB887` : 'none')};
+`;
+
+const WidgetProfileVideoPlayer = (props: { videoStream: MediaStream | null, mirrorVideo: boolean, borderGlowWidth: number }) => {
+    const videoElRef = React.useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+        if (videoElRef.current && props.videoStream) {
+            videoElRef.current.srcObject = props.videoStream;
+        }
+    }, [props.videoStream]);
+
+    return (
+        <StyledWidgetProfileVideoPlayer
+            ref={videoElRef}
+            autoPlay={true}
+            muted={true}
+            $mirror={props.mirrorVideo}
+            $borderGlowWidth={props.borderGlowWidth}
+        />
+    );
+};
