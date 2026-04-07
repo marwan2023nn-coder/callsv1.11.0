@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"maps"
 	"net"
 	"net/http"
 	"os"
@@ -70,6 +69,9 @@ type configuration struct {
 	// Ringing is default off (for now -- 8.0), allow sysadmins to turn it on.
 	// When set to true it enables ringing for DM/GM channels.
 	EnableRinging *bool
+	// The default ringback sound to use while placing a call (outgoing), when the user hasn't selected one.
+	// Empty means using the bundled default ring.mp3.
+	DefaultOutgoingRingbackSound string
 	// The speech-to-text model size to use to transcribe calls.
 	TranscriberModelSize transcriber.ModelSize
 	// The speech-to-text API to use to transcribe calls.
@@ -128,6 +130,9 @@ type ClientConfig struct {
 	EnableSimulcast *bool
 	// When set to true it enables ringing for DM/GM channels.
 	EnableRinging *bool
+	// The default ringback sound to use while placing a call (outgoing), when the user hasn't selected one.
+	// Empty means using the bundled default ring.mp3.
+	DefaultOutgoingRingbackSound string
 	// (Cloud) License information that isn't exposed to clients yet on the webapp
 	SkuShortName string `json:"sku_short_name"`
 	// Let the server determine whether or not host controls are allowed (through license checks or otherwise)
@@ -138,8 +143,6 @@ type ClientConfig struct {
 	GroupCallsAllowed bool
 	// When set to true it enables experimental support for using the data channel for signaling.
 	EnableDCSignaling *bool
-	// When set to try it enables video calls in direct message channels.
-	EnableVideo *bool
 }
 
 const (
@@ -266,9 +269,6 @@ func (c *configuration) SetDefaults() {
 	if c.EnableDCSignaling == nil {
 		c.EnableDCSignaling = model.NewPointer(false)
 	}
-	if c.EnableVideo == nil {
-		c.EnableVideo = model.NewPointer(false)
-	}
 }
 
 func (c *configuration) IsValid() error {
@@ -367,6 +367,7 @@ func (c *configuration) Clone() *configuration {
 	cfg.TranscribeAPIAzureSpeechRegion = c.TranscribeAPIAzureSpeechRegion
 	cfg.LiveCaptionsModelSize = c.LiveCaptionsModelSize
 	cfg.LiveCaptionsLanguage = c.LiveCaptionsLanguage
+	cfg.DefaultOutgoingRingbackSound = c.DefaultOutgoingRingbackSound
 
 	if c.UDPServerPort != nil {
 		cfg.UDPServerPort = model.NewPointer(*c.UDPServerPort)
@@ -461,10 +462,6 @@ func (c *configuration) Clone() *configuration {
 		cfg.EnableDCSignaling = model.NewPointer(*c.EnableDCSignaling)
 	}
 
-	if c.EnableVideo != nil {
-		cfg.EnableVideo = model.NewPointer(*c.EnableVideo)
-	}
-
 	return &cfg
 }
 
@@ -517,25 +514,25 @@ func (p *Plugin) getClientConfig(c *configuration) ClientConfig {
 	}
 
 	return ClientConfig{
-		AllowEnableCalls:     model.NewPointer(true), // always true
-		DefaultEnabled:       c.DefaultEnabled,
-		ICEServers:           c.ICEServers,
-		ICEServersConfigs:    c.getICEServers(true),
-		MaxCallParticipants:  c.MaxCallParticipants,
-		NeedsTURNCredentials: model.NewPointer(c.TURNStaticAuthSecret != "" && len(c.ICEServersConfigs.getTURNConfigsForCredentials()) > 0),
-		AllowScreenSharing:   c.AllowScreenSharing,
-		EnableRecordings:     c.EnableRecordings,
-		EnableTranscriptions: c.EnableTranscriptions,
-		EnableLiveCaptions:   c.EnableLiveCaptions,
-		MaxRecordingDuration: c.MaxRecordingDuration,
-		EnableSimulcast:      c.EnableSimulcast,
-		EnableRinging:        c.EnableRinging,
-		SkuShortName:         skuShortName,
-		HostControlsAllowed:  p.licenseChecker.HostControlsAllowed(),
-		EnableAV1:            c.EnableAV1,
-		GroupCallsAllowed:    p.licenseChecker.GroupCallsAllowed(),
-		EnableDCSignaling:    c.EnableDCSignaling,
-		EnableVideo:          c.EnableVideo,
+		AllowEnableCalls:             model.NewPointer(true), // always true
+		DefaultEnabled:               c.DefaultEnabled,
+		ICEServers:                   c.ICEServers,
+		ICEServersConfigs:            c.getICEServers(true),
+		MaxCallParticipants:          c.MaxCallParticipants,
+		NeedsTURNCredentials:         model.NewPointer(c.TURNStaticAuthSecret != "" && len(c.ICEServersConfigs.getTURNConfigsForCredentials()) > 0),
+		AllowScreenSharing:           c.AllowScreenSharing,
+		EnableRecordings:             c.EnableRecordings,
+		EnableTranscriptions:         c.EnableTranscriptions,
+		EnableLiveCaptions:           c.EnableLiveCaptions,
+		MaxRecordingDuration:         c.MaxRecordingDuration,
+		EnableSimulcast:              c.EnableSimulcast,
+		EnableRinging:                c.EnableRinging,
+		DefaultOutgoingRingbackSound: c.DefaultOutgoingRingbackSound,
+		SkuShortName:                 skuShortName,
+		HostControlsAllowed:          p.licenseChecker.HostControlsAllowed(),
+		EnableAV1:                    c.EnableAV1,
+		GroupCallsAllowed:            p.licenseChecker.GroupCallsAllowed(),
+		EnableDCSignaling:            c.EnableDCSignaling,
 	}
 }
 
@@ -645,19 +642,7 @@ func (p *Plugin) ConfigurationWillBeSaved(newCfg *model.Config) (*model.Config, 
 	appErr := model.NewAppError("saveConfig", "app.save_config.error", nil, "", http.StatusBadRequest)
 	appErr.SkipTranslation = true
 
-	// Fields marked "secret": true in plugin.json are sanitized to model.FakeSetting by
-	// Mattermost before being passed to this hook. Work on a copy with those fields removed
-	// so they are skipped during unmarshal and validation without mutating newCfg (which
-	// the server will save). The fields were already valid when originally saved.
-	configDataForValidation := make(map[string]any, len(configData))
-	maps.Copy(configDataForValidation, configData)
-	for k, v := range configDataForValidation {
-		if v == model.FakeSetting {
-			delete(configDataForValidation, k)
-		}
-	}
-
-	js, err := json.Marshal(configDataForValidation)
+	js, err := json.Marshal(configData)
 	if err != nil {
 		err = fmt.Errorf("failed to marshal config data: %w", err)
 		p.LogError(err.Error())
@@ -721,6 +706,7 @@ func (p *Plugin) setOverrides(cfg *configuration) {
 	cfg.TCPServerAddress = strings.TrimSpace(cfg.TCPServerAddress)
 	cfg.RTCDServiceURL = strings.TrimSpace(cfg.RTCDServiceURL)
 	cfg.JobServiceURL = strings.TrimSpace(cfg.JobServiceURL)
+	cfg.DefaultOutgoingRingbackSound = strings.TrimSpace(cfg.DefaultOutgoingRingbackSound)
 }
 
 func (p *Plugin) isSingleHandler() bool {

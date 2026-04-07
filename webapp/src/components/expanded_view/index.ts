@@ -16,7 +16,6 @@ import {
 } from 'src/actions';
 import {
     allowScreenSharing,
-    callsConfig,
     areHostControlsAllowed,
     callStartAtForCurrentCall,
     channelForCurrentCall,
@@ -95,7 +94,6 @@ const mapStateToProps = (state: GlobalState) => {
         isAdmin: isCurrentUserSystemAdmin(state),
         hostControlsAllowed: areHostControlsAllowed(state),
         remoteControlSessionID: remoteControlSessionIDForCurrentCall(state),
-        enableVideo: callsConfig(state).EnableVideo && isDMChannel(channel || undefined),
     };
 };
 

@@ -23,12 +23,6 @@ type Props = {
 
     // Used by the recorder client.
     profileImages?: Record<string, string>,
-    enableVideo: boolean,
-    selfVideoStream: MediaStream | null,
-    otherVideoStream: MediaStream | null,
-    initializingSelfVideo: boolean,
-    currentSession?: UserSessionState,
-    otherSessions: UserSessionState[],
 };
 
 const tileSizesMap = {
@@ -59,12 +53,6 @@ export default function ParticipantsGrid({
     sessions,
     onParticipantRemove,
     profileImages,
-    enableVideo,
-    selfVideoStream,
-    otherVideoStream,
-    initializingSelfVideo,
-    currentSession,
-    otherSessions,
 }: Props) {
     const {formatMessage} = useIntl();
 
@@ -160,19 +148,6 @@ export default function ParticipantsGrid({
                 return null;
             }
 
-            const isYou = currentSessionID ? session.session_id === currentSessionID : false;
-            let hasVideo = false;
-            let videoStream = null;
-            if (enableVideo) {
-                if (isYou) {
-                    hasVideo = Boolean(currentSession?.video) || initializingSelfVideo;
-                    videoStream = selfVideoStream;
-                } else {
-                    hasVideo = Boolean(session?.video);
-                    videoStream = otherVideoStream;
-                }
-            }
-
             return (
                 <CallParticipant
                     key={session.session_id}
@@ -183,17 +158,13 @@ export default function ParticipantsGrid({
                     isSpeaking={isSpeaking}
                     isHandRaised={isHandRaised}
                     reaction={session?.reaction}
-                    isYou={isYou}
+                    isYou={currentSessionID ? session.session_id === currentSessionID : false}
                     isHost={profile.id === callHostID}
                     iAmHost={currentUserID ? currentUserID === callHostID : false}
                     callID={callID}
                     userID={session.user_id}
                     sessionID={session.session_id}
                     isSharingScreen={false}
-                    hasVideo={hasVideo}
-                    videoStream={videoStream}
-                    videoView={enableVideo && (Boolean(currentSession?.video) || otherSessions.some((s) => s.video) || initializingSelfVideo)}
-                    mirrorVideo={isYou && localStorage.getItem('calls_mirror_video') === 'true'}
                     onRemove={() => {
                         if (onParticipantRemove) {
                             onParticipantRemove(session.session_id, session.user_id);
