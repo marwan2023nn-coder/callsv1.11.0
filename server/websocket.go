@@ -34,8 +34,6 @@ const (
 	wsEventUserVoiceOff              = "user_voice_off"
 	wsEventUserScreenOn              = "user_screen_on"
 	wsEventUserScreenOff             = "user_screen_off"
-	wsEventUserVideoOn               = "user_video_on"
-	wsEventUserVideoOff              = "user_video_off"
 	wsEventCallStart                 = "call_start"
 	wsEventCallState                 = "call_state"
 	wsEventCallEnd                   = "call_end"
@@ -258,64 +256,6 @@ func (p *Plugin) handleClientMessageTypeScreen(us *session, msg clientMessage, h
 	return nil
 }
 
-func (p *Plugin) handleClientMessageTypeVideo(us *session, msg clientMessage, handlerID string) error {
-	state, err := p.lockCallReturnState(us.channelID)
-	if err != nil {
-		return fmt.Errorf("failed to lock call: %w", err)
-	}
-	defer p.unlockCall(us.channelID)
-	if state == nil {
-		return fmt.Errorf("no call ongoing")
-	}
-
-	session := state.sessions[us.originalConnID]
-	if session == nil {
-		return fmt.Errorf("user state is missing from call state")
-	}
-	session.Video = msg.Type == clientMessageTypeVideoOn
-
-	if err := p.store.UpdateCallSession(session); err != nil {
-		return fmt.Errorf("failed to update call session: %w", err)
-	}
-
-	msgType := rtc.VideoOnMessage
-	wsMsgType := wsEventUserVideoOn
-	if msg.Type == clientMessageTypeVideoOff {
-		msgType = rtc.VideoOffMessage
-		wsMsgType = wsEventUserVideoOff
-	}
-
-	if handlerID != p.nodeID {
-		if err := p.sendClusterMessage(clusterMessage{
-			ConnID:        us.originalConnID,
-			UserID:        us.userID,
-			ChannelID:     us.channelID,
-			CallID:        us.callID,
-			SenderID:      p.nodeID,
-			ClientMessage: msg,
-		}, clusterMessageTypeUserState, handlerID); err != nil {
-			return err
-		}
-	} else {
-		rtcMsg := rtc.Message{
-			SessionID: us.originalConnID,
-			Type:      msgType,
-			Data:      msg.Data,
-		}
-
-		if err := p.sendRTCMessage(rtcMsg, us.callID); err != nil {
-			p.LogError("failed to send RTC message", "error", err)
-		}
-	}
-
-	p.publishWebSocketEvent(wsMsgType, map[string]interface{}{
-		"userID":     us.userID,
-		"session_id": us.originalConnID,
-	}, &WebSocketBroadcast{ChannelID: us.channelID, ReliableClusterSend: true, UserIDs: getUserIDsFromSessions(state.sessions)})
-
-	return nil
-}
-
 type EmojiData struct {
 	Name    string `json:"name"`
 	Skin    string `json:"skin,omitempty"`
@@ -448,10 +388,6 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 		})
 	case clientMessageTypeScreenOn, clientMessageTypeScreenOff:
 		if err := p.handleClientMessageTypeScreen(us, msg, handlerID); err != nil {
-			return err
-		}
-	case clientMessageTypeVideoOn, clientMessageTypeVideoOff:
-		if err := p.handleClientMessageTypeVideo(us, msg, handlerID); err != nil {
 			return err
 		}
 	case clientMessageTypeRaiseHand, clientMessageTypeUnraiseHand:
@@ -1389,7 +1325,7 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 			return
 		}
 		msg.Data = data
-	case clientMessageTypeICE, clientMessageTypeScreenOn, clientMessageTypeVideoOn, clientMessageTypeVideoOff:
+	case clientMessageTypeICE, clientMessageTypeScreenOn:
 		msgData, ok := req.Data["data"].(string)
 		if !ok {
 			p.LogError("invalid or missing data")

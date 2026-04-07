@@ -470,11 +470,14 @@ export const didNotifyForCall = (state: GlobalState, callID: string): boolean =>
 // Config logic
 //
 export type CallsConfigExtended = CallsConfig & {
+    DefaultOutgoingRingbackSound?: string;
 };
 
 export const callsConfig = (state: GlobalState): CallsConfigExtended =>
     pluginState(state).callsConfig;
 
+export const defaultOutgoingRingbackSound = (state: GlobalState): string =>
+    callsConfig(state).DefaultOutgoingRingbackSound || '';
 
 export const iceServers = (state: GlobalState): RTCIceServer[] =>
     callsConfig(state).ICEServersConfigs || [];
@@ -498,14 +501,6 @@ export const isLimitRestricted: (state: GlobalState) => boolean =
             const numCurrentUsers = Object.keys(sessions[channelID] || {}).length;
             return max > 0 && numCurrentUsers >= max;
         },
-    );
-
-export const sessionsForOtherUsersInCall: (state: GlobalState) => UserSessionState[] =
-    createSelector(
-        'sessionsForOtherUsersInCall',
-        getCurrentUserId,
-        sessionsInCurrentCall,
-        (currentUserID, sessions) => sessions.filter((session) => session.user_id !== currentUserID),
     );
 
 export const allowScreenSharing = (state: GlobalState) =>

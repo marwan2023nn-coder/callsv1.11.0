@@ -12,8 +12,7 @@ import ShowMoreIcon from 'src/components/icons/show_more';
 import SpeakerIcon from 'src/components/icons/speaker_icon';
 import TickIcon from 'src/components/icons/tick';
 import UnmutedIcon from 'src/components/icons/unmuted_icon';
-import VideoOnIcon from 'src/components/icons/video_on';
-import {areLiveCaptionsAvailableInCurrentCall, callsConfig} from 'src/selectors';
+import {areLiveCaptionsAvailableInCurrentCall} from 'src/selectors';
 import type {
     AudioDevices,
 } from 'src/types/types';
@@ -22,14 +21,14 @@ import styled from 'styled-components';
 
 import ControlsButton from './controls_button';
 
-type DevicesListProps = {
+type AudioDevicesListProps = {
     deviceType: string;
     devices: MediaDeviceInfo[];
     currentDevice: MediaDeviceInfo | null;
     onDeviceClick: (device: MediaDeviceInfo) => void;
 }
 
-const MediaDevicesList = ({deviceType, devices, currentDevice, onDeviceClick}: DevicesListProps) => {
+const AudioDevicesList = ({deviceType, devices, currentDevice, onDeviceClick}: AudioDevicesListProps) => {
     const {formatMessage} = useIntl();
 
     // Note: this is system default, not the concept of default that we save in local storage in client.ts
@@ -45,24 +44,24 @@ const MediaDevicesList = ({deviceType, devices, currentDevice, onDeviceClick}: D
         return (
             <li
                 className='MenuItem'
-                key={`${deviceType}-device-${device.deviceId}`}
+                key={`audio-${deviceType}-device-${device.deviceId}`}
                 role='menuitem'
                 aria-label={makeDeviceLabel(device)}
             >
-                <DeviceButton
+                <AudioDeviceButton
                     className='style--none'
                     onClick={() => onDeviceClick(device)}
                     $isCurrentDevice={isCurrentDevice}
                 >
-                    <DeviceName>
+                    <AudioDeviceName>
                         {makeDeviceLabel(device)}
-                    </DeviceName>
+                    </AudioDeviceName>
                     { isCurrentDevice &&
-                    <DeviceSelectedIcon>
+                    <AudioDeviceSelectedIcon>
                         <TickIcon/>
-                    </DeviceSelectedIcon>
+                    </AudioDeviceSelectedIcon>
                     }
-                </DeviceButton>
+                </AudioDeviceButton>
             </li>
         );
     });
@@ -73,7 +72,7 @@ const MediaDevicesList = ({deviceType, devices, currentDevice, onDeviceClick}: D
             role='menu'
         >
             <DevicesList
-                id={`calls-popout-${deviceType}s-menu`}
+                id={`calls-popout-audio-${deviceType}s-menu`}
                 className='Menu__content dropdown-menu'
             >
                 {list}
@@ -82,17 +81,17 @@ const MediaDevicesList = ({deviceType, devices, currentDevice, onDeviceClick}: D
     );
 };
 
-const DeviceSelectedIcon = styled.div`
+const AudioDeviceSelectedIcon = styled.div`
 &&&& {
     svg {
       width: 14px;
       height: 14px;
-      fill: var(--button-bg);
+      fill: #00987e;
     }
 }
 `;
 
-const DeviceName = styled.span`
+const AudioDeviceName = styled.span`
   color: var(--center-channel-color);
   font-size: 14px;
   width: 100%;
@@ -100,7 +99,7 @@ const DeviceName = styled.span`
   overflow: hidden;
 `;
 
-const DeviceButton = styled.button<{$isCurrentDevice: boolean}>`
+const AudioDeviceButton = styled.button<{$isCurrentDevice: boolean}>`
 &&& {
   display: flex;
   background: ${({$isCurrentDevice}) => $isCurrentDevice ? 'rgba(28, 88, 217, 0.08)' : ''};
@@ -122,46 +121,40 @@ const DevicesList = styled.ul`
 }
 `;
 
-type DevicesProps = {
+type AudioDevicesProps = {
     deviceType: string;
     isActive: boolean;
     onToggle: (deviceType: string) => void;
 }
 
-const Devices = ({deviceType, isActive, onToggle}: DevicesProps) => {
+const AudioDevices = ({deviceType, isActive, onToggle}: AudioDevicesProps) => {
     const {formatMessage} = useIntl();
     const [currentAudioInputDevice, setCurrentAudioInputDevice] = useState<MediaDeviceInfo | null>(null);
     const [currentAudioOutputDevice, setCurrentAudioOutputDevice] = useState<MediaDeviceInfo | null>(null);
-    const [currentVideoInputDevice, setCurrentVideoInputDevice] = useState<MediaDeviceInfo | null>(null);
     const [audioDevices, setAudioDevices] = useState<AudioDevices>({inputs: [], outputs: []});
-    const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+
+    const isInput = deviceType === 'input';
 
     const handleDeviceClick = (device: MediaDeviceInfo) => {
         const callsClient = getCallsClient();
 
-        if (deviceType === 'audioinput') {
+        if (isInput) {
             if (device !== currentAudioInputDevice) {
                 callsClient?.setAudioInputDevice(device);
             }
             setCurrentAudioInputDevice(device);
-        } else if (deviceType === 'audiooutput') {
+        } else {
             if (device !== currentAudioOutputDevice) {
                 callsClient?.setAudioOutputDevice(device);
             }
             setCurrentAudioOutputDevice(device);
-        } else if (deviceType === 'videoinput') {
-            if (device !== currentVideoInputDevice) {
-                callsClient?.setVideoInputDevice(device);
-            }
-            setCurrentVideoInputDevice(device);
         }
 
         onToggle(deviceType);
     };
 
-    const handleDeviceChange = (aDevices: AudioDevices, vDevices: MediaDeviceInfo[]) => {
-        setAudioDevices(aDevices);
-        setVideoDevices(vDevices);
+    const handleDeviceChange = (devices: AudioDevices) => {
+        setAudioDevices(devices);
 
         const callsClient = getCallsClient();
         if (!callsClient) {
@@ -175,10 +168,6 @@ const Devices = ({deviceType, isActive, onToggle}: DevicesProps) => {
         if (callsClient.currentAudioOutputDevice !== currentAudioOutputDevice) {
             setCurrentAudioOutputDevice(callsClient.currentAudioOutputDevice);
         }
-
-        if (callsClient.currentVideoInputDevice !== currentVideoInputDevice) {
-            setCurrentVideoInputDevice(callsClient.currentVideoInputDevice);
-        }
     };
 
     useEffect(() => {
@@ -190,14 +179,11 @@ const Devices = ({deviceType, isActive, onToggle}: DevicesProps) => {
 
         callsClient.on('devicechange', handleDeviceChange);
         setAudioDevices(callsClient.getAudioDevices());
-        setVideoDevices(callsClient.getVideoDevices());
 
-        if (deviceType === 'audioinput') {
+        if (isInput) {
             setCurrentAudioInputDevice(callsClient.currentAudioInputDevice);
-        } else if (deviceType === 'audiooutput') {
+        } else {
             setCurrentAudioOutputDevice(callsClient.currentAudioOutputDevice);
-        } else if (deviceType === 'videoinput') {
-            setCurrentVideoInputDevice(callsClient.currentVideoInputDevice);
         }
 
         return () => {
@@ -205,50 +191,33 @@ const Devices = ({deviceType, isActive, onToggle}: DevicesProps) => {
         };
     }, []);
 
-    if (deviceType === 'audioinput' && audioDevices.inputs.length === 0) {
+    if (isInput && audioDevices.inputs.length === 0) {
         return null;
     }
 
-    if (deviceType === 'audiooutput' && audioDevices.outputs.length === 0) {
+    if (!isInput && audioDevices.outputs.length === 0) {
         return null;
     }
 
-    if (deviceType === 'videoinput' && videoDevices.length === 0) {
-        return null;
-    }
-
-    let currentDevice = deviceType === 'audioinput' ? currentAudioInputDevice : currentAudioOutputDevice;
-    if (deviceType === 'videoinput') {
-        currentDevice = currentVideoInputDevice;
-    }
-    let Icon = deviceType === 'audioinput' ? UnmutedIcon : SpeakerIcon;
-    if (deviceType === 'videoinput') {
-        Icon = VideoOnIcon;
-    }
+    const currentDevice = isInput ? currentAudioInputDevice : currentAudioOutputDevice;
+    const DeviceIcon = isInput ? UnmutedIcon : SpeakerIcon;
     const label = currentDevice?.label || formatMessage({defaultMessage: 'Default'});
 
-    let devices = deviceType === 'audioinput' ?
+    const devices = isInput ?
         audioDevices.inputs?.filter((device) => device.deviceId && device.label) :
         audioDevices.outputs?.filter((device) => device.deviceId && device.label);
-    if (deviceType === 'videoinput') {
-        devices = videoDevices.filter((device) => device.deviceId && device.label);
-    }
-
     const isDisabled = devices.length === 0;
 
-    let deviceTypeLabel = deviceType === 'audioinput' ?
+    const deviceTypeLabel = isInput ?
         formatMessage({defaultMessage: 'Microphone'}) : formatMessage({defaultMessage: 'Audio output'});
-    if (deviceType === 'videoinput') {
-        deviceTypeLabel = formatMessage({defaultMessage: 'Camera'});
-    }
 
     return (
         <>
             {isActive &&
-            <MediaDevicesList
+            <AudioDevicesList
                 deviceType={deviceType}
                 devices={devices}
-                currentDevice={currentDevice}
+                currentDevice={isInput ? currentAudioInputDevice : currentAudioOutputDevice}
                 onDeviceClick={handleDeviceClick}
             />
             }
@@ -257,36 +226,36 @@ const Devices = ({deviceType, isActive, onToggle}: DevicesProps) => {
                 role='menuitem'
                 aria-label={deviceTypeLabel}
             >
-                <DeviceTypeButton
-                    id={`calls-popout-${deviceType}-button`}
+                <AudioDeviceTypeButton
+                    id={`calls-popout-audio-${deviceType}-button`}
                     className='style--none'
                     disabled={isDisabled}
                     onClick={() => onToggle(deviceType)}
                     $active={isActive}
-                    aria-controls={`calls-popout-${deviceType}s-menu`}
+                    aria-controls={`calls-popout-audio-${deviceType}s-menu`}
                     aria-expanded={isActive}
                 >
-                    <DeviceIcon $isDisabled={isDisabled}>
-                        <Icon/>
-                    </DeviceIcon>
+                    <AudioDeviceIcon $isDisabled={isDisabled}>
+                        <DeviceIcon/>
+                    </AudioDeviceIcon>
 
-                    <DeviceTypeButtonBody>
-                        <DeviceTypeLabel
+                    <AudioDeviceTypeButtonBody>
+                        <AudioDeviceTypeLabel
                             className='MenuItem__primary-text'
                         >
                             {deviceTypeLabel}
-                        </DeviceTypeLabel>
-                        <DeviceLabel $isDisabled={isDisabled}>
+                        </AudioDeviceTypeLabel>
+                        <AudioDeviceLabel $isDisabled={isDisabled}>
                             {label}
-                        </DeviceLabel>
-                    </DeviceTypeButtonBody>
+                        </AudioDeviceLabel>
+                    </AudioDeviceTypeButtonBody>
 
                     {devices.length > 0 &&
                     <ShowDevicesIcon $isDisabled={isDisabled}>
                         <ShowMoreIcon/>
                     </ShowDevicesIcon>
                     }
-                </DeviceTypeButton>
+                </AudioDeviceTypeButton>
             </li>
         </>
     );
@@ -302,7 +271,7 @@ const ShowDevicesIcon = styled.div<{$isDisabled: boolean}>`
 }
 `;
 
-const DeviceTypeLabel = styled.span`
+const AudioDeviceTypeLabel = styled.span`
 &&&& {
   padding: 0;
   font-size: 14px;
@@ -310,7 +279,7 @@ const DeviceTypeLabel = styled.span`
 }
 `;
 
-const DeviceLabel = styled.span<{$isDisabled: boolean}>`
+const AudioDeviceLabel = styled.span<{$isDisabled: boolean}>`
 &&& {
   color: ${({$isDisabled}) => $isDisabled ? 'rgba(var(--center-channel-color-rgb), 0.32)' : 'rgba(var(--center-channel-color-rgb), 0.56)'};
   font-size: 12px;
@@ -322,7 +291,7 @@ const DeviceLabel = styled.span<{$isDisabled: boolean}>`
 }
 `;
 
-const DeviceTypeButtonBody = styled.div`
+const AudioDeviceTypeButtonBody = styled.div`
 &&& {
     display: flex;
     align-items: start;
@@ -334,7 +303,7 @@ const DeviceTypeButtonBody = styled.div`
 }
 `;
 
-const DeviceIcon = styled.div<{$isDisabled: boolean}>`
+const AudioDeviceIcon = styled.div<{$isDisabled: boolean}>`
 &&& {
     svg {
       width: 16px;
@@ -345,7 +314,7 @@ const DeviceIcon = styled.div<{$isDisabled: boolean}>`
 }
 `;
 
-const DeviceTypeButton = styled.button<{$active: boolean, disabled: boolean}>`
+const AudioDeviceTypeButton = styled.button<{$active: boolean, disabled: boolean}>`
 &&& {
     display: flex;
     align-items: start;
@@ -407,25 +376,17 @@ type CallSettingsProps = {
 export function CallSettings({onLiveCaptionsToggle, showLiveCaptions}: CallSettingsProps) {
     const [showAudioInputs, setShowAudioInputs] = useState(false);
     const [showAudioOutputs, setShowAudioOutputs] = useState(false);
-    const [showVideoInputs, setShowVideoInputs] = useState(false);
-    const isVideoEnabled = useSelector(callsConfig).EnableVideo;
     const showCCButton = useSelector(areLiveCaptionsAvailableInCurrentCall);
     const {formatMessage} = useIntl();
     const dispatch = useDispatch();
 
     const onToggle = (deviceType: string) => {
-        if (deviceType === 'audioinput') {
+        if (deviceType === 'input') {
             setShowAudioInputs(!showAudioInputs);
             setShowAudioOutputs(false);
-            setShowVideoInputs(false);
-        } else if (deviceType === 'audiooutput') {
+        } else {
             setShowAudioOutputs(!showAudioOutputs);
             setShowAudioInputs(false);
-            setShowVideoInputs(false);
-        } else if (deviceType === 'videoinput') {
-            setShowVideoInputs(!showVideoInputs);
-            setShowAudioInputs(false);
-            setShowAudioOutputs(false);
         }
     };
 
@@ -445,23 +406,16 @@ export function CallSettings({onLiveCaptionsToggle, showLiveCaptions}: CallSetti
                 className='Menu__content dropdown-menu'
                 role='menu'
             >
-                <Devices
-                    deviceType='audiooutput'
+                <AudioDevices
+                    deviceType='output'
                     isActive={showAudioOutputs}
                     onToggle={onToggle}
                 />
-                <Devices
-                    deviceType='audioinput'
+                <AudioDevices
+                    deviceType='input'
                     isActive={showAudioInputs}
                     onToggle={onToggle}
                 />
-                {isVideoEnabled &&
-                <Devices
-                    deviceType='videoinput'
-                    isActive={showVideoInputs}
-                    onToggle={onToggle}
-                />
-                }
 
                 { (showCCButton || showAdditionalSetttingsButton) && <li className='MenuGroup menu-divider'/>}
                 { showCCButton &&

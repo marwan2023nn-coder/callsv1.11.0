@@ -19,7 +19,6 @@ import {
 } from 'src/actions';
 import {
     allowScreenSharing,
-    callsConfig,
     callStartAtForCurrentCall,
     clientConnecting,
     expandedView,
@@ -34,7 +33,6 @@ import {
     recordingsEnabled,
     screenSharingSessionForCurrentCall,
     sessionForCurrentCall,
-    sessionsForOtherUsersInCall,
     sessionsInCurrentCall,
     sessionsInCurrentCallMap,
     sortedIncomingCalls,
@@ -72,7 +70,6 @@ const mapStateToProps = (state: GlobalState) => {
         sessions,
         sessionsMap: sessionsInCurrentCallMap(state),
         currentSession: sessionForCurrentCall(state),
-        otherSessions: sessionsForOtherUsersInCall(state),
         profiles,
         callStartAt: callStartAtForCurrentCall(state),
         callHostID: hostIDForCurrentCall(state),
@@ -90,7 +87,6 @@ const mapStateToProps = (state: GlobalState) => {
         clientConnecting: clientConnecting(state),
         callThreadID,
         recordingsEnabled: recordingsEnabled(state),
-        enableVideo: callsConfig(state).EnableVideo && isDMChannel(channel),
     };
 };
 

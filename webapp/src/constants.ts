@@ -44,22 +44,6 @@ export const CallAlertConfigs: { [key: string]: CallAlertConfig } = {
         tooltipSubtext: defineMessage({defaultMessage: 'Allow microphone access to workspace.'}),
         dismissable: true,
     },
-    missingVideoInput: {
-        type: CallAlertType.Error,
-        icon: 'video-off',
-        bannerText: defineMessage({defaultMessage: 'Unable to find a valid video input device. Try plugging in a video input device.'}),
-        tooltipText: defineMessage({defaultMessage: 'No video input devices'}),
-        tooltipSubtext: defineMessage({defaultMessage: 'Try plugging in a video input device.'}),
-        dismissable: true,
-    },
-    missingVideoInputPermissions: {
-        type: CallAlertType.Error,
-        icon: 'video-off',
-        bannerText: defineMessage({defaultMessage: 'Allow camera access to workspace.'}),
-        tooltipText: defineMessage({defaultMessage: 'No video input permissions'}),
-        tooltipSubtext: defineMessage({defaultMessage: 'Allow camera access to workspace.'}),
-        dismissable: true,
-    },
     missingScreenPermissions: {
         type: CallAlertType.Error,
         icon: 'monitor-off',
@@ -119,6 +103,5 @@ export const STORAGE_CALLS_CLIENT_STATS_KEY = 'calls_client_stats';
 export const STORAGE_CALLS_CLIENT_LOGS_KEY = 'calls_client_logs';
 export const STORAGE_CALLS_DEFAULT_AUDIO_INPUT_KEY = 'calls_default_audio_input';
 export const STORAGE_CALLS_DEFAULT_AUDIO_OUTPUT_KEY = 'calls_default_audio_output';
-export const STORAGE_CALLS_DEFAULT_VIDEO_INPUT_KEY = 'calls_default_video_input';
 export const STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY = 'calls_outgoing_ringback_sound';
 export const STORAGE_CALLS_SHARE_AUDIO_WITH_SCREEN = 'calls_share_audio_with_screen';
