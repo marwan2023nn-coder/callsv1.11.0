@@ -21,9 +21,15 @@ func (p *Plugin) NotificationWillBePushed(notification *model.PushNotification, 
 		if err != nil {
 			p.LogError("store.IsUserInCall failed", "err", err.Error())
 		} else if isUserInCall {
-			msg := "calls: suppressing notification on call thread for connected user"
-			p.LogDebug(msg, "userID", userID, "channelID", notification.ChannelId, "threadID", call.ThreadID, "callID", call.ID)
-			return nil, msg
+			// If the user is in a call but is not online, we don't suppress the notification.
+			status, appErr := p.API.GetUserStatus(userID)
+			if appErr != nil {
+				p.LogError("failed to get user status", "err", appErr.Error())
+			} else if status.Status == model.StatusOnline {
+				msg := "calls: suppressing notification on call thread for connected user"
+				p.LogDebug(msg, "userID", userID, "channelID", notification.ChannelId, "threadID", call.ThreadID, "callID", call.ID)
+				return nil, msg
+			}
 		}
 	} else if err != nil && !errors.Is(err, db.ErrNotFound) {
 		p.LogError("store.GetActiveCallByChannelID failed", "err", err.Error())

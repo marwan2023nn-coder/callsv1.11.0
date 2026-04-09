@@ -7,6 +7,7 @@ import {getCurrentUserId} from 'mattermost-redux/selectors/entities/users';
 import {CALL_START_POST_TYPE} from 'src/constants';
 import {
     channelIDForCurrentCall,
+    getStatusForCurrentUser,
     ringingEnabled,
     threadIDForCurrentCall,
 } from 'src/selectors';
@@ -42,7 +43,8 @@ export function desktopNotificationHandler(
 
         // Do not notify for a call's thread if the user is currently in that call...
         if (channelIDForCurrentCall(store.getState()) === post.channel_id &&
-            threadIDForCurrentCall(store.getState()) === post.root_id) {
+            threadIDForCurrentCall(store.getState()) === post.root_id &&
+            getStatusForCurrentUser(store.getState()) === 'online') {
             let mentions = [];
             if (msgProps.mentions) {
                 mentions = JSON.parse(msgProps.mentions);
