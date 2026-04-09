@@ -10,7 +10,6 @@ import {
     UnavailableSubtitle,
 } from 'src/components/admin_console_settings/common';
 import {isCloud, isOnPremNotEnterprise, recordingsEnabled, transcriptionsEnabled} from 'src/selectors';
-import {untranslatable} from 'src/utils';
 
 export default function CallLiveCaptionsSection(props: {settingsList: React.ReactNode[]}) {
     const {formatMessage} = useIntl();
@@ -46,7 +45,7 @@ export default function CallLiveCaptionsSection(props: {settingsList: React.Reac
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Live captions'})}
-                            {<EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
+                            {<EnterprisePill>{formatMessage({id: 'calls.plan.enterprise', defaultMessage: 'Enterprise'})}</EnterprisePill>}
                         </SectionTitle>
                         {subtitle}
                     </div>

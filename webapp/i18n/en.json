@@ -335,6 +335,7 @@
   "app.call.ignored_message": "تم تجاهل المكالمة",
   "app.call.no_answer_message": "مكالمة لم يرد عليها",
   "app.call.started_at_message": "بدأت المكالمة في {startTime}",
+  "app.call.started_by_user": "بواسطة {user}",
   "app.call.ended_at_message": "انتهت المكالمة في {endTime}",
   "app.call.join_call": "الانضمام إلى المكالمة",
   "app.call.limit_reached": "عذرًا، يقتصر عدد المشاركين في كل مكالمة حاليًا على {count}.",

@@ -23,7 +23,6 @@ import {
 import {PrimaryButton} from 'src/components/buttons';
 import {HorizontalSpacer, VerticalSpacer} from 'src/components/shared';
 import {adminStats, isCloud, isOnPremNotEnterprise} from 'src/selectors';
-import {untranslatable} from 'src/utils';
 import {modals} from 'src/webapp_globals';
 
 export default function CallRecordingsSection(props: {settingsList: React.ReactNode[]}) {
@@ -71,7 +70,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                 <FormattedMessage
                                     defaultMessage={'Get access to call recordings, transcriptions, and live captions'}
                                 />
-                                <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>
+                                <EnterprisePill>{formatMessage({id: 'calls.plan.enterprise', defaultMessage: 'Enterprise'})}</EnterprisePill>
                             </Title>
                             <VerticalSpacer $size={8}/>
                             <Text>
@@ -80,7 +79,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                     values={{
                                         featureLink: (text: string) => (
                                             <a
-                                                href='https://mattermost.com/pl/calls-deployment-recordings?utm_source=mattermost&utm_medium=in-product&utm_content=calls_recordings_feature_discovery'
+                                                href='https://workspace.com/pl/calls-deployment-recordings?utm_source=workspace&utm_medium=in-product&utm_content=calls_recordings_feature_discovery'
                                                 target='_blank'
                                                 rel='noreferrer'
                                             >
@@ -104,7 +103,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                             b: (text: string) => <b>{text}</b>,
                                             linkEvaluation: (text: string) => (
                                                 <a
-                                                    href='https://mattermost.com/software-evaluation-agreement'
+                                                    href='https://workspace.com/software-evaluation-agreement'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -113,7 +112,7 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                                             ),
                                             linkPrivacy: (text: string) => (
                                                 <a
-                                                    href='https://mattermost.com/privacy-policy/'
+                                                    href='https://workspace.com/privacy-policy/'
                                                     target='_blank'
                                                     rel='noreferrer'
                                                 >
@@ -141,10 +140,13 @@ export default function CallRecordingsSection(props: {settingsList: React.ReactN
                     <div className='section-header'>
                         <SectionTitle className='section-title'>
                             {formatMessage({defaultMessage: 'Call recordings'})}
-                            {!cloud && <EnterprisePill>{untranslatable('Enterprise')}</EnterprisePill>}
+                            {!cloud && <EnterprisePill>{formatMessage({id: 'calls.plan.enterprise', defaultMessage: 'Enterprise'})}</EnterprisePill>}
                         </SectionTitle>
                         <div className='section-subtitle'>
-                            {formatMessage({defaultMessage: 'Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Workspace'})}
+                            {formatMessage({
+                                id: 'oIy77K',
+                                defaultMessage: 'Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Workspace',
+                            })}
                         </div>
                     </div>
                     <div className='section-body'>

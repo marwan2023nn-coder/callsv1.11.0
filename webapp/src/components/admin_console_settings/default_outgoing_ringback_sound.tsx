@@ -49,7 +49,7 @@ const DefaultOutgoingRingbackSound = (props: CustomComponentProps) => {
                         data-testid={props.id + 'label'}
                         htmlFor={props.id}
                     >
-                        {formatMessage({defaultMessage: 'Default outgoing ringback sound'})}
+                        {formatMessage({id: 'calls.default_outgoing_ringback_sound.title', defaultMessage: 'Default outgoing ringback sound'})}
                     </label>
                 </LabelRow>
             </div>
@@ -75,7 +75,10 @@ const DefaultOutgoingRingbackSound = (props: CustomComponentProps) => {
                     data-testid={props.id + 'help-text'}
                     className='help-text'
                 >
-                    {formatMessage({defaultMessage: 'The default sound to play while placing a call when the user has not selected a custom ringback sound.'})}
+                    {formatMessage({
+                        id: 'calls.default_outgoing_ringback_sound.description',
+                        defaultMessage: 'The default sound to play while placing a call when the user has not selected a custom ringback sound.',
+                    })}
                 </div>
 
                 {overridden &&
