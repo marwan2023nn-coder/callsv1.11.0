@@ -58,6 +58,9 @@ export default class CallsClient extends EventEmitter {
     public initTime = Date.now();
     private rtcMonitor: RTCMonitor | null = null;
     private av1Codec: RTCRtpCodecCapability | null = null;
+    private joinData: CallsClientJoinData | null = null;
+    private rtcReconnectCount = 0;
+    private readonly maxRTCReconnects = 3;
 
     constructor(config: CallsClientConfig) {
         logDebug('creating new calls client', JSON.stringify(config));
@@ -320,6 +323,7 @@ export default class CallsClient extends EventEmitter {
     }
 
     public async init(joinData: CallsClientJoinData) {
+        this.joinData = joinData;
         this.channelID = joinData.channelID;
 
         if (this.config.enableAV1 && !this.config.simulcast) {
@@ -463,8 +467,12 @@ export default class CallsClient extends EventEmitter {
 
             peer.on('error', (err) => {
                 logErr('peer error', err);
-                if (!this.closed) {
+                if (!this.closed && this.peer === peer) {
                     clearTimeout(timeout);
+                    if ((this.connected || this.rtcReconnectCount > 0) && this.rtcReconnectCount < this.maxRTCReconnects) {
+                        this.reconnectRTC();
+                        return;
+                    }
                     this.disconnect(err === rtcPeerTimeoutErr.message ? rtcPeerTimeoutErr : rtcPeerErr);
                 }
             });
@@ -504,16 +512,38 @@ export default class CallsClient extends EventEmitter {
                 this.emit('connect');
                 this.rtcMonitor?.start();
                 this.connected = true;
+                this.rtcReconnectCount = 0;
             });
 
             peer.on('close', () => {
                 logDebug('rtc closed');
 
-                if (!this.closed) {
+                if (!this.closed && this.peer === peer) {
                     clearTimeout(timeout);
+                    if ((this.connected || this.rtcReconnectCount > 0) && this.rtcReconnectCount < this.maxRTCReconnects) {
+                        this.reconnectRTC();
+                        return;
+                    }
                     this.disconnect(rtcPeerCloseErr);
                 }
             });
+
+            if (this.audioTrack && (this.audioTrack.enabled || this.voiceTrackAdded)) {
+                logDebug('re-adding audio track to new peer');
+                await peer.addTrack(this.audioTrack, this.stream!);
+                this.voiceTrackAdded = true;
+            }
+
+            if (this.localScreenTrack) {
+                logDebug('re-adding screen track to new peer');
+                const screenStream = this.getLocalScreenStream()!;
+                await peer.addStream(screenStream);
+                if (this.config.enableAV1 && this.av1Codec) {
+                    await peer.addTrack(this.localScreenTrack, screenStream, {
+                        codec: this.av1Codec,
+                    });
+                }
+            }
 
             // Intercept DataChannel messages to handle custom RTC message types
             // and avoid "unexpected dc message type" warnings in calls-common.
@@ -645,6 +675,41 @@ export default class CallsClient extends EventEmitter {
 
         // We emit this event so it's easier to keep state in sync between widget and pop out.
         this.emit('devicechange', this.audioDevices);
+    }
+
+    private reconnectRTC() {
+        if (this.closed || !this.ws || !this.joinData) {
+            return;
+        }
+
+        logInfo('rtc: reconnecting', this.rtcReconnectCount + 1);
+        this.rtcReconnectCount++;
+
+        this.rtcMonitor?.stop();
+        this.rtcMonitor = null;
+
+        if (this.peer) {
+            this.peer.destroy();
+            this.peer = null;
+        }
+
+        this.streams.forEach((stream) => {
+            if (stream === this.stream || (this.localScreenTrack && stream.getTracks().includes(this.localScreenTrack))) {
+                return;
+            }
+            stream.getTracks().forEach((track) => {
+                track.stop();
+                track.dispatchEvent(new Event('ended'));
+            });
+        });
+        this.streams = this.streams.filter((s) => s === this.stream || (this.localScreenTrack && s.getTracks().includes(this.localScreenTrack)));
+
+        this.connected = false;
+        this.voiceTrackAdded = false;
+        this.remoteVoiceTracks = [];
+        this.remoteScreenTrack = null;
+
+        this.ws.send('join', this.joinData);
     }
 
     public disconnect(err?: Error) {
