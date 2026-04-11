@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	rtcRemoteControlOnMessage    rtc.MessageType = 9
-	rtcRemoteControlOffMessage   rtc.MessageType = 10
-	rtcRemoteControlEventMessage rtc.MessageType = 11
+	rtcRemoteControlOnMessage    rtc.MessageType = 12
+	rtcRemoteControlOffMessage   rtc.MessageType = 13
+	rtcRemoteControlEventMessage rtc.MessageType = 14
 )
 
 var (

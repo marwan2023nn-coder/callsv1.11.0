@@ -8,7 +8,12 @@ import type {EmojiData, CallsClientJoinData} from '@mattermost/calls-common/lib/
 
 import {EventEmitter} from 'events';
 
+import {Decoder} from '@msgpack/msgpack';
+
 import {zlibSync, strToU8} from 'fflate';
+
+import {decodeDCMsg} from '@mattermost/calls-common/lib/dc_msg';
+
 import {AudioDevices, CallsClientConfig, CallsClientStats, TrackInfo} from 'src/types/types';
 
 import {logDebug, logErr, logInfo, logWarn, persistClientLogs} from './log';
@@ -509,11 +514,36 @@ export default class CallsClient extends EventEmitter {
                     this.disconnect(rtcPeerCloseErr);
                 }
             });
+
+            // Intercept DataChannel messages to handle custom RTC message types
+            // and avoid "unexpected dc message type" warnings in calls-common.
+            const originalDCMessage = peer.dc.onmessage;
+            const decoder = new Decoder();
+            peer.dc.onmessage = (ev: MessageEvent) => {
+                try {
+                    const {mt, payload} = decodeDCMsg(decoder, new Uint8Array(ev.data));
+                    const type = mt as number;
+                    if (type === 14) {
+                        this.emit('inputEvent', JSON.parse(payload as string));
+                        return;
+                    } else if (type === 12 || type === 13) {
+                        // These are currently handled via WebSocket, but we consume them here
+                        // to silence the warning.
+                        return;
+                    }
+                } catch (err) {
+                    // Fallback to original handler if decoding fails or it's not one of our types.
+                }
+
+                if (originalDCMessage) {
+                    originalDCMessage.call(peer.dc, ev);
+                }
+            };
         });
 
         ws.on('message', async (outerMsg: any) => {
             const {data, type} = outerMsg;
-            if (type === 11) {
+            if (type === 14) {
                 this.emit('inputEvent', JSON.parse(data));
                 return;
             }
