@@ -1,0 +1,1079 @@
+{
+  "+8GJY8": {
+    "defaultMessage": "The API key for Azure Speech Services"
+  },
+  "+DMPFa": {
+    "defaultMessage": "TURN Static Auth Secret"
+  },
+  "+Y8Kh/": {
+    "defaultMessage": "Call transcriptions"
+  },
+  "+hqq/q": {
+    "defaultMessage": "(Optional) When set to true, live captions are enabled."
+  },
+  "+y3UCQ": {
+    "defaultMessage": "Job service URL"
+  },
+  "/BxyxW": {
+    "defaultMessage": "The UDP port the RTC server will listen on."
+  },
+  "/ROIGq": {
+    "defaultMessage": "(Optional) The URL to a running RTCD service instance that should host the calls. When set (non empty) all calls will be handled by the external service."
+  },
+  "/WMCDd": {
+    "defaultMessage": "Something went wrong!"
+  },
+  "/c+F8S": {
+    "defaultMessage": "Call from <b>{callerName}</b> with <b>{others}</b>"
+  },
+  "/n/Skb": {
+    "defaultMessage": "Joining call…"
+  },
+  "0Ihpmc": {
+    "defaultMessage": "Record call"
+  },
+  "0LuKMT": {
+    "defaultMessage": "You're already in a call"
+  },
+  "0cE6s2": {
+    "defaultMessage": "Calls can't be initiated in an insecure context"
+  },
+  "0fFRUQ": {
+    "defaultMessage": "Start presenting"
+  },
+  "0fj4bj": {
+    "defaultMessage": "Allow screen sharing"
+  },
+  "10k1Mv": {
+    "defaultMessage": "The URL pointing to a running calls-offloader job service instance."
+  },
+  "1QvHUW": {
+    "defaultMessage": "Your recording will end in {count, plural, =1 {# minute} other {# minutes}}."
+  },
+  "1ZXBVF": {
+    "defaultMessage": "By selecting <b>Try free for 30 days</b>, I agree to the <linkEvaluation>Workspace Software Evaluation Agreement</linkEvaluation>, <linkPrivacy>Privacy Policy</linkPrivacy>, and receiving product emails."
+  },
+  "1s4g9H": {
+    "defaultMessage": "When set to true, clients will use WebRTC data channels for signaling of new media tracks. This can result in a more efficient and less race-prone process, especially in case of frequent WebSocket disconnections."
+  },
+  "1vzfaf": {
+    "defaultMessage": "End call for everyone"
+  },
+  "22Lra1": {
+    "defaultMessage": "Here's the call recording"
+  },
+  "23eRB2": {
+    "defaultMessage": "Call connection failed"
+  },
+  "2NqRta": {
+    "defaultMessage": "You left the channel"
+  },
+  "2T4EGD": {
+    "defaultMessage": "You're already in a call with {participant}."
+  },
+  "2n0xcg": {
+    "defaultMessage": "Enable calls"
+  },
+  "3WdZyZ": {
+    "defaultMessage": "You have been removed from the channel, and have been disconnected from the call."
+  },
+  "3p0fzx": {
+    "defaultMessage": "Daily Call Recordings"
+  },
+  "3wS4fn": {
+    "defaultMessage": "Upgrade to use calls in Channels"
+  },
+  "477I0g": {
+    "defaultMessage": "Low"
+  },
+  "47FYwb": {
+    "defaultMessage": "Cancel"
+  },
+  "4Jcytp": {
+    "defaultMessage": "Notify admin"
+  },
+  "4WZGCB": {
+    "defaultMessage": "When set to true, call participants can share their screen."
+  },
+  "4lj46b": {
+    "defaultMessage": "You can find the recording and transcription in this call's chat thread once it has finished processing."
+  },
+  "4nSrEc": {
+    "defaultMessage": "When set to true, ringing functionality is enabled: participants in direct or group messages will receive a desktop alert and a ringing notification when a call is started. Changing this setting requires a plugin restart."
+  },
+  "5ClUrE": {
+    "defaultMessage": "Something went wrong with the recording"
+  },
+  "5oE+Ts": {
+    "defaultMessage": "When set to true, the RTC service will work in dual-stack mode, listening for IPv6 connections and generating candidates in addition to IPv4 ones."
+  },
+  "5yUTF3": {
+    "defaultMessage": "The call recording and transcription files will be processed and posted in the call thread. Are you sure you want to stop the recording and transcription?"
+  },
+  "6AKf56": {
+    "defaultMessage": "Join call"
+  },
+  "6HPRG7": {
+    "defaultMessage": "ICE Host Port Override"
+  },
+  "6R+29J": {
+    "defaultMessage": "The language passed to the live captions transcriber. Should be a 2-letter ISO 639 Set 1 language code, e.g. 'en'. If blank, will be set to English 'en' as default."
+  },
+  "6aGJYU": {
+    "defaultMessage": "There's no ongoing call in the channel."
+  },
+  "6cjovA": {
+    "defaultMessage": "You can find the recording in this call's chat thread once it has finished processing."
+  },
+  "6y1672": {
+    "defaultMessage": "Monthly Calls"
+  },
+  "6ytNw2": {
+    "defaultMessage": "Not applicable when the <link>RTCD service URL</link> field is in use."
+  },
+  "7C5R1Z": {
+    "defaultMessage": "Real-time communication daemon is a service built to offload calls onto your own WebRTC services and efficiently support scalable and secure deployments. <featureLink>Learn more about this feature</featureLink>."
+  },
+  "7UZW5X": {
+    "defaultMessage": "حاليًا، {count} هو الحد الأقصى لعدد المشاركين في المكالمات السحابية."
+  },
+  "7YIAur": {
+    "defaultMessage": "Calls can be recorded for up to {count, plural, =1 {# minute} other {# minutes}}."
+  },
+  "7YLq3n": {
+    "defaultMessage": "a few seconds"
+  },
+  "7cVXct": {
+    "defaultMessage": "Show participants"
+  },
+  "7gVR9m": {
+    "defaultMessage": "An internal error occurred and prevented you from joining the call. Please try again."
+  },
+  "83mzYJ": {
+    "defaultMessage": "Call quality may be degraded due to unstable network conditions."
+  },
+  "85btzx": {
+    "defaultMessage": "(Optional) The IP address to be used as the host ICE candidate. If empty, it defaults to resolving via STUN."
+  },
+  "8JGf6X": {
+    "defaultMessage": "Show chat thread"
+  },
+  "8bMzaP": {
+    "defaultMessage": "Calls are a quick, audio-first, way to interact with your team. Upgrade to workspace Professional to use calls in channels and group messages."
+  },
+  "8isok9": {
+    "defaultMessage": "Mute participant"
+  },
+  "94UiTg": {
+    "defaultMessage": "Recording is in progress"
+  },
+  "99M2n9": {
+    "defaultMessage": "(Optional) When set to true, post-call transcriptions are enabled."
+  },
+  "9I3kDh": {
+    "defaultMessage": "Recording and transcription has stopped. Processing…"
+  },
+  "9ewpwJ": {
+    "defaultMessage": "Contact your system admin for more information about call capacity."
+  },
+  "9tBhzB": {
+    "defaultMessage": "Upgrade now"
+  },
+  "AD/PkD": {
+    "defaultMessage": "No recording is in progress."
+  },
+  "APILK5": {
+    "defaultMessage": "Live captions: Number of threads per transcriber"
+  },
+  "APWZiG": {
+    "defaultMessage": "Consider letting everyone know that this meeting is being recorded."
+  },
+  "AYHboe": {
+    "defaultMessage": "This is a paid feature, available with a free 30-day trial"
+  },
+  "Ap6DG5": {
+    "defaultMessage": "{count, plural, =1 {# recording} other {# recordings}}"
+  },
+  "AxMhQr": {
+    "defaultMessage": "High"
+  },
+  "Az0GQD": {
+    "defaultMessage": "<b>{participant}</b> has joined the call."
+  },
+  "BI2zH5": {
+    "defaultMessage": "Remove from call"
+  },
+  "BzWJNo": {
+    "defaultMessage": "You don't have permission to stop the recording. Please ask the call host to stop the recording."
+  },
+  "Cbb/An": {
+    "defaultMessage": "Lower hand"
+  },
+  "DKskNw": {
+    "defaultMessage": "You don't have permission to end the call. Please ask the call owner to end call."
+  },
+  "DLokwF": {
+    "defaultMessage": "You need to be using an HTTPS connection to make calls. Visit the documentation for more information."
+  },
+  "Dnf29C": {
+    "defaultMessage": "Monthly Call Recordings"
+  },
+  "DswqlB": {
+    "defaultMessage": "Show live captions"
+  },
+  "DuV+hE": {
+    "defaultMessage": "No screen sharing permissions"
+  },
+  "EDhVeS": {
+    "defaultMessage": "Audio output"
+  },
+  "EGuJGy": {
+    "defaultMessage": "بدء المكالمة"
+  },
+  "EaucLA": {
+    "defaultMessage": "View plans"
+  },
+  "EiKwlo": {
+    "defaultMessage": "RTC Server Port (TCP)"
+  },
+  "F3JxN5": {
+    "defaultMessage": "Enable call ringing"
+  },
+  "FVHddU": {
+    "defaultMessage": "We couldn't join the call because the connection timed out. Please check your network connection and try again."
+  },
+  "FVtE+o": {
+    "defaultMessage": "Enable live captions (Beta)"
+  },
+  "FZ+LUh": {
+    "defaultMessage": "Open emoji picker"
+  },
+  "FoNl1e": {
+    "defaultMessage": "Check the <troubleShootingLink>troubleshooting section</troubleShootingLink> if the problem persists."
+  },
+  "FpgQ3M": {
+    "defaultMessage": "Avg Call Duration (minutes)"
+  },
+  "FuLQQr": {
+    "defaultMessage": "Also share system audio"
+  },
+  "G9EwJD": {
+    "defaultMessage": "Call recording quality"
+  },
+  "GJP27v": {
+    "defaultMessage": "Call from <b>{callerName}</b>"
+  },
+  "GSZYxc": {
+    "defaultMessage": "Call recordings"
+  },
+  "Ga0yXg": {
+    "defaultMessage": "Call started"
+  },
+  "GcvLBC": {
+    "defaultMessage": "Understood"
+  },
+  "GeElPx": {
+    "defaultMessage": "Started {callStartedAt}"
+  },
+  "GjrlL9": {
+    "defaultMessage": "General settings"
+  },
+  "GoLgxG": {
+    "defaultMessage": "Add reaction"
+  },
+  "H6F81N": {
+    "defaultMessage": "The audio output device has changed to <i>{deviceLabel}</i>."
+  },
+  "HB6L88": {
+    "defaultMessage": "Configure your screen sharing settings."
+  },
+  "HBa/E5": {
+    "defaultMessage": "Make host"
+  },
+  "HUMEKL": {
+    "defaultMessage": "When set to true it enables using the AV1 codec to encode screen sharing tracks. This can result in improved screen sharing quality for clients that support it. Note: this setting won't apply when EnableSimulcast is true."
+  },
+  "HV60d3": {
+    "defaultMessage": "Daily Calls"
+  },
+  "He5vFp": {
+    "defaultMessage": "Close icon"
+  },
+  "Hl1L9U": {
+    "defaultMessage": "A call is already ongoing in the channel."
+  },
+  "HmqEaS": {
+    "defaultMessage": "{list} {count, plural, =1 {is} other {are}} on the call"
+  },
+  "HpoDwk": {
+    "defaultMessage": "Group"
+  },
+  "Hr+LCl": {
+    "defaultMessage": "Server Side TURN"
+  },
+  "Hzws31": {
+    "defaultMessage": "End call"
+  },
+  "I8Phi9": {
+    "defaultMessage": "Recording and transcription is in progress"
+  },
+  "IGE94D": {
+    "defaultMessage": "RTC Server Address (UDP)"
+  },
+  "IVDcrj": {
+    "defaultMessage": "هذه ميزة مدفوعة، متاحة مع تجربة مجانية لمدة 30 يومًا"
+  },
+  "Igo1xs": {
+    "defaultMessage": "It looks like something went wrong with your Enterprise trial request. You can try again later or <supportLink>contact Support</supportLink> if the error persists."
+  },
+  "ImGHky": {
+    "defaultMessage": "Calls are not available in archived channels."
+  },
+  "IzCVhG": {
+    "defaultMessage": "More options"
+  },
+  "JN0IJ4": {
+    "defaultMessage": "When test mode is enabled, only system admins are able to start calls in channels. This allows testing to confirm calls are working as expected."
+  },
+  "JPAXWx": {
+    "defaultMessage": "{users} raised a hand"
+  },
+  "JVbliD": {
+    "defaultMessage": "Screen sharing settings"
+  },
+  "Ja3J5X": {
+    "defaultMessage": "Click to stop recording"
+  },
+  "Jji6GY": {
+    "defaultMessage": "Displays spoken words as text captions during a call. To enable live captions, recordings and transcriptions must be enabled first"
+  },
+  "JkRNKw": {
+    "defaultMessage": "<b>{name}</b> is now the host"
+  },
+  "K35XPQ": {
+    "defaultMessage": "Call transcriber API"
+  },
+  "KDjh1K": {
+    "defaultMessage": "RTC Server"
+  },
+  "KEzTF7": {
+    "defaultMessage": "<b>You're muted.</b> Select {muteIcon} to unmute."
+  },
+  "KKkUks": {
+    "defaultMessage": "True"
+  },
+  "KZiF9C": {
+    "defaultMessage": "Try plugging in an audio input device."
+  },
+  "KaiRbV": {
+    "defaultMessage": "Calls are a quick, audio-first, way to interact with your team. Get the full calls experience when you start a free, 30-day trial."
+  },
+  "KnW3l8": {
+    "defaultMessage": "Hide live captions"
+  },
+  "KpV+N+": {
+    "defaultMessage": "Yes, remove"
+  },
+  "Ld/051": {
+    "defaultMessage": "Grant remote control"
+  },
+  "M53rWX": {
+    "defaultMessage": "RTC Server Port (UDP)"
+  },
+  "M6lXfS": {
+    "defaultMessage": "Set up RTCD services"
+  },
+  "M6nX1N": {
+    "defaultMessage": "Show chat"
+  },
+  "MQr9sh": {
+    "defaultMessage": "Unable to end the call"
+  },
+  "MspN+p": {
+    "defaultMessage": "Unable to start recording"
+  },
+  "MtkpLO": {
+    "defaultMessage": "You are now the host"
+  },
+  "MvoyUx": {
+    "defaultMessage": "Calls are only available in DM channels."
+  },
+  "N+xxAg": {
+    "defaultMessage": "Microphone input"
+  },
+  "N2IrpM": {
+    "defaultMessage": "Confirm"
+  },
+  "NIGw0f": {
+    "defaultMessage": "The audio and video quality of call recordings. Note: this setting can affect the overall performance of the job service and the number of concurrent recording jobs that can be run."
+  },
+  "NMJFh2": {
+    "defaultMessage": "Workspace Cloud Professional feature"
+  },
+  "O6EeNO": {
+    "defaultMessage": "Allow call hosts to record meeting video and audio in the cloud. Recording include the entire call window view along with participants' audio track and any shared screen video. <featureLink>Learn more about this feature</featureLink>."
+  },
+  "O9VT3o": {
+    "defaultMessage": "(Optional) The secret key used to generate TURN short-lived authentication credentials."
+  },
+  "OKhRC6": {
+    "defaultMessage": "Share"
+  },
+  "Ogjhjk": {
+    "defaultMessage": "The speech-to-text API to use for post-call transcriptions."
+  },
+  "Op9vS3": {
+    "defaultMessage": "The maximum duration (in minutes) for call recordings. Value must be in the range [15, 180]."
+  },
+  "OvzONl": {
+    "defaultMessage": "Off"
+  },
+  "Oy7urn": {
+    "defaultMessage": "Host controls"
+  },
+  "Ozk1me": {
+    "defaultMessage": "Get access to call recordings, transcriptions, and live captions"
+  },
+  "P6PLpi": {
+    "defaultMessage": "Join"
+  },
+  "PX0KzA": {
+    "defaultMessage": "The call will end and all its participants will be disconnected. Are you sure you want to end the call?"
+  },
+  "PfcsWl": {
+    "defaultMessage": "Enable AV1 codec for screen sharing (Experimental)"
+  },
+  "PjoOvw": {
+    "defaultMessage": "You're sharing your screen"
+  },
+  "PzV1UF": {
+    "defaultMessage": "(Optional) A port number to be used as an override for host candidates in place of the one used to listen on. Note: this port will apply to both UDP and TCP host candidates."
+  },
+  "Q0W0k5": {
+    "defaultMessage": "Consider letting everyone know that this meeting is being recorded and transcribed."
+  },
+  "QJwBtw": {
+    "defaultMessage": "The API region for Azure Speech Services"
+  },
+  "QStrKh": {
+    "defaultMessage": "Allows calls to be transcribed to text files. To enable call transcriptions, recordings must be enabled first"
+  },
+  "QtFGiO": {
+    "defaultMessage": "Host"
+  },
+  "RBzfy/": {
+    "defaultMessage": "Max call participants"
+  },
+  "RTgSVH": {
+    "defaultMessage": "Audio devices"
+  },
+  "Rdll7R": {
+    "defaultMessage": "قم بإعداد أجهزة الصوت التي سيتم استخدامها لمكالمات Workspace"
+  },
+  "Refhfu": {
+    "defaultMessage": "Create meeting summary"
+  },
+  "Ru6jT+": {
+    "defaultMessage": "Please try to record again. You can also contact your system admin for troubleshooting help."
+  },
+  "S2W9y3": {
+    "defaultMessage": "You're recording"
+  },
+  "Sh/5aI": {
+    "defaultMessage": "Settings menu"
+  },
+  "SmSeXX": {
+    "defaultMessage": "Do you want to leave and join a call with {users}?"
+  },
+  "SrNCsC": {
+    "defaultMessage": "The audio input device has changed to <i>{deviceLabel}</i>."
+  },
+  "Ssxh83": {
+    "defaultMessage": "Unable to find a valid audio input device. Try plugging in an audio input device."
+  },
+  "TAIiAz": {
+    "defaultMessage": "Click to stop"
+  },
+  "TDaF6J": {
+    "defaultMessage": "Dismiss"
+  },
+  "TdTXXf": {
+    "defaultMessage": "Learn more"
+  },
+  "Tg9Lia": {
+    "defaultMessage": "Calls is not currently enabled"
+  },
+  "UF6kPm": {
+    "defaultMessage": "Direct"
+  },
+  "UcFeI7": {
+    "defaultMessage": "Show participants list"
+  },
+  "Uv823M": {
+    "defaultMessage": "Call transcriber threads"
+  },
+  "Uys4Mj": {
+    "defaultMessage": "Close reactions"
+  },
+  "VMXPVw": {
+    "defaultMessage": "The local IP address used by the RTC server to listen on for UDP connections."
+  },
+  "VXdfVy": {
+    "defaultMessage": "The local IP address used by the RTC server to listen on for TCP connections."
+  },
+  "VXuUsJ": {
+    "defaultMessage": "Share sound with screen"
+  },
+  "Vc8/fR": {
+    "defaultMessage": "Total Active Sessions"
+  },
+  "W0dDFs": {
+    "defaultMessage": "قم بالترقية إلى Cloud Professional أو Cloud Enterprise لتمكين المكالمات الجماعية لأكثر من {count, plural, =1 {مشارك واحد} other {# مشاركين}}."
+  },
+  "W9355R": {
+    "defaultMessage": "Unmute"
+  },
+  "WFaX8C": {
+    "defaultMessage": "Welcome to your Workspace Enterprise trial! It expires on {trialExpirationDate}. You now have access to <recordingsDocsLink>Call recordings</recordingsDocsLink>,<rtcdDocsLink>RTCD services</rtcdDocsLink>, <guestAccountsLink>guest accounts</guestAccountsLink>, <autoComplianceReportsLink>automated compliance reports</autoComplianceReportsLink>, and <mobileSecureNotificationsLink>mobile secure-ID push notifications</mobileSecureNotificationsLink>, among many other features. View all features in our <documentationLink>documentation</documentationLink>."
+  },
+  "WUeQHK": {
+    "defaultMessage": "The maximum number of participants that can join a call. If left empty, or set to 0, an unlimited number of participants can join."
+  },
+  "WhiGBX": {
+    "defaultMessage": "Stop sharing"
+  },
+  "X2AtRx": {
+    "defaultMessage": "Speaker output"
+  },
+  "X9g3QZ": {
+    "defaultMessage": "There's a limit of {count, plural, =1 {# participant} other {# participants}} per call."
+  },
+  "XDWEZM": {
+    "defaultMessage": "Someone"
+  },
+  "XPQ/IN": {
+    "defaultMessage": "The speech-to-text model size to use for post-call transcriptions. Heavier models will produce more accurate results at the expense of processing time and resources usage."
+  },
+  "Xq3WJ4": {
+    "defaultMessage": "No audio input permissions"
+  },
+  "Z/nRgQ": {
+    "defaultMessage": "Default - {deviceLabel}"
+  },
+  "ZTqTKs": {
+    "defaultMessage": "Total Calls"
+  },
+  "Zh+5A6": {
+    "defaultMessage": "On"
+  },
+  "ZhtEeD": {
+    "defaultMessage": "Unable to start call"
+  },
+  "ZqqZFV": {
+    "defaultMessage": "Settings for participants, screen sharing, ringing, and more"
+  },
+  "ZvZBwP": {
+    "defaultMessage": "Leave and join new call"
+  },
+  "Zx9T5i": {
+    "defaultMessage": "Your trial has started!{br}Explore the benefits of Enterprise"
+  },
+  "a+2U7T": {
+    "defaultMessage": "This setting has been set through an environment variable. It cannot be changed through the System Console."
+  },
+  "aC/wxa": {
+    "defaultMessage": "a few seconds ago"
+  },
+  "aEmq2L": {
+    "defaultMessage": "اتصل بمسؤول النظام الخاص بك لمزيد من المعلومات حول سعة المكالمة."
+  },
+  "aGUZiT": {
+    "defaultMessage": "المكالمات غير متاحة في المحادثة المباشرة مع مستخدم معطل."
+  },
+  "aaYQI7": {
+    "defaultMessage": "Enable IPv6 support (Experimental)"
+  },
+  "aeJJMp": {
+    "defaultMessage": "Calls by Channel Type"
+  },
+  "app.call.ended_at_message": {
+    "defaultMessage": "Call ended at {endTime}"
+  },
+  "app.call.ignored_message": {
+    "defaultMessage": "Call ignored"
+  },
+  "app.call.join_call": {
+    "defaultMessage": "Join call"
+  },
+  "app.call.limit_reached": {
+    "defaultMessage": "Sorry, participants per call are currently limited to {count}."
+  },
+  "app.call.limit_reached.cloud_paid": {
+    "defaultMessage": "This is because calls is in the beta phase. We’re working to remove this limit soon."
+  },
+  "app.call.no_answer_message": {
+    "defaultMessage": "Missed call"
+  },
+  "app.call.started_at_message": {
+    "defaultMessage": "Call started at {startTime}"
+  },
+  "app.call.started_by_user": {
+    "defaultMessage": "by {user}"
+  },
+  "axn5zT": {
+    "defaultMessage": "Here's the call recording. Transcription is processing and will be posted when ready."
+  },
+  "b2Wfwm": {
+    "defaultMessage": "Open in new window"
+  },
+  "bBIj2W": {
+    "defaultMessage": "Recording has stopped. Processing…"
+  },
+  "bRM2eb": {
+    "defaultMessage": "Something went wrong with calls"
+  },
+  "bvd1gK": {
+    "defaultMessage": "Try channel calls with a free trial"
+  },
+  "byETlq": {
+    "defaultMessage": "Recording and transcription has started"
+  },
+  "cF+8Cn": {
+    "defaultMessage": "Do you want to leave and join a call in {channel}?"
+  },
+  "cIAiR2": {
+    "defaultMessage": "Hide participants"
+  },
+  "cLA9Ho": {
+    "defaultMessage": "Try free for 30 days"
+  },
+  "cT92bQ": {
+    "defaultMessage": "Live captions language"
+  },
+  "cW6887": {
+    "defaultMessage": "Microphone"
+  },
+  "calls.default_outgoing_ringback_sound.description": {
+    "defaultMessage": "The default sound to play while placing a call when the user has not selected a custom ringback sound."
+  },
+  "calls.default_outgoing_ringback_sound.title": {
+    "defaultMessage": "Default outgoing ringback sound"
+  },
+  "calls.plan.enterprise": {
+    "defaultMessage": "Enterprise"
+  },
+  "calls.ringback_sound.builtin.calm": {
+    "defaultMessage": "Calm"
+  },
+  "calls.ringback_sound.builtin.cheerful": {
+    "defaultMessage": "Cheerful"
+  },
+  "calls.ringback_sound.builtin.dynamic": {
+    "defaultMessage": "Dynamic"
+  },
+  "calls.ringback_sound.builtin.urgent": {
+    "defaultMessage": "Urgent"
+  },
+  "calls.ringback_sound.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "calls.ringback_sound.default": {
+    "defaultMessage": "Default (ring.mp3)"
+  },
+  "calls.ringback_sound.default_with_value": {
+    "defaultMessage": "Default ({defaultSound})"
+  },
+  "calls.ringback_sound.description": {
+    "defaultMessage": "Choose the sound used while placing a call."
+  },
+  "calls.ringback_sound.edit": {
+    "defaultMessage": "Edit"
+  },
+  "calls.ringback_sound.preview": {
+    "defaultMessage": "Preview"
+  },
+  "calls.ringback_sound.save": {
+    "defaultMessage": "Save"
+  },
+  "calls.ringback_sound.title": {
+    "defaultMessage": "Ringing sound"
+  },
+  "ccAjUZ": {
+    "defaultMessage": "Call from {callerName}"
+  },
+  "cn4U3Z": {
+    "defaultMessage": "No audio input devices"
+  },
+  "cyR7Kh": {
+    "defaultMessage": "Back"
+  },
+  "cyRErF": {
+    "defaultMessage": "The number of separate live-captions transcribers for each call. Each transcribes one audio stream at a time. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
+  },
+  "dCb7CD": {
+    "defaultMessage": "Start call"
+  },
+  "dYWbfI": {
+    "defaultMessage": "RTC Server Address (TCP)"
+  },
+  "duV28m": {
+    "defaultMessage": "Live captions: Number of transcribers used per call"
+  },
+  "dxd4Xp": {
+    "defaultMessage": "Revoke remote control"
+  },
+  "e0O55n": {
+    "defaultMessage": "Live captions: Model size"
+  },
+  "e4fQlU": {
+    "defaultMessage": "There was an error with the connection to the call. Please check your network connection and try again."
+  },
+  "eC6XJY": {
+    "defaultMessage": "Stop screen share"
+  },
+  "eGdbaZ": {
+    "defaultMessage": "The host has started recording and transcription for this meeting. By staying in the meeting, you give consent to being recorded and transcribed."
+  },
+  "ePQ5jF": {
+    "defaultMessage": "When enabled, audio from your browser tab or system (depending on what's shared) will be included with the screen content."
+  },
+  "ePVyxv": {
+    "defaultMessage": "Test mode"
+  },
+  "elmIJt": {
+    "defaultMessage": "Avg Call Participants"
+  },
+  "esxtQH": {
+    "defaultMessage": "Call from {callerName} with {others}"
+  },
+  "euPd26": {
+    "defaultMessage": "Do you want to leave and join a call with {user}?"
+  },
+  "evecl7": {
+    "defaultMessage": "Azure API Key"
+  },
+  "fBafHF": {
+    "defaultMessage": "ICE and TURN"
+  },
+  "fLgmQZ": {
+    "defaultMessage": "Unable to stop recording"
+  },
+  "fnihsY": {
+    "defaultMessage": "Leave"
+  },
+  "fuOxwe": {
+    "defaultMessage": "Maximum call recording duration"
+  },
+  "gRWCuk": {
+    "defaultMessage": "The host has started recording this meeting. By staying in the meeting, you give consent to being recorded."
+  },
+  "gZlFBP": {
+    "defaultMessage": "Okay"
+  },
+  "gm+b09": {
+    "defaultMessage": "الانضمام إلى المكالمة"
+  },
+  "h/atWw": {
+    "defaultMessage": "The number of threads used by the post-call transcriber. This must be in the range [1, numCPUs]."
+  },
+  "hMhzKQ": {
+    "defaultMessage": "Set up call recordings"
+  },
+  "hYbTkY": {
+    "defaultMessage": "هذه المكالمة وصلت إلى الحد الأقصى من {count, plural, =1 {مشارك واحد} other {# مشاركين}}."
+  },
+  "hgr938": {
+    "defaultMessage": "{callerName} is inviting you to a call"
+  },
+  "i9WVfc": {
+    "defaultMessage": "Call transcriber model size"
+  },
+  "iPB+yD": {
+    "defaultMessage": "Pop out"
+  },
+  "iWGktR": {
+    "defaultMessage": "Disable calls"
+  },
+  "iaLwNK": {
+    "defaultMessage": "The TCP port the RTC server will listen on."
+  },
+  "iwiMzv": {
+    "defaultMessage": "Select Notify admin to send an automatic request to your system admins to start the trial."
+  },
+  "jJx0DN": {
+    "defaultMessage": "<b>{callerName}</b> is inviting you to a call"
+  },
+  "jaeBHy": {
+    "defaultMessage": "Welcome to your Workspace Enterprise trial! It expires on {trialExpirationDate}. You now have access to <rtcdDocsLink>RTCD services</rtcdDocsLink>, <recordingsDocsLink>call recordings</recordingsDocsLink>, <guestAccountsLink>guest accounts</guestAccountsLink>, <autoComplianceReportsLink>automated compliance reports</autoComplianceReportsLink>, and <mobileSecureNotificationsLink>mobile secure-ID push notifications</mobileSecureNotificationsLink>, among many other features. View all features in our <documentationLink>documentation</documentationLink>."
+  },
+  "jhSOa2": {
+    "defaultMessage": "Unable to start or join call"
+  },
+  "jlh3Mq": {
+    "defaultMessage": "Azure API Region"
+  },
+  "jvo0vs": {
+    "defaultMessage": "Save"
+  },
+  "jxJ92u": {
+    "defaultMessage": "(Optional) A list of ICE servers (STUN/TURN) configurations to use. This field should contain a valid JSON array."
+  },
+  "k+s53l": {
+    "defaultMessage": "Hide chat"
+  },
+  "k2FwJB": {
+    "defaultMessage": "Displays spoken words as text captions during a call. Recordings and transcriptions must be enabled"
+  },
+  "k6Gv5L": {
+    "defaultMessage": "المكالمات غير متاحة في القنوات المؤرشفة."
+  },
+  "kJ5W29": {
+    "defaultMessage": "You"
+  },
+  "khySO0": {
+    "defaultMessage": "TURN Credentials Expiration (minutes)"
+  },
+  "kj3s4R": {
+    "defaultMessage": "The host removed you from the call."
+  },
+  "kr3shS": {
+    "defaultMessage": "Unable to join call"
+  },
+  "ks1Gvx": {
+    "defaultMessage": "Or hold space bar"
+  },
+  "l/BSzX": {
+    "defaultMessage": "When set to true, simulcast for screen sharing is enabled. This can help to improve screen sharing quality."
+  },
+  "lE59Z5": {
+    "defaultMessage": "Use data channels for signaling (Experimental)"
+  },
+  "lKv8ex": {
+    "defaultMessage": "Default"
+  },
+  "lRSSL4": {
+    "defaultMessage": "You're already in a call in {channel}."
+  },
+  "lWsBmL": {
+    "defaultMessage": "Chat unavailable: different team selected. Click here to switch back to {channelName} in {teamName}."
+  },
+  "lhEBhE": {
+    "defaultMessage": "Looks like something went wrong with calls. You can restart the app and try again."
+  },
+  "lmIKQg": {
+    "defaultMessage": "(you)"
+  },
+  "lr1SOF": {
+    "defaultMessage": "<b>{callerName}</b> is inviting you to a call with <b>{others}</b>"
+  },
+  "mMHaeQ": {
+    "defaultMessage": "Mute others"
+  },
+  "mRqfP4": {
+    "defaultMessage": "Choose what to share"
+  },
+  "mzT8sG": {
+    "defaultMessage": "Enable simulcast for screen sharing (Experimental)"
+  },
+  "n1Ubod": {
+    "defaultMessage": "Enable call recordings"
+  },
+  "nOZzE1": {
+    "defaultMessage": "You're viewing {presenter}'s screen"
+  },
+  "neS8Zu": {
+    "defaultMessage": "You're viewing {presenterName}'s screen"
+  },
+  "o1mCbV": {
+    "defaultMessage": "Stop presenting"
+  },
+  "oCnRcJ": {
+    "defaultMessage": "Raise hand"
+  },
+  "oHaYeq": {
+    "defaultMessage": "Starting call…"
+  },
+  "oHffQz": {
+    "defaultMessage": "There was an error with the connection to the call. Try to <joinLink>re-join</joinLink> the call."
+  },
+  "oIy77K": {
+    "defaultMessage": "Recordings include the entire call window view along with participants’ audio track and any shared screen video. Recordings are stored in Workspace"
+  },
+  "oNH4AW": {
+    "defaultMessage": "Close window"
+  },
+  "ogJ7x+": {
+    "defaultMessage": "Upgrade to Cloud Professional or Cloud Enterprise to enable group calls with more than {count, plural, =1 {# participant} other {# participants}}."
+  },
+  "omP/e4": {
+    "defaultMessage": "Use your own WebRTC service"
+  },
+  "ovJ26C": {
+    "defaultMessage": "Medium"
+  },
+  "p/C72L": {
+    "defaultMessage": "Total Active Calls"
+  },
+  "p0+4B8": {
+    "defaultMessage": "<b>You're unmuted.</b> Select {muteIcon} to mute."
+  },
+  "p7D2e3": {
+    "defaultMessage": "In this channel"
+  },
+  "paBpxN": {
+    "defaultMessage": "Ignore"
+  },
+  "pkW7OA": {
+    "defaultMessage": "The number of threads per live-captions transcriber. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
+  },
+  "q/D7UA": {
+    "defaultMessage": "Configure a dedicated service used to offload calls and efficiently support scalable and secure deployments"
+  },
+  "qR+5t1": {
+    "defaultMessage": "is talking…"
+  },
+  "rDKqMG": {
+    "defaultMessage": "You were removed from the call"
+  },
+  "rHkdRZ": {
+    "defaultMessage": "Screen recording access is not currently allowed or was canceled."
+  },
+  "rjM2Q9": {
+    "defaultMessage": "Unable to leave the call"
+  },
+  "rqUl6u": {
+    "defaultMessage": "جارٍ بدء المكالمة..."
+  },
+  "rxqs5U": {
+    "defaultMessage": "False"
+  },
+  "s/N5tn": {
+    "defaultMessage": "You're not connected to a call in the current channel."
+  },
+  "s822C5": {
+    "defaultMessage": "The speech-to-text model size to use for live captions. Heavier models will produce more accurate results at the expense of processing time and resources usage."
+  },
+  "sCBCDq": {
+    "defaultMessage": "Stop recording"
+  },
+  "sCoM27": {
+    "defaultMessage": "Stop recording and transcription"
+  },
+  "siSK92": {
+    "defaultMessage": "(Optional) The number of minutes that the generated TURN credentials will be valid for."
+  },
+  "sl/RA0": {
+    "defaultMessage": "Allow screen recording access to workspace."
+  },
+  "swGCLs": {
+    "defaultMessage": "RTCD service URL"
+  },
+  "syezrN": {
+    "defaultMessage": "Enable call transcriptions (Beta)"
+  },
+  "tBbQCQ": {
+    "defaultMessage": "<b>{name}</b> was removed from the call"
+  },
+  "tFFfej": {
+    "defaultMessage": "Network configuration for the integrated RTC server"
+  },
+  "tWDocx": {
+    "defaultMessage": "Remove participant"
+  },
+  "tcxpLX": {
+    "defaultMessage": "No one"
+  },
+  "tjqBPU": {
+    "defaultMessage": "You were removed from the channel"
+  },
+  "tkrJyM": {
+    "defaultMessage": "A recording is already in progress."
+  },
+  "uDqZfV": {
+    "defaultMessage": "(Optional) When set to true, call recordings are enabled."
+  },
+  "uP11RR": {
+    "defaultMessage": "Live captions"
+  },
+  "uhu5aG": {
+    "defaultMessage": "Public"
+  },
+  "ul0LrL": {
+    "defaultMessage": "{num, plural, one {# other} other {# others}}"
+  },
+  "v+ptbV": {
+    "defaultMessage": "ICE Servers Configurations"
+  },
+  "v5GPHS": {
+    "defaultMessage": "Hide participants list"
+  },
+  "v5VizZ": {
+    "defaultMessage": "RTCD Service"
+  },
+  "vQOne2": {
+    "defaultMessage": "Allows calls to be transcribed to text files. Recordings must be enabled"
+  },
+  "veptjG": {
+    "defaultMessage": "You're already connected to a call in the current channel."
+  },
+  "vev9kZ": {
+    "defaultMessage": "You're already in a call with {participants}."
+  },
+  "viXE32": {
+    "defaultMessage": "Private"
+  },
+  "vp+5Dc": {
+    "defaultMessage": "<b>{host}</b> lowered your hand"
+  },
+  "vxEY29": {
+    "defaultMessage": "Leave call"
+  },
+  "wEGS+o": {
+    "defaultMessage": "You have left the channel, and have been disconnected from the call."
+  },
+  "wEQDC6": {
+    "defaultMessage": "Edit"
+  },
+  "wL1sJv": {
+    "defaultMessage": "Close emoji picker"
+  },
+  "x6EHjL": {
+    "defaultMessage": "You don't have permission to start a recording. Please ask the call host to start a recording."
+  },
+  "x82IOl": {
+    "defaultMessage": "Mute"
+  },
+  "xXjqzO": {
+    "defaultMessage": "Additional settings"
+  },
+  "xYhChH": {
+    "defaultMessage": "Are you sure you want to remove <b>{userName}</b> from the call?"
+  },
+  "xhPELz": {
+    "defaultMessage": "(Optional) When enabled, it will pass and use the configured TURN candidates to server initiated connections."
+  },
+  "y29kXu": {
+    "defaultMessage": "جارٍ الانضمام إلى المكالمة..."
+  },
+  "yO68rk": {
+    "defaultMessage": "Calls are currently running in test mode and only system admins can start them. Reach out directly to your system admin for assistance"
+  },
+  "yfYHc5": {
+    "defaultMessage": "ICE Host Override"
+  },
+  "yjQNKt": {
+    "defaultMessage": "Calls are disabled in this channel."
+  },
+  "yx0b7N": {
+    "defaultMessage": "{count, plural, =1 {# transcription} other {# transcriptions}}"
+  },
+  "zHHQ+e": {
+    "defaultMessage": "Allow microphone access to workspace."
+  },
+  "zUH89x": {
+    "defaultMessage": "The call recording will be processed and posted in the call thread. Are you sure you want to stop the recording?"
+  },
+  "zx0myy": {
+    "defaultMessage": "Participants"
+  }
+}

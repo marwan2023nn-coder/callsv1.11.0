@@ -4,6 +4,8 @@
 import React, {ComponentProps} from 'react';
 import {defineMessage, useIntl} from 'react-intl';
 import {
+    AudioInputMissingError,
+    AudioInputPermissionsError,
     insecureContextErr,
     rtcPeerCloseErr,
     rtcPeerErr,
@@ -193,6 +195,35 @@ export const CallErrorModal = (props: Props) => {
             <>{formatMessage(removedMsg)}</>
         );
         confirmMsg = formatMessage(removedDismiss);
+        break;
+    case AudioInputPermissionsError.message:
+        headerMsg = (
+            <span dir='auto'>{formatMessage({defaultMessage: 'No audio input permissions'})}</span>
+        );
+        msg = (
+            <span dir='auto'>{formatMessage({defaultMessage: 'Allow microphone access to workspace.'})}</span>
+        );
+        break;
+    case AudioInputMissingError.message:
+        headerMsg = (
+            <span dir='auto'>{formatMessage({defaultMessage: 'No audio input devices'})}</span>
+        );
+        msg = (
+            <span dir='auto'>{formatMessage({defaultMessage: 'Unable to find a valid audio input device. Try plugging in an audio input device.'})}</span>
+        );
+        break;
+    case 'websocket error':
+    case 'max disconnected time reached':
+        headerMsg = (
+            <span dir='auto'>{formatMessage({defaultMessage: 'Call connection failed'})}</span>
+        );
+        msg = (
+            <span dir='auto'>
+                {formatMessage({defaultMessage: 'There was an error with the connection to the call. Please check your network connection and try again.'})}
+                {untranslatable(' ')}
+                {troubleShootingMsg}
+            </span>
+        );
         break;
     }
 
