@@ -12,13 +12,13 @@ Calls enables voice calling and screen sharing functionality in workspace channe
 
 ## Requirements
 
-This plugin demands some network configuration changes to allow audio/video communication between clients, such as opening network ports. Please refer to the [documentation](https://docs.mattermost.com/configure/calls-deployment.html#network) for more details.
+This plugin demands some network configuration changes to allow audio/video communication between clients, such as opening network ports. Please refer to the [documentation](https://docs.workspace.com/configure/calls-deployment.html#network) for more details.
 
 ## Documentation
 
-[End-user documentation](https://docs.mattermost.com/channels/make-calls.html)
-[Calls self-hosted deployment](https://docs.mattermost.com/configure/calls-deployment.html)
-[Configuration settings](https://docs.mattermost.com/configure/plugins-configuration-settings.html#calls)
+[End-user documentation](https://docs.workspace.com/channels/make-calls.html)
+[Calls self-hosted deployment](https://docs.workspace.com/configure/calls-deployment.html)
+[Configuration settings](https://docs.workspace.com/configure/plugins-configuration-settings.html#calls)
 
 ## Development
 
