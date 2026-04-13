@@ -238,7 +238,7 @@ func (p *Plugin) handleClientMessageTypeScreen(us *session, msg clientMessage, h
 		}
 	} else {
 		rtcMsg := rtc.Message{
-			SessionID: us.originalConnID,
+			SessionID: us.rtcSessionID,
 			Type:      msgType,
 			Data:      msg.Data,
 		}
@@ -292,7 +292,7 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			}
 		} else {
 			rtcMsg := rtc.Message{
-				SessionID: us.originalConnID,
+				SessionID: us.rtcSessionID,
 				Type:      rtc.SDPMessage,
 				Data:      msg.Data,
 			}
@@ -305,7 +305,7 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 		p.LogDebug("received ice candidate", "connID", us.connID, "originalConnID", us.originalConnID, "userID", us.userID)
 		if handlerID == p.nodeID {
 			rtcMsg := rtc.Message{
-				SessionID: us.originalConnID,
+				SessionID: us.rtcSessionID,
 				Type:      rtc.ICEMessage,
 				Data:      msg.Data,
 			}
@@ -346,7 +346,7 @@ func (p *Plugin) handleClientMsg(us *session, msg clientMessage, handlerID strin
 			}
 
 			rtcMsg := rtc.Message{
-				SessionID: us.originalConnID,
+				SessionID: us.rtcSessionID,
 				Type:      msgType,
 				Data:      msg.Data,
 			}
@@ -541,7 +541,7 @@ func (p *Plugin) wsReader(us *session, authSessionID, handlerID string) {
 				p.LogInfo("invalid or expired session, closing RTC session", fields...)
 
 				// We forcefully disconnect any session that has been revoked or expired.
-				if err := p.closeRTCSession(us.userID, us.connID, us.channelID, handlerID, us.callID); err != nil {
+				if err := p.closeRTCSession(us.userID, us.rtcSessionID, us.channelID, handlerID, us.callID); err != nil {
 					p.LogError("failed to close RTC session", append(fields[:5], "err", err.Error()))
 				}
 
@@ -575,9 +575,9 @@ func (p *Plugin) wsWriter() {
 				return
 			}
 
-			us := p.getSessionByOriginalID(msg.SessionID)
+			us := p.getSessionByRTCID(msg.SessionID)
 			if us == nil {
-				p.LogError("failed to get session by originalConnID", "originalConnID", msg.SessionID)
+				p.LogWarn("failed to get session by rtcSessionID (likely old signal)", "rtcSessionID", msg.SessionID)
 				continue
 			}
 
@@ -603,7 +603,7 @@ func (p *Plugin) wsWriter() {
 
 			p.publishWebSocketEvent(wsEventSignal, map[string]interface{}{
 				"data":   string(msg.Data),
-				"connID": msg.SessionID,
+				"connID": us.originalConnID,
 				"type":   int(msg.Type),
 			}, &WebSocketBroadcast{ConnectionID: us.connID, ReliableClusterSend: true})
 		case <-p.stopCh:
@@ -637,7 +637,7 @@ func (p *Plugin) handleLeave(us *session, userID, connID, channelID, handlerID s
 		p.LogDebug("timeout waiting for reconnection", "userID", userID, "connID", connID, "channelID", channelID)
 	}
 
-	if err := p.closeRTCSession(userID, us.originalConnID, channelID, handlerID, us.callID); err != nil {
+	if err := p.closeRTCSession(userID, us.rtcSessionID, channelID, handlerID, us.callID); err != nil {
 		p.LogError(err.Error())
 	}
 
@@ -826,6 +826,12 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 
 		us := newUserSession(userID, channelID, connID, state.Call.ID, p.rtcdManager == nil && handlerID == p.nodeID)
 		p.mut.Lock()
+		if oldUs, ok := p.sessions[connID]; ok && oldUs.callID == state.Call.ID {
+			p.LogDebug("session already exists for the same call, marking as superseded", "connID", connID)
+			atomic.StoreInt32(&oldUs.removed, 1)
+			// Generate a unique RTC session ID to prevent signaling crosstalk
+			us.rtcSessionID = fmt.Sprintf("%s-%d", connID, time.Now().UnixNano())
+		}
 		p.sessions[connID] = us
 		p.mut.Unlock()
 
@@ -835,7 +841,7 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 				Data: map[string]any{
 					"callID":      us.callID,
 					"userID":      userID,
-					"sessionID":   connID,
+					"sessionID":   us.rtcSessionID,
 					"channelID":   channelID,
 					"av1Support":  joinData.AV1Support,
 					"dcSignaling": joinData.DCSignaling,
@@ -865,7 +871,7 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 					GroupID:   "default",
 					CallID:    us.callID,
 					UserID:    userID,
-					SessionID: connID,
+					SessionID: us.rtcSessionID,
 					Props: rtc.SessionProps{
 						"channelID":   channelID,
 						"av1Support":  joinData.AV1Support,
@@ -1094,6 +1100,8 @@ func (p *Plugin) handleReconnect(userID, connID, channelID, originalConnID, prev
 
 	us = newUserSession(userID, channelID, connID, state.Call.ID, rtc)
 	us.originalConnID = originalConnID
+	// Generate a unique RTC session ID to prevent signaling crosstalk
+	us.rtcSessionID = fmt.Sprintf("%s-%d", originalConnID, time.Now().UnixNano())
 	if p.sessions[originalConnID] != nil {
 		// We need to ensure to clear the original session to avoid potentially tracking it twice in case the ID has changed
 		// and we are the node handling it's RTC counterpart.
@@ -1117,7 +1125,7 @@ func (p *Plugin) handleReconnect(userID, connID, channelID, originalConnID, prev
 		msg := rtcd.ClientMessage{
 			Type: rtcd.ClientMessageReconnect,
 			Data: map[string]string{
-				"sessionID": originalConnID,
+				"sessionID": us.rtcSessionID,
 			},
 		}
 		if err := p.rtcdManager.Send(msg, state.Call.Props.RTCDHost); err != nil {
@@ -1452,7 +1460,13 @@ func (p *Plugin) closeRTCSession(userID, connID, channelID, handlerID, callID st
 	p.LogDebug("closeRTCSession", "userID", userID, "connID", connID, "channelID", channelID)
 	if p.rtcServer != nil {
 		if handlerID == p.nodeID {
-			if err := p.rtcServer.CloseSession(connID); err != nil {
+			rtcSessionID := connID
+			p.mut.RLock()
+			if us := p.sessions[connID]; us != nil {
+				rtcSessionID = us.rtcSessionID
+			}
+			p.mut.RUnlock()
+			if err := p.rtcServer.CloseSession(rtcSessionID); err != nil {
 				return err
 			}
 		} else {
@@ -1595,3 +1609,17 @@ func (p *Plugin) handleMetricMessage(metricName public.MetricName, userID string
 
 	return nil
 }
+
+func (p *Plugin) getSessionByRTCID(rtcSessionID string) *session {
+	p.mut.RLock()
+	defer p.mut.RUnlock()
+
+	for _, s := range p.sessions {
+		if s.rtcSessionID == rtcSessionID {
+			return s
+		}
+	}
+
+	return nil
+}
+

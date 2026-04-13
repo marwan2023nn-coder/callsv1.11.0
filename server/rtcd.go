@@ -615,7 +615,7 @@ func (m *rtcdClientManager) handleClientMsg(msg rtcd.ClientMessage) error {
 			return fmt.Errorf("missing sessionID")
 		}
 		m.ctx.LogDebug("received close message from rtcd", "sessionID", sessionID)
-		us := m.ctx.getSessionByOriginalID(sessionID)
+		us := m.ctx.getSessionByRTCID(sessionID)
 		if us != nil && atomic.CompareAndSwapInt32(&us.rtcClosed, 0, 1) {
 			m.ctx.LogDebug("closing rtc close channel", "sessionID", sessionID)
 			close(us.rtcCloseCh)
@@ -663,14 +663,14 @@ func (m *rtcdClientManager) handleClientMsg(msg rtcd.ClientMessage) error {
 
 	m.ctx.LogDebug("relaying ws message", "sessionID", rtcMsg.SessionID, "userID", rtcMsg.UserID)
 
-	us := m.ctx.getSessionByOriginalID(rtcMsg.SessionID)
+	us := m.ctx.getSessionByRTCID(rtcMsg.SessionID)
 	if us == nil {
-		return fmt.Errorf("failed to find session by originalConnID: %s", rtcMsg.SessionID)
+		return fmt.Errorf("failed to find session by rtcSessionID: %s", rtcMsg.SessionID)
 	}
 
 	m.ctx.publishWebSocketEvent(wsEventSignal, map[string]interface{}{
 		"data":   string(rtcMsg.Data),
-		"connID": rtcMsg.SessionID,
+		"connID": us.originalConnID,
 	}, &WebSocketBroadcast{ConnectionID: us.connID, ReliableClusterSend: true})
 
 	return nil

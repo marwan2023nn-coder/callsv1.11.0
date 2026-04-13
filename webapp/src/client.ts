@@ -61,6 +61,7 @@ export default class CallsClient extends EventEmitter {
     private joinData: CallsClientJoinData | null = null;
     private rtcReconnectCount = 0;
     private readonly maxRTCReconnects = 3;
+    private signalBuffer: string[] = [];
 
     constructor(config: CallsClientConfig) {
         logDebug('creating new calls client', JSON.stringify(config));
@@ -427,6 +428,15 @@ export default class CallsClient extends EventEmitter {
 
             this.collectICEStats();
 
+            // Replay buffered signaling messages
+            if (this.signalBuffer.length > 0) {
+                logDebug(`replaying ${this.signalBuffer.length} buffered signals`);
+                for (const signal of this.signalBuffer) {
+                    await this.peer.signal(signal);
+                }
+                this.signalBuffer = [];
+            }
+
             this.rtcMonitor = new RTCMonitor({
                 peer,
                 logger: {
@@ -720,6 +730,7 @@ export default class CallsClient extends EventEmitter {
         this.voiceTrackAdded = false;
         this.remoteVoiceTracks = [];
         this.remoteScreenTrack = null;
+        this.signalBuffer = [];
 
         this.ws.send('join', this.joinData);
     }

@@ -58,6 +58,9 @@ type session struct {
 	// removed tracks whether the session was removed from state.
 	removed int32
 
+	// rtcSessionID is a unique identifier for the RTC session.
+	rtcSessionID string
+
 	// rate limiter for incoming WebSocket messages.
 	wsMsgLimiter *rate.Limiter
 }
@@ -77,6 +80,7 @@ func newUserSession(userID, channelID, connID, callID string, rtc bool) *session
 		rtcCloseCh:     make(chan struct{}),
 		wsMsgLimiter:   rate.NewLimiter(100, 200),
 		rtc:            rtc,
+		rtcSessionID:   connID,
 	}
 }
 
@@ -146,7 +150,8 @@ func (p *Plugin) addUserSession(state *callState, callsEnabled *bool, userID, co
 	}
 
 	if _, ok := state.sessions[connID]; ok {
-		return nil, fmt.Errorf("session is already connected")
+		p.LogDebug("session is already connected, returning current state", "userID", userID, "connID", connID)
+		return state, nil
 	}
 
 	// Check for license limits -- needs to be done here to prevent a race condition
