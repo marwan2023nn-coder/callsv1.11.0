@@ -106,6 +106,32 @@ func TestAddUserSession(t *testing.T) {
 		require.Equal(t, retState, retState2)
 	})
 
+	t.Run("allow re-joining existing session", func(t *testing.T) {
+		defer mockAPI.AssertExpectations(t)
+		defer mockMetrics.AssertExpectations(t)
+		defer ResetTestStore(t, p.store)
+
+		mockAPI.On("GetConfig").Return(&model.Config{}, nil).Once()
+		mockAPI.On("GetLicense").Return(&model.License{
+			SkuShortName: "professional",
+		}, nil).Once()
+
+		// Start call
+		mockMetrics.On("IncWebSocketEvent", "out", wsEventCallHostChanged).Once()
+		mockAPI.On("PublishWebSocketEvent", wsEventCallHostChanged, mock.Anything,
+			&model.WebsocketBroadcast{UserId: "userA", ChannelId: "channelID", ReliableClusterSend: true}).Once()
+
+		retState, err := p.addUserSession(nil, model.NewPointer(true), "userA", "connA", "channelID", "", model.ChannelTypeOpen)
+		require.NoError(t, err)
+		require.NotNil(t, retState)
+		require.Len(t, retState.sessions, 1)
+
+		// Re-join with the same connection ID
+		retState2, err := p.addUserSession(retState, model.NewPointer(true), "userA", "connA", "channelID", "", model.ChannelTypeOpen)
+		require.NoError(t, err)
+		require.Equal(t, retState, retState2)
+	})
+
 	t.Run("allow calls in DMs only when unlicensed", func(t *testing.T) {
 		defer mockAPI.AssertExpectations(t)
 		defer mockMetrics.AssertExpectations(t)

@@ -101,8 +101,8 @@ func (p *Plugin) startSession(us *session, senderID string, props rtc.SessionPro
 	}
 
 	defer func() {
-		p.LogDebug("closing rtc session", "sessionID", us.connID)
-		if err := p.rtcServer.CloseSession(us.connID); err != nil {
+		p.LogDebug("closing rtc session", "sessionID", us.rtcSessionID)
+		if err := p.rtcServer.CloseSession(us.rtcSessionID); err != nil {
 			p.LogError("failed to close session", "error", err.Error())
 		}
 	}()

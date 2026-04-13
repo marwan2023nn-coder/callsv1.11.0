@@ -61,6 +61,7 @@ export default class CallsClient extends EventEmitter {
     private joinData: CallsClientJoinData | null = null;
     private rtcReconnectCount = 0;
     private readonly maxRTCReconnects = 3;
+    private signalBuffer: string[] = [];
 
     constructor(config: CallsClientConfig) {
         logDebug('creating new calls client', JSON.stringify(config));
@@ -422,6 +423,15 @@ export default class CallsClient extends EventEmitter {
 
             this.collectICEStats();
 
+            // Replay buffered signaling messages
+            if (this.signalBuffer.length > 0) {
+                logDebug(`replaying ${this.signalBuffer.length} buffered signals`);
+                for (const signal of this.signalBuffer) {
+                    await this.peer.signal(signal);
+                }
+                this.signalBuffer = [];
+            }
+
             this.rtcMonitor = new RTCMonitor({
                 peer,
                 logger: {
@@ -556,9 +566,9 @@ export default class CallsClient extends EventEmitter {
                     if (type === 14) {
                         this.emit('inputEvent', JSON.parse(payload as string));
                         return;
-                    } else if (type === 12 || type === 13) {
-                        // These are currently handled via WebSocket, but we consume them here
-                        // to silence the warning.
+                    } else if (type === 9 || type === 12 || type === 13) {
+                        // These are currently handled via WebSocket, or represent newer protocol types
+                        // that we want to silence warnings for.
                         return;
                     }
                 } catch (err) {
@@ -585,6 +595,9 @@ export default class CallsClient extends EventEmitter {
             if (msg.type === 'answer' || msg.type === 'offer' || msg.type === 'candidate') {
                 if (this.peer) {
                     await this.peer.signal(data);
+                } else {
+                    logDebug('buffering signaling message');
+                    this.signalBuffer.push(data);
                 }
             }
         });
@@ -708,6 +721,7 @@ export default class CallsClient extends EventEmitter {
         this.voiceTrackAdded = false;
         this.remoteVoiceTracks = [];
         this.remoteScreenTrack = null;
+        this.signalBuffer = [];
 
         this.ws.send('join', this.joinData);
     }
