@@ -164,7 +164,7 @@ export const profilesInCallInChannel = (state: GlobalState, channelID: string): 
 };
 
 export const numProfilesInCallInChannel = (state: GlobalState, channelID: string): number => {
-    return profilesInCallInChannel(state, channelID).length;
+    return numSessionsInCallInChannel(state, channelID);
 };
 
 export const numSessionsInCallInChannel = (state: GlobalState, channelID: string): number => {

@@ -424,6 +424,13 @@ const removeReaction = (reactions: Reaction[], reaction: Reaction) => {
 
 const reactions = (state: usersReactionsState = {}, action: sessionsAction) => {
     switch (action.type) {
+    case UNINIT:
+        return {};
+    case CALL_END: {
+        const nextState = {...state};
+        delete nextState[action.data.channelID];
+        return nextState;
+    }
     case USER_REACTED:
         if (action.data.reaction) {
             if (!state[action.data.channelID]) {
@@ -515,6 +522,14 @@ const captionTimeout = (channelState: LiveCaptions, data: liveCaptionTimeoutData
 
 const liveCaptions = (state: liveCaptionState = {}, action: liveCaptionAction | liveCaptionTimeoutAction) => {
     switch (action.type) {
+    case UNINIT:
+        return {};
+    case CALL_END: {
+        const data = action.data as callEndData;
+        const nextState = {...state};
+        delete nextState[data.channelID];
+        return nextState;
+    }
     case LIVE_CAPTION: {
         const data = action.data as liveCaptionData;
         return {
@@ -596,8 +611,16 @@ const recordings = (state: callsJobState = {}, action: jobStateAction | localSes
     }
 };
 
-const callLiveCaptionsState = (state: callsJobState = {}, action: jobStateAction) => {
+const callLiveCaptionsState = (state: callsJobState = {}, action: jobStateAction | localSessionCloseAction) => {
     switch (action.type) {
+    case UNINIT:
+        return {};
+    case LOCAL_SESSION_CLOSE: {
+        const theAction = action as localSessionCloseAction;
+        const nextState = {...state};
+        delete nextState[theAction.data.channelID];
+        return nextState;
+    }
     case CALL_LIVE_CAPTIONS_STATE: {
         return {
             ...state,
@@ -670,10 +693,16 @@ type hostsStateAction = {
     };
 }
 
-const hosts = (state: hostsState = {}, action: hostsStateAction) => {
+const hosts = (state: hostsState = {}, action: hostsStateAction | callEndAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
+    case CALL_END: {
+        const data = action.data as callEndData;
+        const nextState = {...state};
+        delete nextState[data.channelID];
+        return nextState;
+    }
     case CALL_HOST:
         return {
             ...state,
