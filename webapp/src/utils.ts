@@ -373,6 +373,33 @@ export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
     return sdp;
 }
 
+export function setSDPAudioOptions(sdp: string) {
+    const opusRtpMap = sdp.match(/a=rtpmap:(\d+) opus\/48000\/2/);
+    if (!opusRtpMap) {
+        return sdp;
+    }
+
+    const pt = opusRtpMap[1];
+    const fmtpRegex = new RegExp(`a=fmtp:${pt} (.*)\\r?\\n`);
+    const fmtpMatch = sdp.match(fmtpRegex);
+
+    if (fmtpMatch) {
+        const fmtpParams = fmtpMatch[1];
+        if (fmtpParams.indexOf('useinbandfec=1') === -1) {
+            sdp = sdp.replace(fmtpRegex, (match) => {
+                const lineEnding = match.endsWith('\r\n') ? '\r\n' : '\n';
+                return `a=fmtp:${pt} ${fmtpParams};useinbandfec=1${lineEnding}`;
+            });
+        }
+    } else {
+        sdp = sdp.replace(new RegExp(`a=rtpmap:${pt} opus/48000/2(\\r?\\n)`, 'g'), (match, lineEnding) => {
+            return `a=rtpmap:${pt} opus/48000/2${lineEnding}a=fmtp:${pt} useinbandfec=1${lineEnding}`;
+        });
+    }
+
+    return sdp;
+}
+
 export function split<T>(list: T[], i: number, pad = false): [list: T[], overflowed?: T[]] {
     if (list.length <= i + (pad ? 1 : 0)) {
         return [list];

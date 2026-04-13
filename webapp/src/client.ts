@@ -17,7 +17,7 @@ import {decodeDCMsg} from '@mattermost/calls-common/lib/dc_msg';
 import {AudioDevices, CallsClientConfig, CallsClientStats, TrackInfo} from 'src/types/types';
 
 import {logDebug, logErr, logInfo, logWarn, persistClientLogs} from './log';
-import {getScreenStream, getPersistentStorage, setSDPMaxVideoBW} from './utils';
+import {getScreenStream, getPersistentStorage, setSDPMaxVideoBW, setSDPAudioOptions} from './utils';
 import {WebSocketClient, WebSocketError, WebSocketErrorType} from './websocket';
 import {
     STORAGE_CALLS_CLIENT_STATS_KEY,
@@ -404,7 +404,7 @@ export default class CallsClient extends EventEmitter {
                     logErr('timed out waiting for rtc connection');
                     this.disconnect(rtcPeerTimeoutErr);
                 }
-            }, 15000);
+            }, 30000);
 
             const peer = new RTCPeer({
                 iceServers: this.config.iceServers || [],
@@ -459,6 +459,9 @@ export default class CallsClient extends EventEmitter {
                 if (sdp.type === 'offer' || sdp.type === 'answer') {
                     // Set a max bitrate of 2Mbps for screen sharing.
                     sdpStr = setSDPMaxVideoBW(sdpStr, 2000);
+
+                    // Apply audio resilience options.
+                    sdpStr = setSDPAudioOptions(sdpStr);
                 }
                 sdpHandler({
                     type: sdp.type,
