@@ -365,25 +365,37 @@ export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
         bandwidth = (bandwidth >>> 0) * 1000;
         modifier = 'TIAS';
     }
+
     const lines = sdp.split(/\r?\n/);
-    let foundModifier = false;
+    const newLines = [];
+    let inVideoSection = false;
+    let foundModifierInSection = false;
+
     for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('b=' + modifier + ':')) {
-            lines[i] = 'b=' + modifier + ':' + bandwidth;
-            foundModifier = true;
-            break;
+        const line = lines[i];
+
+        if (line.startsWith('m=')) {
+            if (inVideoSection && !foundModifierInSection) {
+                newLines.push('b=' + modifier + ':' + bandwidth);
+            }
+            inVideoSection = line.startsWith('m=video ');
+            foundModifierInSection = false;
         }
+
+        if (inVideoSection && line.startsWith('b=' + modifier + ':')) {
+            newLines.push('b=' + modifier + ':' + bandwidth);
+            foundModifierInSection = true;
+            continue;
+        }
+
+        newLines.push(line);
     }
 
-    if (!foundModifier) {
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith('m=video ')) {
-                lines.splice(i + 1, 0, 'b=' + modifier + ':' + bandwidth);
-                break;
-            }
-        }
+    if (inVideoSection && !foundModifierInSection) {
+        newLines.push('b=' + modifier + ':' + bandwidth);
     }
-    sdp = lines.join('\r\n');
+
+    sdp = newLines.join('\r\n');
     if (!sdp.endsWith('\r\n')) {
         sdp += '\r\n';
     }

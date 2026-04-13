@@ -576,7 +576,7 @@ type disclaimerDismissedAction = {
     };
 }
 
-const recordings = (state: callsJobState = {}, action: jobStateAction | localSessionCloseAction | disclaimerDismissedAction) => {
+const recordings = (state: callsJobState = {}, action: jobStateAction | localSessionCloseAction | disclaimerDismissedAction | callEndAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -584,6 +584,12 @@ const recordings = (state: callsJobState = {}, action: jobStateAction | localSes
         const theAction = action as localSessionCloseAction;
         const nextState = {...state};
         delete nextState[theAction.data.channelID];
+        return nextState;
+    }
+    case CALL_END: {
+        const data = action.data as callEndData;
+        const nextState = {...state};
+        delete nextState[data.callID];
         return nextState;
     }
     case CALL_RECORDING_STATE: {
@@ -611,7 +617,7 @@ const recordings = (state: callsJobState = {}, action: jobStateAction | localSes
     }
 };
 
-const callLiveCaptionsState = (state: callsJobState = {}, action: jobStateAction | localSessionCloseAction) => {
+const callLiveCaptionsState = (state: callsJobState = {}, action: jobStateAction | localSessionCloseAction | callEndAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -619,6 +625,12 @@ const callLiveCaptionsState = (state: callsJobState = {}, action: jobStateAction
         const theAction = action as localSessionCloseAction;
         const nextState = {...state};
         delete nextState[theAction.data.channelID];
+        return nextState;
+    }
+    case CALL_END: {
+        const data = action.data as callEndData;
+        const nextState = {...state};
+        delete nextState[data.callID];
         return nextState;
     }
     case CALL_LIVE_CAPTIONS_STATE: {
