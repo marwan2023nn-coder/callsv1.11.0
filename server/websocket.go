@@ -54,7 +54,7 @@ const (
 	wsEventHostRemoteControlOn       = "host_remote_control_on"
 	wsEventHostRemoteControlOff      = "host_remote_control_off"
 
-	wsReconnectionTimeout = 10 * time.Second
+	wsReconnectionTimeout = 30 * time.Second
 )
 
 var (

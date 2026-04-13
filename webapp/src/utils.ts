@@ -388,10 +388,10 @@ export function setSDPAudioOptions(sdp: string) {
         const line = lines[i];
         if (line.startsWith(`a=fmtp:${pt} `)) {
             fmtpFound = true;
-            if (line.indexOf('useinbandfec=1') === -1) {
-                resultLines.push(`${line};useinbandfec=1`);
-            } else {
+            if (line.includes('useinbandfec=1')) {
                 resultLines.push(line);
+            } else {
+                resultLines.push(`${line};useinbandfec=1`);
             }
         } else {
             resultLines.push(line);
@@ -406,12 +406,12 @@ export function setSDPAudioOptions(sdp: string) {
     if (!fmtpFound) {
         // Find the rtpmap line again to insert fmtp right after it.
         const rtpmapIdx = resultLines.findIndex((l) => l === `a=rtpmap:${pt} opus/48000/2`);
-        if (rtpmapIdx !== -1) {
+        if (rtpmapIdx >= 0) {
             resultLines.splice(rtpmapIdx + 1, 0, `a=fmtp:${pt} useinbandfec=1`);
         }
     }
 
-    const lineEnding = sdp.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
+    const lineEnding = sdp.includes('\r\n') ? '\r\n' : '\n';
     return resultLines.join(lineEnding);
 }
 

@@ -22,6 +22,7 @@ import {
     shouldRenderDesktopWidget,
     sleep,
     toHuman,
+    setSDPAudioOptions,
 } from './utils';
 
 describe('utils', () => {
@@ -702,3 +703,37 @@ describe('utils', () => {
     });
 });
 
+
+    describe('setSDPAudioOptions', () => {
+        const sdpWithOpus = 'v=0\r\no=- 12345 67890 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10;useinbandfec=0\r\n';
+        const sdpWithOpusNoFmtp = 'v=0\r\no=- 12345 67890 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\na=rtpmap:111 opus/48000/2\r\n';
+        const sdpWithoutOpus = 'v=0\r\no=- 12345 67890 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 0\r\na=rtpmap:0 PCMU/8000\r\n';
+
+        it('should enable FEC if opus is present and fmtp exists', () => {
+            const result = setSDPAudioOptions(sdpWithOpus);
+            expect(result).toContain('a=fmtp:111 minptime=10;useinbandfec=0;useinbandfec=1');
+        });
+
+        it('should enable FEC if opus is present and fmtp does not exist', () => {
+            const result = setSDPAudioOptions(sdpWithOpusNoFmtp);
+            expect(result).toContain('a=fmtp:111 useinbandfec=1');
+        });
+
+        it('should not modify SDP if opus is not present', () => {
+            const result = setSDPAudioOptions(sdpWithoutOpus);
+            expect(result).toEqual(sdpWithoutOpus);
+        });
+
+        it('should handle LF line endings', () => {
+            const sdpLF = sdpWithOpus.replace(/\r\n/g, '\n');
+            const result = setSDPAudioOptions(sdpLF);
+            expect(result).toContain('a=fmtp:111 minptime=10;useinbandfec=0;useinbandfec=1\n');
+            expect(result).not.toContain('\r');
+        });
+
+        it('should handle missing trailing newline', () => {
+            const sdpNoTrailing = sdpWithOpus.trim();
+            const result = setSDPAudioOptions(sdpNoTrailing);
+            expect(result).toContain('a=fmtp:111 minptime=10;useinbandfec=0;useinbandfec=1');
+        });
+    });
