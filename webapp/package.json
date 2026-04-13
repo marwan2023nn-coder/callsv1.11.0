@@ -16,7 +16,7 @@
     "test:watch": "jest --watch",
     "test-ci": "jest --forceExit --detectOpenHandles --maxWorkers=2",
     "check-types": "tsc",
-    "extract": "formatjs extract 'src/**/*.{ts,tsx}' --ignore 'src/**/*.d.ts' --out-file i18n/temp.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' && formatjs compile 'i18n/temp.json' --out-file i18n/ar.json && rm i18n/temp.json"
+    "extract": "formatjs extract 'src/**/*.{ts,tsx}' --ignore 'src/**/*.d.ts' --out-file i18n/temp.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' && formatjs compile 'i18n/temp.json' --out-file i18n/en-AU.json && rm i18n/temp.json"
   },
   "dependencies": {
     "@floating-ui/react": "0.26.12",
