@@ -11,6 +11,7 @@ const wsMinReconnectRetryTimeMs = 1000; // 1 second
 const wsReconnectionTimeout = 30000; // 30 seconds
 const wsReconnectTimeIncrement = 500; // 0.5 seconds
 const wsPingIntervalMs = 5000; // 5 seconds
+const wsPongTimeoutMs = 10000; // 10 seconds timeout for pong response
 
 export enum WebSocketErrorType {
     Native,
@@ -238,21 +239,27 @@ export class WebSocketClient extends EventEmitter {
         logDebug('ws: starting ping interval', this.originalConnID);
 
         this.pingInterval = setInterval(() => {
-            if (this.waitingForPong && this.ws) {
-                logWarn('ws: ping timeout, reconnecting', this.originalConnID);
-
-                // We call the close handler directly since through ws.close() it could execute after a significant delay.
-                this.ws.onclose = null;
-                this.ws.close();
-                this.closeHandler(new CloseEvent('close', {
-                    code: 4000,
-                }));
-
+            if (this.waitingForPong) {
+                // If we are already waiting for a pong, we don't send another ping.
+                // The pong timeout logic will handle reconnection if needed.
                 return;
             }
 
             this.ping();
         }, wsPingIntervalMs);
+    }
+
+    private handlePongTimeout() {
+        if (this.waitingForPong && this.ws) {
+            logWarn('ws: pong timeout, reconnecting', this.originalConnID);
+
+            // We call the close handler directly since through ws.close() it could execute after a significant delay.
+            this.ws.onclose = null;
+            this.ws.close();
+            this.closeHandler(new CloseEvent('close', {
+                code: 4000,
+            }));
+        }
     }
 
     private stopPingInterval() {
@@ -276,6 +283,9 @@ export class WebSocketClient extends EventEmitter {
                 action: 'ping',
                 seq: this.seqNo++,
             }));
+
+            // Set a timeout for the pong response to handle network issues or background throttling.
+            setTimeout(() => this.handlePongTimeout(), wsPongTimeoutMs);
         }
     }
 }
