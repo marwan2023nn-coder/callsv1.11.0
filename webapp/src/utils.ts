@@ -365,10 +365,12 @@ export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
         bandwidth = (bandwidth >>> 0) * 1000;
         modifier = 'TIAS';
     }
+
+    const lineEnd = sdp.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
     if (sdp.indexOf('b=' + modifier + ':') === -1) {
-        sdp = sdp.replaceAll(/m=video (.*)\r\n/gm, 'm=video $1\r\nb=' + modifier + ':' + bandwidth + '\r\n');
+        sdp = sdp.replace(/m=video (.*)(\r\n|\n)/g, 'm=video $1$2b=' + modifier + ':' + bandwidth + '$2');
     } else {
-        sdp = sdp.replace(new RegExp('b=' + modifier + ':.*\r\n'), 'b=' + modifier + ':' + bandwidth + '\r\n');
+        sdp = sdp.replace(new RegExp('b=' + modifier + ':.*(\\r\\n|\\n)', 'g'), 'b=' + modifier + ':' + bandwidth + lineEnd);
     }
     return sdp;
 }

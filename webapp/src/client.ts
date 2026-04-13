@@ -398,6 +398,11 @@ export default class CallsClient extends EventEmitter {
         ws.on('join', async () => {
             logDebug('join ack received, initializing connection');
 
+            if (this.peer) {
+                logDebug('peer already exists, skipping initialization');
+                return;
+            }
+
             const timeout = setTimeout(() => {
                 if (!this.connected && !this.closed) {
                     logErr('timed out waiting for rtc connection');
@@ -556,9 +561,9 @@ export default class CallsClient extends EventEmitter {
                     if (type === 14) {
                         this.emit('inputEvent', JSON.parse(payload as string));
                         return;
-                    } else if (type === 12 || type === 13) {
-                        // These are currently handled via WebSocket, but we consume them here
-                        // to silence the warning.
+                    } else if (type === 12 || type === 13 || type === 9) {
+                        // These are currently handled via WebSocket or internally, but we
+                        // consume them here to silence the warning.
                         return;
                     }
                 } catch (err) {
@@ -582,9 +587,16 @@ export default class CallsClient extends EventEmitter {
             if (!msg) {
                 return;
             }
+
             if (msg.type === 'answer' || msg.type === 'offer' || msg.type === 'candidate') {
                 if (this.peer) {
-                    await this.peer.signal(data);
+                    try {
+                        await this.peer.signal(data);
+                    } catch (err) {
+                        logErr('failed to signal peer', err);
+                    }
+                } else {
+                    logWarn('received signaling message but peer is not initialized', msg.type);
                 }
             }
         });
