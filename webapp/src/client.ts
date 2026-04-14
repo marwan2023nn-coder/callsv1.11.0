@@ -62,6 +62,7 @@ export default class CallsClient extends EventEmitter {
     private rtcReconnectCount = 0;
     private readonly maxRTCReconnects = 3;
     private signalBuffer: string[] = [];
+    private iceRestarting = false;
 
     constructor(config: CallsClientConfig) {
         logDebug('creating new calls client', JSON.stringify(config));
@@ -86,7 +87,15 @@ export default class CallsClient extends EventEmitter {
             this.disconnect();
         };
         window.addEventListener('beforeunload', this.onBeforeUnload);
+        if ('connection' in navigator) {
+            (navigator as any).connection.addEventListener('change', this.onNetworkChange);
+        }
     }
+
+    private onNetworkChange = () => {
+        logInfo('network change detected, attempting ice restart');
+        this.attemptICERestart();
+    };
 
     private async updateDevices() {
         logDebug('a/v device change detected');
@@ -526,6 +535,14 @@ export default class CallsClient extends EventEmitter {
                 this.rtcMonitor?.start();
                 this.connected = true;
                 this.rtcReconnectCount = 0;
+                this.iceRestarting = false;
+            });
+
+            peer.on('iceConnectionStateChange', (state: string) => {
+                logDebug('ice connection state change', state);
+                if (state === 'disconnected' || state === 'failed') {
+                    this.attemptICERestart();
+                }
             });
 
             peer.on('close', () => {
@@ -607,6 +624,9 @@ export default class CallsClient extends EventEmitter {
     }
 
     public destroy() {
+        if ('connection' in navigator) {
+            (navigator as any).connection.removeEventListener('change', this.onNetworkChange);
+        }
         this.removeAllListeners('close');
         this.removeAllListeners('connect');
         this.removeAllListeners('remoteVoiceStream');
@@ -691,6 +711,31 @@ export default class CallsClient extends EventEmitter {
 
         // We emit this event so it's easier to keep state in sync between widget and pop out.
         this.emit('devicechange', this.audioDevices);
+    }
+
+    private async attemptICERestart() {
+        if (this.closed || !this.peer || this.iceRestarting) {
+            return;
+        }
+
+        logInfo('attempting ice restart');
+        this.iceRestarting = true;
+
+        try {
+            // @ts-ignore: RTCPeer might not have createOffer exposed directly depending on the wrapper
+            // but we assume it follows the standard WebRTC pattern or the wrapper handles it.
+            // If the wrapper doesn't support it, we fallback to full reconnect.
+            if (typeof (this.peer as any).createOffer === 'function') {
+                const offer = await (this.peer as any).createOffer({iceRestart: true});
+                await (this.peer as any).setLocalDescription(offer);
+            } else {
+                throw new Error('ice restart not supported by peer wrapper');
+            }
+        } catch (err) {
+            logErr('ice restart failed, falling back to full reconnect', err);
+            this.iceRestarting = false;
+            this.reconnectRTC();
+        }
     }
 
     private reconnectRTC() {
