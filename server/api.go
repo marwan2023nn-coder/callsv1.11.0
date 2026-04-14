@@ -52,7 +52,7 @@ func (p *Plugin) handleGetCallChannelState(w http.ResponseWriter, r *http.Reques
 	// We should go through only if the user has permissions to the requested channel
 	// or if the user is the Calls bot.
 	if !(p.isBotSession(r) || p.API.HasPermissionToChannel(userID, channelID, model.PermissionReadChannel)) {
-		p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -111,7 +111,7 @@ func (p *Plugin) handleGetCallActive(w http.ResponseWriter, r *http.Request) {
 	// We should go through only if the user has permissions to the requested channel
 	// or if the user is the Calls bot.
 	if !(p.isBotSession(r) || p.API.HasPermissionToChannel(userID, channelID, model.PermissionReadChannel)) {
-		p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -350,17 +350,19 @@ func (p *Plugin) handleServeStandalone(w http.ResponseWriter, r *http.Request) {
 			referrerURL, err := url.Parse(referrer)
 			if err != nil {
 				p.LogWarn("Serve standalone, BLOCKED: Invalid referrer", "err", err.Error())
-				p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
+				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
 			}
 
 			if referrerURL.Host != r.Host {
 				p.LogWarn("Serve standalone, BLOCKED: Cross-origin referrer", "from", referrerURL.Host, "to", r.Host)
-				p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
+				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
 			}
 
 			// Allow same-origin referrers
+		} else {
+			// No referrer - could be direct navigation (OK) or malicious site with referrer policy
 		}
 	}
 
@@ -557,7 +559,7 @@ func (p *Plugin) handleEnv(w http.ResponseWriter, r *http.Request) error {
 	isAdmin := p.API.HasPermissionTo(userID, model.PermissionManageSystem)
 
 	if !isAdmin {
-		p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return nil
 	}
 
