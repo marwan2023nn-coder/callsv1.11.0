@@ -361,8 +361,6 @@ func (p *Plugin) handleServeStandalone(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Allow same-origin referrers
-		} else {
-			// No referrer - could be direct navigation (OK) or malicious site with referrer policy
 		}
 	}
 
