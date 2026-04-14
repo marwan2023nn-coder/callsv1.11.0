@@ -154,6 +154,17 @@ func (p *Plugin) addUserSession(state *callState, callsEnabled *bool, userID, co
 		return state, nil
 	}
 
+	// Clean up any existing sessions for the same user in the same call to prevent ghost sessions.
+	for oldConnID, session := range state.sessions {
+		if session.UserID == userID {
+			p.LogDebug("found existing session for user, removing it before adding new one", "userID", userID, "oldConnID", oldConnID, "newConnID", connID)
+			if err := p.store.DeleteCallSession(oldConnID); err != nil {
+				p.LogError("failed to delete old call session", "oldConnID", oldConnID, "err", err.Error())
+			}
+			delete(state.sessions, oldConnID)
+		}
+	}
+
 	// Check for license limits -- needs to be done here to prevent a race condition
 	if allowed, err := p.joinAllowed(state); !allowed {
 		if err != nil {
