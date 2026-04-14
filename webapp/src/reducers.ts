@@ -81,7 +81,7 @@ type channelsStateAction = {
     data: ChannelState;
 }
 
-function channels(state: channelsState = {}, action: channelsStateAction) {
+const channels = (state: channelsState = {}, action: channelsStateAction) => {
     switch (action.type) {
     case RECEIVED_CHANNEL_STATE:
         return {
@@ -91,7 +91,7 @@ function channels(state: channelsState = {}, action: channelsStateAction) {
     default:
         return state;
     }
-}
+};
 
 type clientState = {
     channelID: string;
@@ -117,7 +117,7 @@ type callEndData = {
 // clientStateReducer holds the channel and session ID for the call the current user is connected to.
 // This reducer is only needed by the Desktop app client to be aware that the user is
 // connected through the global widget.
-function clientStateReducer(state: clientState = null, action: clientStateAction | callEndAction) {
+const clientStateReducer = (state: clientState = null, action: clientStateAction | callEndAction) => {
     switch (action.type) {
     case UNINIT:
         return null;
@@ -145,7 +145,7 @@ function clientStateReducer(state: clientState = null, action: clientStateAction
     default:
         return state;
     }
-}
+};
 
 export type sessionsState = {
     [channelID: string]: {
@@ -165,7 +165,7 @@ type sessionsAction = {
     };
 }
 
-function sessions(state: sessionsState = {}, action: sessionsAction) {
+const sessions = (state: sessionsState = {}, action: sessionsAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -401,7 +401,7 @@ function sessions(state: sessionsState = {}, action: sessionsAction) {
     default:
         return state;
     }
-}
+};
 
 export type usersReactionsState = {
     [channelID: string]: {
@@ -418,19 +418,12 @@ const queueReactions = (state: Reaction[], reaction: Reaction) => {
     return result;
 };
 
-const removeReaction = (_reactions: Reaction[], reaction: Reaction) => {
-    return _reactions.filter((r) => r.user_id !== reaction.user_id || r.timestamp > reaction.timestamp);
+const removeReaction = (reactions: Reaction[], reaction: Reaction) => {
+    return reactions.filter((r) => r.user_id !== reaction.user_id || r.timestamp > reaction.timestamp);
 };
 
-function reactions(state: usersReactionsState = {}, action: sessionsAction) {
+const reactions = (state: usersReactionsState = {}, action: sessionsAction) => {
     switch (action.type) {
-    case UNINIT:
-        return {};
-    case CALL_END: {
-        const nextState = {...state};
-        delete nextState[action.data.channelID];
-        return nextState;
-    }
     case USER_REACTED:
         if (action.data.reaction) {
             if (!state[action.data.channelID]) {
@@ -478,7 +471,7 @@ function reactions(state: usersReactionsState = {}, action: sessionsAction) {
     default:
         return state;
     }
-}
+};
 
 export type liveCaptionState = {
     [channelID: string]: LiveCaptions;
@@ -520,16 +513,8 @@ const captionTimeout = (channelState: LiveCaptions, data: liveCaptionTimeoutData
     return state;
 };
 
-function liveCaptions(state: liveCaptionState = {}, action: liveCaptionAction | liveCaptionTimeoutAction) {
+const liveCaptions = (state: liveCaptionState = {}, action: liveCaptionAction | liveCaptionTimeoutAction) => {
     switch (action.type) {
-    case UNINIT:
-        return {};
-    case CALL_END: {
-        const data = action.data as callEndData;
-        const nextState = {...state};
-        delete nextState[data.channelID];
-        return nextState;
-    }
     case LIVE_CAPTION: {
         const data = action.data as liveCaptionData;
         return {
@@ -547,7 +532,7 @@ function liveCaptions(state: liveCaptionState = {}, action: liveCaptionAction | 
     default:
         return state;
     }
-}
+};
 
 export type callsJobState = {
     [callID: string]: CallJobState;
@@ -576,22 +561,14 @@ type disclaimerDismissedAction = {
     };
 }
 
-function recordings(state: callsJobState = {}, action: jobStateAction | localSessionCloseAction | disclaimerDismissedAction | callEndAction) {
+const recordings = (state: callsJobState = {}, action: jobStateAction | localSessionCloseAction | disclaimerDismissedAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
     case LOCAL_SESSION_CLOSE: {
+        const theAction = action as localSessionCloseAction;
         const nextState = {...state};
-
-        // Note: recordings state is keyed by callID, but LOCAL_SESSION_CLOSE only has channelID.
-        // We attempt to find the callID to clear it, but since this reducer doesn't have channelID mapping,
-        // it's hard to be perfect here. CALL_END is the primary reliable cleanup.
-        return nextState;
-    }
-    case CALL_END: {
-        const data = action.data as callEndData;
-        const nextState = {...state};
-        delete nextState[data.callID];
+        delete nextState[theAction.data.channelID];
         return nextState;
     }
     case CALL_RECORDING_STATE: {
@@ -617,25 +594,10 @@ function recordings(state: callsJobState = {}, action: jobStateAction | localSes
     default:
         return state;
     }
-}
+};
 
-function callLiveCaptionsState(state: callsJobState = {}, action: jobStateAction | localSessionCloseAction | callEndAction) {
+const callLiveCaptionsState = (state: callsJobState = {}, action: jobStateAction) => {
     switch (action.type) {
-    case UNINIT:
-        return {};
-    case LOCAL_SESSION_CLOSE: {
-        const nextState = {...state};
-
-        // Note: callLiveCaptionsState is keyed by callID, but LOCAL_SESSION_CLOSE only has channelID.
-        // CALL_END is the primary reliable cleanup.
-        return nextState;
-    }
-    case CALL_END: {
-        const data = action.data as callEndData;
-        const nextState = {...state};
-        delete nextState[data.callID];
-        return nextState;
-    }
     case CALL_LIVE_CAPTIONS_STATE: {
         return {
             ...state,
@@ -648,7 +610,7 @@ function callLiveCaptionsState(state: callsJobState = {}, action: jobStateAction
     default:
         return state;
     }
-}
+};
 
 // callState should only hold immutable data, meaning those
 // fields that don't change for the whole duration of a call.
@@ -671,7 +633,7 @@ type callsState = {
     [channelID: string]: callState;
 }
 
-function calls(state: callsState = {}, action: callStateAction) {
+const calls = (state: callsState = {}, action: callStateAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -690,7 +652,7 @@ function calls(state: callsState = {}, action: callStateAction) {
     default:
         return state;
     }
-}
+};
 
 export type hostsState = {
     [channelID: string]: {
@@ -708,16 +670,10 @@ type hostsStateAction = {
     };
 }
 
-function hosts(state: hostsState = {}, action: hostsStateAction | callEndAction) {
+const hosts = (state: hostsState = {}, action: hostsStateAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
-    case CALL_END: {
-        const data = action.data as callEndData;
-        const nextState = {...state};
-        delete nextState[data.channelID];
-        return nextState;
-    }
     case CALL_HOST:
         return {
             ...state,
@@ -729,7 +685,7 @@ function hosts(state: hostsState = {}, action: hostsStateAction | callEndAction)
     default:
         return state;
     }
-}
+};
 
 export type screenSharingIDsState = {
     [channelID: string]: string;
@@ -743,7 +699,7 @@ type screenSharingIDAction = {
     }
 }
 
-function screenSharingIDs(state: screenSharingIDsState = {}, action: screenSharingIDAction) {
+const screenSharingIDs = (state: screenSharingIDsState = {}, action: screenSharingIDAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -769,9 +725,9 @@ function screenSharingIDs(state: screenSharingIDsState = {}, action: screenShari
     default:
         return state;
     }
-}
+};
 
-function remoteControlIDs(state: screenSharingIDsState = {}, action: screenSharingIDAction) {
+const remoteControlIDs = (state: screenSharingIDsState = {}, action: screenSharingIDAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -797,9 +753,9 @@ function remoteControlIDs(state: screenSharingIDsState = {}, action: screenShari
     default:
         return state;
     }
-}
+};
 
-function expandedView(state = false, action: { type: string }) {
+const expandedView = (state = false, action: { type: string }) => {
     switch (action.type) {
     case UNINIT:
         return false;
@@ -810,12 +766,12 @@ function expandedView(state = false, action: { type: string }) {
     default:
         return state;
     }
-}
+};
 
-function switchCallModal(state = {
+const switchCallModal = (state = {
     show: false,
     targetID: '',
-}, action: { type: string, data?: { targetID: string } }) {
+}, action: { type: string, data?: { targetID: string } }) => {
     switch (action.type) {
     case UNINIT:
         return {show: false, targetID: ''};
@@ -826,9 +782,9 @@ function switchCallModal(state = {
     default:
         return state;
     }
-}
+};
 
-function screenSourceModal(state = false, action: { type: string }) {
+const screenSourceModal = (state = false, action: { type: string }) => {
     switch (action.type) {
     case UNINIT:
         return false;
@@ -839,9 +795,9 @@ function screenSourceModal(state = false, action: { type: string }) {
     default:
         return state;
     }
-}
+};
 
-function callsConfig(state = CallsConfigDefault, action: { type: string, data: CallsConfig }) {
+const callsConfig = (state = CallsConfigDefault, action: { type: string, data: CallsConfig }) => {
     switch (action.type) {
     case RECEIVED_CALLS_CONFIG:
         return action.data;
@@ -856,43 +812,43 @@ function callsConfig(state = CallsConfigDefault, action: { type: string, data: C
     default:
         return state;
     }
-}
+};
 
-function callsConfigEnvOverrides(state = {}, action: { type: string, data: Record<string, string> }) {
+const callsConfigEnvOverrides = (state = {}, action: { type: string, data: Record<string, string> }) => {
     switch (action.type) {
     case RECEIVED_CALLS_CONFIG_ENV_OVERRIDES:
         return action.data;
     default:
         return state;
     }
-}
+};
 
-function callsVersionInfo(state = {}, action: { type: string, data: CallsVersionInfo }) {
+const callsVersionInfo = (state = {}, action: { type: string, data: CallsVersionInfo }) => {
     switch (action.type) {
     case RECEIVED_CALLS_VERSION_INFO:
         return action.data;
     default:
         return state;
     }
-}
+};
 
-function rtcdEnabled(state = false, action: {type: string, data: boolean}) {
+const rtcdEnabled = (state = false, action: {type: string, data: boolean}) => {
     switch (action.type) {
     case RTCD_ENABLED:
         return action.data;
     default:
         return state;
     }
-}
+};
 
-function callsUserPreferences(state = CallsUserPreferencesDefault, action: { type: string, data: CallsUserPreferences }) {
+const callsUserPreferences = (state = CallsUserPreferencesDefault, action: { type: string, data: CallsUserPreferences }) => {
     switch (action.type) {
     case RECEIVED_CALLS_USER_PREFERENCES:
         return action.data;
     default:
         return state;
     }
-}
+};
 
 export type recentlyJoinedUsersState = {
     [channelID: string]: string[];
@@ -906,7 +862,7 @@ type recentlyJoinedUsersAction = {
     };
 }
 
-function recentlyJoinedUsers(state: recentlyJoinedUsersState = {}, action: recentlyJoinedUsersAction) {
+const recentlyJoinedUsers = (state: recentlyJoinedUsersState = {}, action: recentlyJoinedUsersAction) => {
     switch (action.type) {
     case UNINIT:
         return {};
@@ -942,7 +898,7 @@ function recentlyJoinedUsers(state: recentlyJoinedUsersState = {}, action: recen
     default:
         return state;
     }
-}
+};
 
 type IncomingCallAction = {
     type: string;
@@ -955,7 +911,7 @@ type IncomingCallAction = {
     };
 };
 
-function incomingCalls(state: IncomingCallNotification[] = [], action: IncomingCallAction) {
+const incomingCalls = (state: IncomingCallNotification[] = [], action: IncomingCallAction) => {
     switch (action.type) {
     case ADD_INCOMING_CALL:
         return [...state, {...action.data}];
@@ -964,7 +920,7 @@ function incomingCalls(state: IncomingCallNotification[] = [], action: IncomingC
     default:
         return state;
     }
-}
+};
 
 type RingNotifyForCallsAction = {
     type: string;
@@ -973,7 +929,7 @@ type RingNotifyForCallsAction = {
     };
 }
 
-function ringingForCalls(state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) {
+const ringingForCalls = (state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) => {
     switch (action.type) {
     case RINGING_FOR_CALL:
         return {
@@ -988,9 +944,9 @@ function ringingForCalls(state: { [callID: string]: boolean } = {}, action: Ring
     default:
         return state;
     }
-}
+};
 
-function didRingForCalls(state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) {
+const didRingForCalls = (state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) => {
     switch (action.type) {
     case DID_RING_FOR_CALL:
     case RINGING_FOR_CALL:
@@ -1001,9 +957,9 @@ function didRingForCalls(state: { [callID: string]: boolean } = {}, action: Ring
     default:
         return state;
     }
-}
+};
 
-function didNotifyForCalls(state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) {
+const didNotifyForCalls = (state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) => {
     switch (action.type) {
     case DID_NOTIFY_FOR_CALL:
         return {
@@ -1013,9 +969,9 @@ function didNotifyForCalls(state: { [callID: string]: boolean } = {}, action: Ri
     default:
         return state;
     }
-}
+};
 
-function dismissedCalls(state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) {
+const dismissedCalls = (state: { [callID: string]: boolean } = {}, action: RingNotifyForCallsAction) => {
     switch (action.type) {
     case DISMISS_CALL:
         return {
@@ -1025,9 +981,9 @@ function dismissedCalls(state: { [callID: string]: boolean } = {}, action: RingN
     default:
         return state;
     }
-}
+};
 
-function clientConnecting(state = false, action: { type: string, data: boolean }) {
+const clientConnecting = (state = false, action: { type: string, data: boolean }) => {
     switch (action.type) {
     case UNINIT:
         return false;
@@ -1036,7 +992,7 @@ function clientConnecting(state = false, action: { type: string, data: boolean }
     default:
         return state;
     }
-}
+};
 
 type hostControlNoticeAction = {
     type: string;
@@ -1063,8 +1019,8 @@ const removeHostControlNotice = (notices: HostControlNotice[], noticeID: string)
     return notices.filter((n) => n.noticeID !== noticeID);
 };
 
-function hostControlNotices(state: hostControlNoticeState = {},
-    action: hostControlNoticeAction | hostControlNoticeTimeoutAction) {
+const hostControlNotices = (state: hostControlNoticeState = {},
+    action: hostControlNoticeAction | hostControlNoticeTimeoutAction) => {
     switch (action.type) {
     case HOST_CONTROL_NOTICE: {
         const data = action.data as HostControlNotice;
@@ -1083,7 +1039,7 @@ function hostControlNotices(state: hostControlNoticeState = {},
     default:
         return state;
     }
-}
+};
 
 export default combineReducers({
     channels,

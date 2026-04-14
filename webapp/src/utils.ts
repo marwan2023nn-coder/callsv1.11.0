@@ -21,7 +21,6 @@ import {parseSemVer} from 'semver-parser';
 import CallsClient from 'src/client';
 import {STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY, STORAGE_CALLS_SHARE_AUDIO_WITH_SCREEN} from 'src/constants';
 import RestClient from 'src/rest_client';
-import {setSDPMaxVideoBW} from 'src/sdp_utils';
 import {getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
 import {DesktopMessage} from 'src/types/types';
 import {notificationSounds} from 'src/webapp_globals';
@@ -360,7 +359,19 @@ export function getUserIdFromDM(dmName: string, currentUserId: string) {
     return otherUserId;
 }
 
-export {setSDPMaxVideoBW};
+export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
+    let modifier = 'AS';
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        bandwidth = (bandwidth >>> 0) * 1000;
+        modifier = 'TIAS';
+    }
+    if (sdp.indexOf('b=' + modifier + ':') === -1) {
+        sdp = sdp.replaceAll(/m=video (.*)\r\n/gm, 'm=video $1\r\nb=' + modifier + ':' + bandwidth + '\r\n');
+    } else {
+        sdp = sdp.replace(new RegExp('b=' + modifier + ':.*\r\n'), 'b=' + modifier + ':' + bandwidth + '\r\n');
+    }
+    return sdp;
+}
 
 export function split<T>(list: T[], i: number, pad = false): [list: T[], overflowed?: T[]] {
     if (list.length <= i + (pad ? 1 : 0)) {

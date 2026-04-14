@@ -389,10 +389,8 @@ describe('CallsClient', () => {
 
             // @ts-ignore
             client.ws = mockWS;
-
             // @ts-ignore
             client.connected = true;
-
             // @ts-ignore
             client.joinData = joinData;
 
@@ -400,7 +398,6 @@ describe('CallsClient', () => {
             client.reconnectRTC();
 
             expect(mockWS.send).toHaveBeenCalledWith('join', joinData);
-
             // @ts-ignore
             expect(client.rtcReconnectCount).toBe(1);
         });
@@ -414,19 +411,14 @@ describe('CallsClient', () => {
 
             // @ts-ignore
             client.ws = mockWS;
-
             // @ts-ignore
             client.connected = true;
-
             // @ts-ignore
             client.joinData = joinData;
-
             // @ts-ignore
             client.rtcReconnectCount = 3;
-
             // @ts-ignore
             client.disconnect = jest.fn();
-
             // @ts-ignore
             client.reconnectRTC = jest.fn();
 
