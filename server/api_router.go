@@ -130,12 +130,12 @@ func (p *Plugin) newAPIRouter() *mux.Router {
 	botRouter.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !p.isBotSession(r) {
-				http.Error(w, "Forbidden", http.StatusForbidden)
+				p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
 				return
 			}
 
 			if !p.licenseChecker.RecordingsAllowed() {
-				http.Error(w, "Forbidden", http.StatusForbidden)
+				p.handleErrorWithCode(w, http.StatusForbidden, "Forbidden", nil)
 				return
 			}
 
