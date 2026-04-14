@@ -373,6 +373,48 @@ export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
     return sdp;
 }
 
+export function setSDPAudioOptions(sdp: string) {
+    const opusRtpMap = sdp.match(/a=rtpmap:(\d+) opus\/48000\/2/);
+    if (!opusRtpMap) {
+        return sdp;
+    }
+
+    const pt = opusRtpMap[1];
+    const lines = sdp.split(/\r?\n/);
+    const resultLines = [];
+    let fmtpFound = false;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.startsWith(`a=fmtp:${pt} `)) {
+            fmtpFound = true;
+            if (line.includes('useinbandfec=1')) {
+                resultLines.push(line);
+            } else {
+                resultLines.push(`${line};useinbandfec=1`);
+            }
+        } else {
+            resultLines.push(line);
+            if (line === `a=rtpmap:${pt} opus/48000/2`) {
+                // If the next line is not the fmtp line we are looking for, we'll insert it later
+                // if it's not found in the rest of the SDP.
+                // However, the standard is that fmtp follows rtpmap.
+            }
+        }
+    }
+
+    if (!fmtpFound) {
+        // Find the rtpmap line again to insert fmtp right after it.
+        const rtpmapIdx = resultLines.findIndex((l) => l === `a=rtpmap:${pt} opus/48000/2`);
+        if (rtpmapIdx >= 0) {
+            resultLines.splice(rtpmapIdx + 1, 0, `a=fmtp:${pt} useinbandfec=1`);
+        }
+    }
+
+    const lineEnding = sdp.includes('\r\n') ? '\r\n' : '\n';
+    return resultLines.join(lineEnding);
+}
+
 export function split<T>(list: T[], i: number, pad = false): [list: T[], overflowed?: T[]] {
     if (list.length <= i + (pad ? 1 : 0)) {
         return [list];
