@@ -367,7 +367,7 @@ export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
     }
 
     const lines = sdp.split(/\r?\n/);
-    const newLines = [];
+    const newLines: string[] = [];
     let inVideoSection = false;
     let foundModifierInSection = false;
 
@@ -375,23 +375,39 @@ export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
         const line = lines[i];
 
         if (line.startsWith('m=')) {
-            if (inVideoSection && !foundModifierInSection) {
-                newLines.push('b=' + modifier + ':' + bandwidth);
-            }
+            // If we were in a video section and didn't find a bandwidth line, insert it now.
+            // We need to find the correct spot for it: after the m= line but before any a= lines.
+            // Since we are at a new m= line, we need to find where the previous video section started
+            // and insert after that m= line if not found.
+            // Actually, a simpler way is to handle it as we encounter lines.
+
             inVideoSection = line.startsWith('m=video ');
             foundModifierInSection = false;
+            newLines.push(line);
+            continue;
         }
 
-        if (inVideoSection && line.startsWith('b=' + modifier + ':')) {
-            newLines.push('b=' + modifier + ':' + bandwidth);
-            foundModifierInSection = true;
-            continue;
+        if (inVideoSection) {
+            if (line.startsWith('b=' + modifier + ':')) {
+                newLines.push('b=' + modifier + ':' + bandwidth);
+                foundModifierInSection = true;
+                continue;
+            }
+
+            // SDP grammar: b= lines must follow the m= line and precede any a= lines.
+            if (line.startsWith('a=') && !foundModifierInSection) {
+                newLines.push('b=' + modifier + ':' + bandwidth);
+                foundModifierInSection = true;
+            }
         }
 
         newLines.push(line);
     }
 
+    // Final check for the last section if it was video.
     if (inVideoSection && !foundModifierInSection) {
+        // Find last a= line in the section or just append if none.
+        // Actually, we can just append if we reached the end.
         newLines.push('b=' + modifier + ':' + bandwidth);
     }
 

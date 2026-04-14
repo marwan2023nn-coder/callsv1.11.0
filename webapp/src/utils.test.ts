@@ -698,7 +698,4 @@ describe('utils', () => {
                 window.navigator.userAgent = userAgent;
                 expect(getPlatformInfo()).toBe(expectedPlatform);
             },
-        );
-    });
 });
-
