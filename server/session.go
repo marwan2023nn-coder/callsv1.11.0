@@ -158,6 +158,14 @@ func (p *Plugin) addUserSession(state *callState, callsEnabled *bool, userID, co
 	for oldConnID, session := range state.sessions {
 		if session.UserID == userID {
 			p.LogDebug("found existing session for user, removing it before adding new one", "userID", userID, "oldConnID", oldConnID, "newConnID", connID)
+
+			// Also close the RTC session if it exists to prevent stale connections.
+			if oldSession := p.getSessionByOriginalID(oldConnID); oldSession != nil {
+				if err := p.closeRTCSession(session.UserID, oldSession.rtcSessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
+					p.LogError("failed to close old RTC session", "oldConnID", oldConnID, "err", err.Error())
+				}
+			}
+
 			if err := p.store.DeleteCallSession(oldConnID); err != nil {
 				p.LogError("failed to delete old call session", "oldConnID", oldConnID, "err", err.Error())
 			}
