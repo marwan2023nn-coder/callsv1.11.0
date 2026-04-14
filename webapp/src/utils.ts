@@ -21,6 +21,7 @@ import {parseSemVer} from 'semver-parser';
 import CallsClient from 'src/client';
 import {STORAGE_CALLS_OUTGOING_RINGBACK_SOUND_KEY, STORAGE_CALLS_SHARE_AUDIO_WITH_SCREEN} from 'src/constants';
 import RestClient from 'src/rest_client';
+import {setSDPMaxVideoBW} from 'src/sdp_utils';
 import {getRingbackSoundSrc} from 'src/sounds/ringback_sounds';
 import {DesktopMessage} from 'src/types/types';
 import {notificationSounds} from 'src/webapp_globals';
@@ -359,64 +360,7 @@ export function getUserIdFromDM(dmName: string, currentUserId: string) {
     return otherUserId;
 }
 
-export function setSDPMaxVideoBW(sdp: string, bandwidth: number) {
-    let modifier = 'AS';
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        bandwidth = (bandwidth >>> 0) * 1000;
-        modifier = 'TIAS';
-    }
-
-    const lines = sdp.split(/\r?\n/);
-    const newLines: string[] = [];
-    let inVideoSection = false;
-    let foundModifierInSection = false;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        if (line.startsWith('m=')) {
-            // If we were in a video section and didn't find a bandwidth line, insert it now.
-            // We need to find the correct spot for it: after the m= line but before any a= lines.
-            // Since we are at a new m= line, we need to find where the previous video section started
-            // and insert after that m= line if not found.
-            // Actually, a simpler way is to handle it as we encounter lines.
-
-            inVideoSection = line.startsWith('m=video ');
-            foundModifierInSection = false;
-            newLines.push(line);
-            continue;
-        }
-
-        if (inVideoSection) {
-            if (line.startsWith('b=' + modifier + ':')) {
-                newLines.push('b=' + modifier + ':' + bandwidth);
-                foundModifierInSection = true;
-                continue;
-            }
-
-            // SDP grammar: b= lines must follow the m= line and precede any a= lines.
-            if (line.startsWith('a=') && !foundModifierInSection) {
-                newLines.push('b=' + modifier + ':' + bandwidth);
-                foundModifierInSection = true;
-            }
-        }
-
-        newLines.push(line);
-    }
-
-    // Final check for the last section if it was video.
-    if (inVideoSection && !foundModifierInSection) {
-        // Find last a= line in the section or just append if none.
-        // Actually, we can just append if we reached the end.
-        newLines.push('b=' + modifier + ':' + bandwidth);
-    }
-
-    sdp = newLines.join('\r\n');
-    if (!sdp.endsWith('\r\n')) {
-        sdp += '\r\n';
-    }
-    return sdp;
-}
+export {setSDPMaxVideoBW};
 
 export function split<T>(list: T[], i: number, pad = false): [list: T[], overflowed?: T[]] {
     if (list.length <= i + (pad ? 1 : 0)) {
