@@ -174,6 +174,16 @@ func (p *Plugin) addUserSession(state *callState, callsEnabled *bool, userID, co
 				p.LogError("failed to delete old call session", "oldConnID", oldConnID, "err", err.Error())
 			}
 			delete(state.sessions, oldConnID)
+
+			// Notify other participants that this session has left to avoid ghosting in the UI.
+			p.publishWebSocketEvent(wsEventUserLeft, map[string]interface{}{
+				"user_id":    userID,
+				"session_id": oldConnID,
+			}, &WebSocketBroadcast{
+				ChannelID:           channelID,
+				ReliableClusterSend: true,
+				UserIDs:             getUserIDsFromSessions(state.sessions),
+			})
 		}
 	}
 
