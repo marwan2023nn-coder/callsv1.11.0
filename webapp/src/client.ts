@@ -1,6 +1,8 @@
 // Copyright (c) 2020-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+/// <reference lib="dom" />
+
 // eslint-disable max-lines
 // eslint-disable-next-line simple-import-sort/imports
 import {parseRTCStats, RTCMonitor, RTCPeer} from '@mattermost/calls-common';
@@ -57,7 +59,7 @@ export default class CallsClient extends EventEmitter {
     private connected = false;
     public initTime = Date.now();
     private rtcMonitor: RTCMonitor | null = null;
-    private av1Codec: RTCRtpCodecCapability | null = null;
+    private av1Codec: Awaited<ReturnType<typeof RTCPeer.getVideoCodec>> = null;
     private joinData: CallsClientJoinData | null = null;
     private rtcReconnectCount = 0;
     private readonly maxRTCReconnects = 3;
@@ -577,11 +579,12 @@ export default class CallsClient extends EventEmitter {
 
             // Intercept DataChannel messages to handle custom RTC message types
             // and avoid "unexpected dc message type" warnings in calls-common.
-            const originalDCMessage = peer.dc.onmessage;
+            const peerDC = (peer as any).dc;
+            const originalDCMessage = peerDC.onmessage;
             const decoder = new Decoder();
-            peer.dc.onmessage = (ev: MessageEvent) => {
+            peerDC.onmessage = (ev: MessageEvent) => {
                 try {
-                    const {mt, payload} = decodeDCMsg(decoder, new Uint8Array(ev.data));
+                    const {mt, payload} = decodeDCMsg(decoder as any, new Uint8Array(ev.data));
                     const type = mt as number;
                     if (type === 14) {
                         this.emit('inputEvent', JSON.parse(payload as string));
@@ -596,7 +599,7 @@ export default class CallsClient extends EventEmitter {
                 }
 
                 if (originalDCMessage) {
-                    originalDCMessage.call(peer.dc, ev);
+                    originalDCMessage.call(peerDC, ev);
                 }
             };
         });
@@ -713,29 +716,14 @@ export default class CallsClient extends EventEmitter {
         this.emit('devicechange', this.audioDevices);
     }
 
-    private async attemptICERestart() {
+    private attemptICERestart() {
         if (this.closed || !this.peer || this.iceRestarting) {
             return;
         }
 
-        logInfo('attempting ice restart');
+        logInfo('attempting ice restart via full rtc reconnect');
         this.iceRestarting = true;
-
-        try {
-            // @ts-ignore: RTCPeer might not have createOffer exposed directly depending on the wrapper
-            // but we assume it follows the standard WebRTC pattern or the wrapper handles it.
-            // If the wrapper doesn't support it, we fallback to full reconnect.
-            if (typeof (this.peer as any).createOffer === 'function') {
-                const offer = await (this.peer as any).createOffer({iceRestart: true});
-                await (this.peer as any).setLocalDescription(offer);
-            } else {
-                throw new Error('ice restart not supported by peer wrapper');
-            }
-        } catch (err) {
-            logErr('ice restart failed, falling back to full reconnect', err);
-            this.iceRestarting = false;
-            this.reconnectRTC();
-        }
+        this.reconnectRTC();
     }
 
     private reconnectRTC() {
@@ -771,6 +759,7 @@ export default class CallsClient extends EventEmitter {
         this.remoteScreenTrack = null;
         this.signalBuffer = [];
 
+        this.iceRestarting = false;
         this.ws.send('join', this.joinData);
     }
 

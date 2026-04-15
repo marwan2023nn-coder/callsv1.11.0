@@ -11,7 +11,7 @@ const wsMinReconnectRetryTimeMs = 1000; // 1 second
 const wsReconnectionTimeout = 30000; // 30 seconds
 const wsReconnectTimeIncrement = 500; // 0.5 seconds
 const wsPingIntervalMs = 5000; // 5 seconds
-const wsPongTimeoutMs = 10000; // 10 seconds timeout for pong response
+const wsPongTimeoutMs = 8000; // 8 seconds — must be less than nginx proxy_read_timeout (default 10s)
 
 export enum WebSocketErrorType {
     Native,
@@ -103,8 +103,10 @@ export class WebSocketClient extends EventEmitter {
                 return;
             }
 
-            // Handle pong response
-            if (this.waitingForPong && msg?.seq_reply === this.expectedPongSeqNo) {
+            // Handle pong response — either native seq_reply or custom plugin pong event
+            if (this.waitingForPong &&
+                (msg?.seq_reply === this.expectedPongSeqNo ||
+                 msg?.event === `${this.eventPrefix}_pong`)) {
                 this.waitingForPong = false;
                 this.expectedPongSeqNo = 0;
                 return;
@@ -275,14 +277,11 @@ export class WebSocketClient extends EventEmitter {
     private ping() {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.waitingForPong = true;
-
-            // This is used to track the expected pong response which should match the request's sequence number.
             this.expectedPongSeqNo = this.seqNo;
 
-            this.ws.send(JSON.stringify({
-                action: 'ping',
-                seq: this.seqNo++,
-            }));
+            // Send ping with plugin prefix so it reaches the server plugin handler
+            // which responds with a custom_..._pong JSON event (detectable via onmessage).
+            this.send('ping');
 
             // Set a timeout for the pong response to handle network issues or background throttling.
             setTimeout(() => this.handlePongTimeout(), wsPongTimeoutMs);

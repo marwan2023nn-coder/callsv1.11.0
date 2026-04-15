@@ -445,6 +445,9 @@ export function playSound(name: string) {
 
     const audio = new Audio(src);
     audio.play().catch((err) => {
+        if (err?.name === 'AbortError' || err?.name === 'NotAllowedError') {
+            return;
+        }
         logErr(`failed to play sound ${name}`, err);
     });
     audio.onended = () => {

@@ -88,7 +88,7 @@ func performScript(filename string) error {
 			PollySession: svc,
 			PollyVoiceID: aws.String(script.voiceIDs[i]),
 		}, client.WithOpusEncoderFactory(func() (client.OpusEncoder, error) {
-			return opus.NewEncoder(24000, 1, opus.AppVoIP)
+			return opus.NewEncoder(24000, 1, opus.Application(2048)) // 2048 = OPUS_APPLICATION_VOIP
 		}))
 		userClients = append(userClients, user)
 

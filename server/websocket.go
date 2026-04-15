@@ -831,9 +831,24 @@ func (p *Plugin) handleJoin(userID, connID, authSessionID string, joinData calls
 			atomic.StoreInt32(&oldUs.removed, 1)
 			// Generate a unique RTC session ID to prevent signaling crosstalk
 			us.rtcSessionID = fmt.Sprintf("%s-%d", connID, time.Now().UnixNano())
+
+			// Immediately close the old RTC session so its tracks are removed
+			// from SDP offers before the new session is established.
+			go func(oldCallID string) {
+				if err := p.closeRTCSession(userID, connID, channelID, handlerID, oldCallID); err != nil {
+					p.LogError("failed to close superseded RTC session", "err", err.Error(), "connID", connID)
+				}
+			}(oldUs.callID)
+
+			// Notify all clients that the old session left to prevent ghost sessions in the UI.
+			p.publishWebSocketEvent(wsEventUserLeft, map[string]interface{}{
+				"user_id":    userID,
+				"session_id": connID,
+			}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
 		}
 		p.sessions[connID] = us
 		p.mut.Unlock()
+
 
 		if p.rtcdManager != nil {
 			msg := rtcd.ClientMessage{
@@ -1193,8 +1208,9 @@ func (p *Plugin) WebSocketMessageHasBeenPosted(connID, userID string, req *model
 		return
 	}
 
-	// This is the standard ping message handled by Mattermost server. Nothing to do here.
+	// Send back a pong so the client doesn't time out waiting.
 	if msg.Type == "ping" {
+		p.publishWebSocketEvent("pong", map[string]interface{}{}, &WebSocketBroadcast{ConnectionID: connID})
 		return
 	}
 

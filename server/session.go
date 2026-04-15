@@ -162,11 +162,7 @@ func (p *Plugin) addUserSession(state *callState, callsEnabled *bool, userID, co
 			// Also close the RTC session if it exists to prevent stale connections.
 			oldSession := p.getSessionByOriginalID(oldConnID)
 			if oldSession != nil {
-				// Use a context with timeout to prevent deadlock
-				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-				defer cancel()
-
-				if err := p.closeRTCSession(ctx, oldSession.userID, oldSession.rtcSessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
+				if err := p.closeRTCSession(oldSession.userID, oldSession.rtcSessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
 					p.LogError("failed to close old RTC session", "oldConnID", oldConnID, "err", err.Error())
 					// Continue with cleanup even if closeRTCSession fails to prevent session leak
 				}
