@@ -61,7 +61,7 @@ const ChannelHeaderButton = () => {
     if (isClientConnecting && joining) {
         callButtonText = formatMessage({defaultMessage: 'جارٍ الانضمام إلى المكالمة...'});
     } else if (isClientConnecting) {
-        // eslint-disable-next-line unused-imports/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         callButtonText = formatMessage({defaultMessage: 'جارٍ بدء المكالمة...'});
     }
 
@@ -234,7 +234,7 @@ const UpsellIcon = styled.i`
     }
 `;
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CallButtonText = styled.span`
   &&&& {
     font-size: 12px;

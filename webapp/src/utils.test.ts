@@ -18,11 +18,11 @@ import {
     getWSConnectionURL,
     maxAttemptsReachedErr,
     runWithRetry,
+    setSDPAudioOptions,
     shouldRenderCallsIncoming,
     shouldRenderDesktopWidget,
     sleep,
     toHuman,
-    setSDPAudioOptions,
 } from './utils';
 
 describe('utils', () => {
@@ -702,7 +702,6 @@ describe('utils', () => {
         );
     });
 });
-
 
 describe('setSDPAudioOptions', () => {
     const sdpWithOpus = 'v=0\r\no=- 12345 67890 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10;useinbandfec=0\r\n';
