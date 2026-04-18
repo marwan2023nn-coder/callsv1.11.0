@@ -521,20 +521,6 @@ func (p *Plugin) removeUserSession(state *callState, userID, originalConnID, con
 	return nil
 }
 
-// JoinAllowed returns true if the user is allowed to join the call, taking into
-// account license and configuration limits
-func (p *Plugin) joinAllowed(state *callState) (bool, error) {
-	// Rules are:
-	// Cloud Starter: channels, dm/gm: limited to cfg.cloudStarterMaxParticipantsDefault
-	// On-prem, Cloud Professional & Cloud Enterprise (incl. trial): DMs 1-1, GMs and Channel calls
-	// limited to cfg.cloudPaidMaxParticipantsDefault people.
-	// This is set in the override defaults, so MaxCallParticipants will be accurate for the current license.
-	if cfg := p.getConfiguration(); cfg != nil && cfg.MaxCallParticipants != nil &&
-		*cfg.MaxCallParticipants != 0 && len(state.sessions) >= *cfg.MaxCallParticipants {
-		return false, nil
-	}
-	return true, nil
-}
 
 func (p *Plugin) removeSession(us *session) error {
 	// The flow to remove a session is a bit complex as it can trigger from many

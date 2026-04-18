@@ -233,3 +233,15 @@ func (p *Plugin) sendConcurrentSessionsWarning() error {
 
 	return nil
 }
+func (p *Plugin) joinAllowed(state *callState) (bool, error) {
+	// Rules are:
+	// Cloud Starter: channels, dm/gm: limited to cfg.cloudStarterMaxParticipantsDefault
+	// On-prem, Cloud Professional & Cloud Enterprise (incl. trial): DMs 1-1, GMs and Channel calls
+	// limited to cfg.cloudPaidMaxParticipantsDefault people.
+	// This is set in the override defaults, so MaxCallParticipants will be accurate for the current license.
+	if cfg := p.getConfiguration(); cfg != nil && cfg.MaxCallParticipants != nil &&
+		*cfg.MaxCallParticipants != 0 && len(state.sessions) >= *cfg.MaxCallParticipants {
+		return false, nil
+	}
+	return true, nil
+}
