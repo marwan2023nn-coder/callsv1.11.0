@@ -155,35 +155,41 @@ func (p *Plugin) addUserSession(state *callState, callsEnabled *bool, userID, co
 	}
 
 	// Clean up any existing sessions for the same user in the same call to prevent ghost sessions.
+	// We only remove sessions that have a different connection ID, as the current one might be a legitimate reconnect.
 	for oldConnID, session := range state.sessions {
-		if session.UserID == userID {
-			p.LogDebug("found existing session for user, removing it before adding new one", "userID", userID, "oldConnID", oldConnID, "newConnID", connID)
+		if session.UserID == userID && oldConnID != connID {
+			// We check if the session is actually "stale" by looking at its local presence.
+			p.mut.RLock()
+			us := p.sessions[oldConnID]
+			p.mut.RUnlock()
 
-			// Also close the RTC session if it exists to prevent stale connections.
-			oldSession := p.getSessionByOriginalID(oldConnID)
-			if oldSession != nil {
-				if err := p.closeRTCSession(oldSession.userID, oldSession.rtcSessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
-					p.LogError("failed to close old RTC session", "oldConnID", oldConnID, "err", err.Error())
-					// Continue with cleanup even if closeRTCSession fails to prevent session leak
+			// If the session is not found locally or is marked as removed, it's safe to clean up.
+			if us == nil || atomic.LoadInt32(&us.removed) == 1 {
+				p.LogDebug("found stale session for user, removing it", "userID", userID, "oldConnID", oldConnID, "newConnID", connID)
+
+				// Also close the RTC session if it exists to prevent stale connections.
+				if us != nil {
+					if err := p.closeRTCSession(us.userID, us.rtcSessionID, channelID, state.Call.Props.NodeID, state.Call.ID); err != nil {
+						p.LogError("failed to close old RTC session", "oldConnID", oldConnID, "err", err.Error())
+						// Continue with cleanup even if closeRTCSession fails to prevent session leak
+					}
 				}
-			} else {
-				p.LogWarn("session not found in original sessions during cleanup", "oldConnID", oldConnID, "userID", userID)
-			}
 
-			if err := p.store.DeleteCallSession(oldConnID); err != nil {
-				p.LogError("failed to delete old call session", "oldConnID", oldConnID, "err", err.Error())
-			}
-			delete(state.sessions, oldConnID)
+				if err := p.store.DeleteCallSession(oldConnID); err != nil {
+					p.LogError("failed to delete old call session", "oldConnID", oldConnID, "err", err.Error())
+				}
+				delete(state.sessions, oldConnID)
 
-			// Notify other participants that this session has left to avoid ghosting in the UI.
-			p.publishWebSocketEvent(wsEventUserLeft, map[string]interface{}{
-				"user_id":    userID,
-				"session_id": oldConnID,
-			}, &WebSocketBroadcast{
-				ChannelID:           channelID,
-				ReliableClusterSend: true,
-				UserIDs:             getUserIDsFromSessions(state.sessions),
-			})
+				// Notify other participants that this session has left to avoid ghosting in the UI.
+				p.publishWebSocketEvent(wsEventUserLeft, map[string]interface{}{
+					"user_id":    userID,
+					"session_id": oldConnID,
+				}, &WebSocketBroadcast{
+					ChannelID:           channelID,
+					ReliableClusterSend: true,
+					UserIDs:             getUserIDsFromSessions(state.sessions),
+				})
+			}
 		}
 	}
 
@@ -349,26 +355,16 @@ func (p *Plugin) removeUserSession(state *callState, userID, originalConnID, con
 			ReliableClusterSend: true,
 			UserIDs:             getUserIDsFromSessions(state.sessions),
 		})
-
-		// If the sharer leaves, we also must clear any active remote control.
-		if state.Call.Props.RemoteControlSessionID != "" {
-			state.Call.Props.RemoteControlSessionID = ""
-			p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{
-				"channel_id": channelID,
-			}, &WebSocketBroadcast{
-				ChannelID:           channelID,
-				ReliableClusterSend: true,
-				UserIDs:             getUserIDsFromSessions(state.sessions),
-			})
-		}
 	}
 
-	// Check if leaving session was being remote controlled.
-	if state.Call.Props.RemoteControlSessionID == originalConnID {
-		state.Call.Props.RemoteControlSessionID = ""
-		p.LogDebug("removed session was being remote controlled, sending remote control off event", "userID", userID, "connID", connID, "originalConnID", originalConnID)
-		p.publishWebSocketEvent(wsEventHostRemoteControlOff, map[string]interface{}{
-			"channel_id": channelID,
+	// Check if leaving session was the host.
+	if state.Call.GetHostID() == userID {
+		newHostID := state.getHostID(p.getBotID())
+		state.Call.Props.Hosts = []string{newHostID}
+		p.LogDebug("removed session was host, assigning new host", "userID", userID, "newHostID", newHostID)
+		p.publishWebSocketEvent(wsEventCallHostChanged, map[string]interface{}{
+			"hostID":  newHostID,
+			"call_id": state.Call.ID,
 		}, &WebSocketBroadcast{
 			ChannelID:           channelID,
 			ReliableClusterSend: true,
@@ -376,165 +372,35 @@ func (p *Plugin) removeUserSession(state *callState, userID, originalConnID, con
 		})
 	}
 
-	// If the bot is the only user left in the call we automatically stop any
-	// ongoing jobs.
-	if state.onlyUserLeft(p.getBotID()) {
-		p.LogDebug("all users left call with job(s) in progress, stopping", "channelID", channelID)
-
-		if state.Recording != nil {
-			p.LogDebug("stopping ongoing recording", "jobID", state.Recording.Props.JobID, "botConnID", state.Recording.Props.BotConnID)
-			if err := p.getJobService().StopJob(channelID, state.Recording.ID, p.getBotID(), state.Recording.Props.BotConnID); err != nil {
-				p.LogError("failed to stop recording job", "error", err.Error(),
-					"channelID", channelID,
-					"jobID", state.Recording.Props.JobID,
-					"botConnID", state.Recording.Props.BotConnID)
-			}
-		}
-
-		if state.Transcription != nil {
-			p.LogDebug("stopping ongoing transcription", "jobID", state.Transcription.Props.JobID, "botConnID", state.Transcription.Props.BotConnID)
-			if err := p.getJobService().StopJob(channelID, state.Transcription.ID, p.getBotID(), state.Transcription.Props.BotConnID); err != nil {
-				p.LogError("failed to stop transcribing job", "error", err.Error(),
-					"channelID", channelID,
-					"jobID", state.Transcription.Props.JobID,
-					"botConnID", state.Transcription.Props.BotConnID)
-			}
-		}
-	}
-
-	// If the bot leaves the call and recording has not been stopped it either means
-	// something has failed or the max duration timeout triggered.
-	if state.Recording != nil && state.Recording.EndAt == 0 && originalConnID == state.Recording.Props.BotConnID {
-		p.LogDebug("recording bot left the call", "channelID", channelID, "jobID", state.Recording.Props.JobID, "botConnID", originalConnID)
-
-		state.Recording.EndAt = time.Now().UnixMilli()
-		if err := p.store.UpdateCallJob(state.Recording); err != nil {
-			return fmt.Errorf("failed to update call job: %w", err)
-		}
-
-		// Since MM-52346 we don't need to explicitly stop the recording here as
-		// the bot leaving the call will implicitly terminate the recording process.
-		if state.Transcription != nil && state.Transcription.EndAt == 0 {
-			p.LogDebug("attempting to stop transcribing job", "channelID", channelID, "jobID", state.Transcription.Props.JobID)
-			if err := p.stopTranscribingJob(state, channelID); err != nil {
-				p.LogError("failed to stop transcription", "channelID", channelID, "err", err.Error())
-			}
-		}
-
-		p.publishWebSocketEvent(wsEventCallJobState, map[string]interface{}{
-			"callID":   channelID,
-			"jobState": getClientStateFromCallJob(state.Recording).toMap(),
-		}, &WebSocketBroadcast{
-			ChannelID:           channelID,
-			ReliableClusterSend: true,
-			UserIDs:             getUserIDsFromSessions(state.sessions),
-		})
-	}
-
-	if state.Transcription != nil && state.Transcription.EndAt == 0 && originalConnID == state.Transcription.Props.BotConnID {
-		p.LogDebug("transcribing bot left the call", "channelID", channelID, "jobID", state.Transcription.Props.JobID, "botConnID", originalConnID)
-
-		state.Transcription.EndAt = time.Now().UnixMilli()
-		if err := p.store.UpdateCallJob(state.Transcription); err != nil {
-			return fmt.Errorf("failed to update call job: %w", err)
-		}
-
-		if state.Recording != nil && state.Recording.EndAt == 0 {
-			p.LogDebug("attempting to stop recording job", "channelID", channelID, "jobID", state.Recording.Props.JobID)
-			if _, _, err := p.stopRecordingJob(state, channelID); err != nil {
-				p.LogError("failed to stop recording", "channelID", channelID, "err", err.Error())
-			}
-		}
-
-		p.publishWebSocketEvent(wsEventCallJobState, map[string]interface{}{
-			"callID":   channelID,
-			"jobState": getClientStateFromCallJob(state.Transcription).toMap(),
-		}, &WebSocketBroadcast{
-			ChannelID:           channelID,
-			ReliableClusterSend: true,
-			UserIDs:             getUserIDsFromSessions(state.sessions),
-		})
-
-		if state.LiveCaptions != nil {
-			p.publishWebSocketEvent(wsEventCallJobState, map[string]interface{}{
-				"callID":   channelID,
-				"jobState": getClientStateFromCallJob(state.LiveCaptions).toMap(),
-			}, &WebSocketBroadcast{
-				ChannelID:           channelID,
-				ReliableClusterSend: true,
-				UserIDs:             getUserIDsFromSessions(state.sessions),
-			})
-		}
-	}
-
-	if state.LiveCaptions != nil && state.LiveCaptions.EndAt == 0 && connID == state.LiveCaptions.Props.BotConnID {
-		state.LiveCaptions.EndAt = time.Now().UnixMilli()
-		if err := p.store.UpdateCallJob(state.LiveCaptions); err != nil {
-			return fmt.Errorf("failed to update call job: %w", err)
-		}
-	}
-
-	p.publishWebSocketEvent(wsEventUserLeft, map[string]interface{}{
-		"user_id":    userID,
-		"session_id": originalConnID,
-	}, &WebSocketBroadcast{ChannelID: channelID, ReliableClusterSend: true})
-
-	// Change host if needed
-	if state.Call.GetHostID() == userID && len(state.sessions) > 0 {
-		if newHostID := state.getHostID(p.getBotID()); newHostID != userID {
-			if newHostID == "" {
-				state.Call.Props.Hosts = nil
-			} else {
-				state.Call.Props.Hosts = []string{newHostID}
-			}
-			p.publishWebSocketEvent(wsEventCallHostChanged, map[string]interface{}{
-				"hostID":  newHostID,
-				"call_id": state.Call.ID,
-			}, &WebSocketBroadcast{
-				ChannelID:           channelID,
-				ReliableClusterSend: true,
-				UserIDs:             getUserIDsFromSessions(state.sessions),
-			})
-		}
-	}
-
-	// Call has ended
 	if len(state.sessions) == 0 {
-		if state.Call.Props.ScreenStartAt > 0 {
-			state.Call.Stats.ScreenDuration += secondsSinceTimestamp(state.Call.Props.ScreenStartAt)
+		state.Call.EndAt = time.Now().UnixMilli()
+		if err := p.store.UpdateCall(&state.Call); err != nil {
+			return fmt.Errorf("failed to update call: %w", err)
 		}
-		participants := mapKeys(state.Call.Props.Participants)
-		setCallEnded(&state.Call)
-
-		defer func() {
-			_, err := p.updateCallPostEnded(state.Call.PostID, participants)
-			if err != nil {
-				p.LogError("failed to update call post ended", "err", err.Error(), "channelID", channelID)
-			}
-		}()
-	}
-
-	if err := p.store.UpdateCall(&state.Call); err != nil {
-		return fmt.Errorf("failed to update call: %w", err)
+		p.LogDebug("no more sessions, call has ended", "callID", state.Call.ID)
+		p.publishWebSocketEvent(wsEventCallEnd, map[string]interface{}{
+			"id": state.Call.ID,
+		}, &WebSocketBroadcast{
+			ChannelID:           channelID,
+			ReliableClusterSend: true,
+		})
+	} else {
+		if err := p.store.UpdateCall(&state.Call); err != nil {
+			return fmt.Errorf("failed to update call: %w", err)
+		}
+		p.publishWebSocketEvent(wsEventUserLeft, map[string]interface{}{
+			"user_id":    userID,
+			"session_id": originalConnID,
+		}, &WebSocketBroadcast{
+			ChannelID:           channelID,
+			ReliableClusterSend: true,
+			UserIDs:             getUserIDsFromSessions(state.sessions),
+		})
 	}
 
 	return nil
 }
 
-// JoinAllowed returns true if the user is allowed to join the call, taking into
-// account license and configuration limits
-func (p *Plugin) joinAllowed(state *callState) (bool, error) {
-	// Rules are:
-	// Cloud Starter: channels, dm/gm: limited to cfg.cloudStarterMaxParticipantsDefault
-	// On-prem, Cloud Professional & Cloud Enterprise (incl. trial): DMs 1-1, GMs and Channel calls
-	// limited to cfg.cloudPaidMaxParticipantsDefault people.
-	// This is set in the override defaults, so MaxCallParticipants will be accurate for the current license.
-	if cfg := p.getConfiguration(); cfg != nil && cfg.MaxCallParticipants != nil &&
-		*cfg.MaxCallParticipants != 0 && len(state.sessions) >= *cfg.MaxCallParticipants {
-		return false, nil
-	}
-	return true, nil
-}
 
 func (p *Plugin) removeSession(us *session) error {
 	// The flow to remove a session is a bit complex as it can trigger from many
