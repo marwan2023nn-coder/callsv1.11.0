@@ -438,6 +438,7 @@ export default class CallsClient extends EventEmitter {
             if (this.signalBuffer.length > 0) {
                 logDebug(`replaying ${this.signalBuffer.length} buffered signals`);
                 for (const signal of this.signalBuffer) {
+                    // eslint-disable-next-line no-await-in-loop
                     await this.peer.signal(signal);
                 }
                 this.signalBuffer = [];
